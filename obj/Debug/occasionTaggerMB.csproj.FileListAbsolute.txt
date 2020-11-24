@@ -11,3 +11,4 @@ C:\Users\devsnox\Desktop\Meins\C# Source3.1 occassionTagger\obj\Debug\mb_occasio
 C:\Users\devsnox\Desktop\Meins\C# Source3.1 occassionTagger\obj\Debug\MusicBeePlugin.tabbedTagger.resources
 C:\Users\devsnox\Desktop\Meins\C# Source3.1 occassionTagger\obj\Debug\MusicBeePlugin.ChecklistBoxPanel.resources
 C:\Users\devsnox\Desktop\Meins\C# Source3.1 occassionTagger\obj\Debug\MusicBeePlugin.TabbedTaggerPanel.resources
+C:\Users\devsnox\Desktop\Meins\C# Source3.1 occassionTagger\obj\Debug\occasionTaggerMB.csprojAssemblyReference.cache

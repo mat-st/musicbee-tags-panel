@@ -425,10 +425,12 @@ namespace MusicBeePlugin
             _panel.Enabled = false;
             _panel.SuspendLayout();
             _panel.AutoSize = true;
+            _panel.BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
+                
             _panel.Controls.AddRange(new Control[]
             {
                    //CreateGridView(_panel)
-                   this.tabbedTaggerPanel
+                  this.tabbedTaggerPanel
             });
             _panel.ResumeLayout();
         }

@@ -40,22 +40,29 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl1.Name = "tabControl1";
+            this.tabControl1.Padding = new System.Drawing.Point(0, 0);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(441, 366);
+            this.tabControl1.Size = new System.Drawing.Size(453, 371);
+            this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
             // 
             // tabPage1
             // 
+            this.tabPage1.BackColor = System.Drawing.Color.Transparent;
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(433, 340);
+            this.tabPage1.Size = new System.Drawing.Size(445, 345);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Moods";
             this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPage1.Paint += new System.Windows.Forms.PaintEventHandler(this.tabPage1_Paint);
             // 
             // tabPage2
             // 
@@ -85,7 +92,7 @@
             this.AutoSize = true;
             this.Controls.Add(this.tabControl1);
             this.Name = "TabbedTaggerPanel";
-            this.Size = new System.Drawing.Size(444, 369);
+            this.Size = new System.Drawing.Size(453, 371);
             this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
