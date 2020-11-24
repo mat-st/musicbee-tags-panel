@@ -1,0 +1,1 @@
+# musicbee-tags-panel
