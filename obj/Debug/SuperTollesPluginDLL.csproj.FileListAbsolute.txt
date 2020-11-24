@@ -1,0 +1,6 @@
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\obj\Debug\SuperTollesPluginDLL.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\bin\Debug\mb_SuperTollesPlugin.dll.config
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\bin\Debug\mb_SuperTollesPlugin.dll
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\bin\Debug\mb_SuperTollesPlugin.pdb
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\obj\Debug\mb_SuperTollesPlugin.dll
+C:\Users\User\Desktop\MB-API\C# Source3.1 SupertollesPlugin\obj\Debug\mb_SuperTollesPlugin.pdb
