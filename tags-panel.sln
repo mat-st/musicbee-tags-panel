@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "occasionTaggerMB", "occasionTaggerMB.csproj", "{F5D46BA1-6F21-40EF-9695-46105CCACD08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tags-panelMB", "tags-panelMB.csproj", "{F5D46BA1-6F21-40EF-9695-46105CCACD08}"
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "MusicBee", "..\..\MusicBeePortable\MusicBee.exe", "{932D4F3E-1BF0-4520-AEB1-419DD5D0B07C}"
 	ProjectSection(DebuggerProjectSystem) = preProject
