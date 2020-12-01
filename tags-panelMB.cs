@@ -15,7 +15,9 @@ namespace MusicBeePlugin
 {
     public partial class Plugin
     {
-        private const string SettingsFileName = "mb_occasionTagger.Settings.xml";
+        private const string LOG_FILE_NAME = "mb_tags-panel.log";
+        private const string SettingsFileName = "mb_tags-panel.Settings.xml";
+
         private MusicBeeApiInterface mbApiInterface;
         private PluginInfo about = new PluginInfo();
         private TextBox textBox1 = new TextBox();
@@ -27,17 +29,18 @@ namespace MusicBeePlugin
         private string[] temp_occasions;
         private bool sortEnabled;
         string[] selectedFileUrls = new string[] { };
+        private Logger log;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             mbApiInterface = new MusicBeeApiInterface();
             mbApiInterface.Initialise(apiInterfacePtr);
             about.PluginInfoVersion = PluginInfoVersion;
-            about.Name = "occasionTagger";
+            about.Name = "tags-panel";
             about.Description = "Creates a dockable Panel which lets the user choose from an predefined " +
                 "list of occasions";
             about.Author = "Matthias Steiert + The Anonymous Programmer";
-            about.TargetApplication = "occasionTagger";   //  the name of a Plugin Storage device or panel header for a dockable panel
+            about.TargetApplication = "tags-panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
             about.Type = PluginType.General;
             about.VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major;  // your plugin version
             about.VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor;
@@ -48,10 +51,18 @@ namespace MusicBeePlugin
             about.ConfigurationPanelHeight = 0;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
             //createMenuItem();
             // Application.EnableVisualStyles();
-
             LoadOccasionsWithDefaultFallback();
 
+            InitLogger();
+            log.info("Tagger plugin started");
+
             return about;
+        }
+
+        private void InitLogger()
+        {
+            string logPath = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), LOG_FILE_NAME);
+            log = new Logger(logPath);
         }
 
         public bool Configure(IntPtr panelHandle)
@@ -99,7 +110,7 @@ namespace MusicBeePlugin
             file.Close();
         }
 
-        private void loadSettings()
+        private void LoadSettings()
         {
             string filename = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
 
@@ -132,7 +143,7 @@ namespace MusicBeePlugin
         string[] allTagsFromConfig = null;
         private void LoadOccasionsWithDefaultFallback()
         {
-            loadSettings();
+            LoadSettings();
 
             if (SavedSettings.occasions != null && SavedSettings.occasions.Length > 0)
             {
@@ -153,6 +164,7 @@ namespace MusicBeePlugin
         {
             //ourPanel.Dispose();
             ourPanel = null;
+            log.close();
         }
 
         // uninstall this plugin - clean up any persisted files
@@ -385,16 +397,12 @@ namespace MusicBeePlugin
             {
                 panel.Invoke(new Action(() =>
                 {
-                    //_occasionListBindingSource.DataSource = null;
-                    //_occasionListBindingSource.DataSource = data;
-                    this.tabbedTaggerPanel.AddDataSource(list);
+                    this.checklistBox.AddDataSource(list);
                 }));
             }
             else
             {
-                //_occasionListBindingSource.DataSource = null;
-                //_occasionListBindingSource.DataSource = data;
-                this.tabbedTaggerPanel.AddDataSource(list);
+                this.checklistBox.AddDataSource(list);
             }
 
         }
@@ -421,16 +429,33 @@ namespace MusicBeePlugin
 
         private void layoutPanel(Control _panel)
         {
-            this.tabbedTaggerPanel = new TabbedTaggerPanel(mbApiInterface, this.occasionList);
+            createTabbedPanel();
+
             _panel.Enabled = false;
             _panel.SuspendLayout();
-            _panel.AutoSize = true;
             _panel.Controls.AddRange(new Control[]
             {
-                   //CreateGridView(_panel)
-                   this.tabbedTaggerPanel
+                   this.tabControl
             });
             _panel.ResumeLayout();
+            
+        }
+
+        private void createTabbedPanel()
+        {
+            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
+            this.tabControl.Dock = DockStyle.Fill;
+
+            TabPage page1 = new TabPage("Moods");
+            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, occasionList);
+            checklistBox.Dock = DockStyle.Fill;
+            page1.Controls.Add(checklistBox);
+            this.tabControl.TabPages.Add(page1);
+            TabPage page2 = new TabPage("Occassions");
+            this.tabControl.TabPages.Add(page2);
+            TabPage page3 = new TabPage("Genres");
+            this.tabControl.TabPages.Add(page3);
+
         }
 
         private readonly BindingSource _occasionListBindingSource = new BindingSource();
@@ -631,7 +656,8 @@ namespace MusicBeePlugin
         Control ourPanel;
         //string fileTagMoods = null;
         OccasionList selectedOccasions = new OccasionList();
-        private TabbedTaggerPanel tabbedTaggerPanel;
+        private TabControl tabControl;
+        private ChecklistBoxPanel checklistBox;
 
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
@@ -652,7 +678,7 @@ namespace MusicBeePlugin
 
         public class OccasionEntry : IEquatable<OccasionEntry>, IComparable<OccasionEntry>
         {
-            public CheckState checkState = CheckState.Indeterminate;
+            public CheckState checkState = CheckState.Checked;
             public int selected { get; set; }
             public string occasion { get; set; }
             public OccasionEntry(string occasion, int selected)
