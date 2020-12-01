@@ -15,7 +15,7 @@ namespace MusicBeePlugin
     {
         private readonly MusicBeeApiInterface mbApiInterface;
 
-        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, OccasionList data)
+        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data)
         {
             this.mbApiInterface = mbApiInterface;
             
@@ -28,10 +28,15 @@ namespace MusicBeePlugin
             StylePanel();
         }
 
-        public void AddDataSource(OccasionList data)
+        public void AddDataSource(Dictionary<String, CheckState> data)
         {
             this.checkedListBox1.Items.Clear();
-            this.checkedListBox1.Items.AddRange(data.ToArray());
+            foreach (String key in data.Keys.ToArray())
+            {
+                CheckState value = data[key];
+                this.checkedListBox1.Items.Add(key, value);
+            }
+            //this.checkedListBox1.Items.AddRange(data);
         }
 
         private void StylePanel()
@@ -59,9 +64,9 @@ namespace MusicBeePlugin
             return Color.FromArgb(colorValue);
         }
 
-        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
-
+            this.checkedListBox1.ItemCheck += eventHandler;
         }
     }
 }

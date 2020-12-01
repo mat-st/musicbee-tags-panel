@@ -1,7 +1,6 @@
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\MusicBeePlugin.ChecklistBoxPanel.resources
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\MusicBeePlugin.tabbedTagger.resources
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\MusicBeePlugin.fvSettings.resources
-C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\MusicBeePlugin.TabbedTaggerPanel.resources
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\tags-panelMB.csproj.GenerateResource.cache
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\tags-panelMB.csproj.CoreCompileInputs.cache
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\bin\Debug\mb_TagsPanel.dll.config

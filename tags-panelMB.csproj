@@ -104,12 +104,6 @@
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="tags-panelMB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TabbedTaggerPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TabbedTaggerPanel.Designer.cs">
-      <DependentUpon>TabbedTaggerPanel.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -146,9 +140,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TabbedTaggerPanel.resx">
-      <DependentUpon>TabbedTaggerPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
