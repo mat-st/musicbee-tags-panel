@@ -179,7 +179,7 @@ namespace MusicBeePlugin
                 System.IO.File.Delete(SettingsFileName);
             }
         }
-
+        bool listenToTagEvent = true;
         // receive event notifications from MusicBee
         // you need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
@@ -192,16 +192,29 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                    readFileTagList(sourceFileUrl);
                     break;
                 case NotificationType.TrackChanged:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                    readFileTagList(sourceFileUrl);
                     updateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
                     break;
+                case NotificationType.TagsChanging:
+                    if (listenToTagEvent == false)
+                    {
+                        break;
+                    }
+                    checklistBox.RemoveItemCheckEventHandler();
+                    listenToTagEvent = false;
+                    mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
+                    break;
                 case NotificationType.TagsChanged:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                                       
+                    readFileTagList(sourceFileUrl);
+                    updateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
+                    checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
+                    listenToTagEvent = true;
                     break;
             }
         }
@@ -224,7 +237,15 @@ namespace MusicBeePlugin
                 {
                     continue;
                 }
-                occasionList.Add(occasion, CheckState.Checked);
+                CheckState checkState;
+                if (!occasionList.TryGetValue(occasion, out checkState))
+                {
+                    occasionList.Add(occasion, CheckState.Checked);
+                } else
+                {
+                    checkState = CheckState.Checked;
+                }
+                
             }
             this.listUpdate = false;
         }
@@ -411,12 +432,16 @@ namespace MusicBeePlugin
             {
                 panel.Invoke(new Action(() =>
                 {
+                    //checklistBox.RemoveItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                     this.checklistBox.AddDataSource(data);
+                    //checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                 }));
             }
             else
             {
+                //checklistBox.RemoveItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                 this.checklistBox.AddDataSource(data);
+                //checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             }
 
         }
@@ -544,7 +569,9 @@ namespace MusicBeePlugin
 
                 string sortedTags = sortTagsAlphabetical(tagsFromFile);
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
+                checklistBox.RemoveItemCheckEventHandler();
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
+                checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             }
         }
 
