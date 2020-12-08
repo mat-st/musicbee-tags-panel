@@ -9,21 +9,11 @@ using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
-    public partial class tabbedTagger : Form
+    public partial class MeineTestUserControl : UserControl
     {
-        public tabbedTagger()
+        public MeineTestUserControl()
         {
             InitializeComponent();
-        }
-
-        private void tabMoods1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabControl1_Resize(object sender, EventArgs e)
-        {
-
         }
     }
 }

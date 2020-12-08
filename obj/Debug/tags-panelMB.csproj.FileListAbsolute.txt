@@ -8,3 +8,4 @@ C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\bin\Debug\mb_TagsPanel.
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\bin\Debug\mb_TagsPanel.pdb
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\mb_TagsPanel.dll
 C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\mb_TagsPanel.pdb
+C:\Users\devsnox\Source\Repos\mat-st\musicbee-tags-panel\obj\Debug\MusicBeePlugin.MeineTestUserControl.resources

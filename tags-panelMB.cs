@@ -302,6 +302,12 @@ namespace MusicBeePlugin
             {
                 return;
             }
+            if (filenames.Length <= 0)
+            {
+                ourPanel.Enabled = false;
+                return;
+            }
+
             this.listUpdate = true; 
             occasionList.Clear();
             if (filenames == null || filenames.Length < 0)
@@ -453,29 +459,40 @@ namespace MusicBeePlugin
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
             this.tabControl.Dock = DockStyle.Fill;
+            //this.tabControl.AutoSize = true;
+            this.tabControl.Resize += new System.EventHandler(this.tabControl1_Resize);
 
-            TabPage page1 = new TabPage("Moods");
+            TabPage page1 = new TabPage("Occasions");
             this.checklistBox = new ChecklistBoxPanel(mbApiInterface, this.occasionList);
             checklistBox.Dock = DockStyle.Fill;
+            //checklistBox.AutoSize = true;
             checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             page1.Controls.Add(checklistBox);
             this.tabControl.TabPages.Add(page1);
-            TabPage page2 = new TabPage("Occassions");
+            TabPage page2 = new TabPage("Moods");
             this.tabControl.TabPages.Add(page2);
             TabPage page3 = new TabPage("Genres");
             this.tabControl.TabPages.Add(page3);
+            TabPage page4 = new TabPage("Deezer");
+
 
         }
 
 
+        private void tabControl1_Resize(object sender, EventArgs e)
+        {
+            e.ToString();
+        }
+
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
         // return the list of ToolStripMenuItems that will be displayed
-        //public List<ToolStripItem> GetHeaderMenuItems()
-        //{
-        //    List<ToolStripItem> list = new List<ToolStripItem>();
-        //    list.Add(new ToolStripMenuItem("A menu item"));
-        //    return list;
-        //}
+        public List<ToolStripItem> GetHeaderMenuItems()
+        {
+           List<ToolStripItem> list = new List<ToolStripItem>();
+           list.Add(new ToolStripMenuItem("A menu item"));
+            list.Add(new ToolStripMenuItem("Another item"));
+            return list;
+        }
 
         public class SavedSettingsType
         {
