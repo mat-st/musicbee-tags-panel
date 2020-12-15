@@ -35,7 +35,8 @@ namespace MusicBeePlugin
         private TabControl tabControl;
         private ChecklistBoxPanel checklistBox;
 
-        private bool listUpdate;
+        private bool ignoreEventFromHandler = true;
+        private bool ignoreForBatchSelect = true;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -179,7 +180,7 @@ namespace MusicBeePlugin
                 System.IO.File.Delete(SettingsFileName);
             }
         }
-        bool listenToTagEvent = true;
+
         // receive event notifications from MusicBee
         // you need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
@@ -196,32 +197,28 @@ namespace MusicBeePlugin
                     break;
                 case NotificationType.TrackChanged:
                     readFileTagList(sourceFileUrl);
+                    ignoreForBatchSelect = true;
                     updateOccasionTableData(ourPanel);
+                    ignoreForBatchSelect = false;
                     ourPanel.Invalidate();
                     break;
                 case NotificationType.TagsChanging:
-                    if (listenToTagEvent == false)
+                    if (ignoreEventFromHandler)
                     {
                         break;
                     }
-                    checklistBox.RemoveItemCheckEventHandler();
-                    listenToTagEvent = false;
+                    ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    break;
-                case NotificationType.TagsChanged:
-                                       
                     readFileTagList(sourceFileUrl);
                     updateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
-                    checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
-                    listenToTagEvent = true;
+                    ignoreForBatchSelect = false;
                     break;
             }
         }
 
         private void readFileTagList(string sourceFileUrl)
         {
-            this.listUpdate = true;
             occasionList.Clear();
 
             if (sourceFileUrl == null || sourceFileUrl.Length <= 0)
@@ -247,7 +244,6 @@ namespace MusicBeePlugin
                 }
                 
             }
-            this.listUpdate = false;
         }
 
         //private void createMenuItem() {
@@ -300,7 +296,7 @@ namespace MusicBeePlugin
             AddControls(ourPanel);
             updateOccasionTableData(ourPanel);
 
-            return -1;
+            return 0;
         }
 
         private void setPanelEnabled(bool enabled = true)
@@ -329,7 +325,6 @@ namespace MusicBeePlugin
                 return;
             }
 
-            this.listUpdate = true; 
             occasionList.Clear();
             if (filenames == null || filenames.Length < 0)
             {
@@ -368,11 +363,13 @@ namespace MusicBeePlugin
                     occasionList.Add(entry.Key, CheckState.Indeterminate);
                 }
             }
-            //fileTagMoods = String.Join(";", allMoods);
 
+            ignoreEventFromHandler = true;
+            ignoreForBatchSelect = true;
             updateOccasionTableData(ourPanel);
             ourPanel.Invalidate();
-            this.listUpdate = false;
+            ignoreEventFromHandler = false;
+            ignoreForBatchSelect = false;
         }
 
         private string[] GetTagsFromFile(string filename)
@@ -395,19 +392,6 @@ namespace MusicBeePlugin
 
         private void updateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
         {
-            /*
-            if (moodList.Count() > 0)
-            {
-                // return;
-            }
-
-            // array with moods from filetag
-            string[] filetagMoodParts = fileTagMoods.Split(';');
-            Collection<MoodEntry> data = new Collection<MoodEntry>();
-            
-            if (moodList != null)
-            {
-            */
             bool add = true;
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
             foreach (string tagFromConfig in allTagsFromConfig)
@@ -432,16 +416,12 @@ namespace MusicBeePlugin
             {
                 panel.Invoke(new Action(() =>
                 {
-                    //checklistBox.RemoveItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                     this.checklistBox.AddDataSource(data);
-                    //checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                 }));
             }
             else
             {
-                //checklistBox.RemoveItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
                 this.checklistBox.AddDataSource(data);
-                //checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             }
 
         }
@@ -474,7 +454,7 @@ namespace MusicBeePlugin
             _panel.SuspendLayout();
             _panel.Controls.AddRange(new Control[]
             {
-                   this.tabControl
+                  this.tabControl
             });
             _panel.ResumeLayout();
             
@@ -484,29 +464,18 @@ namespace MusicBeePlugin
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
             this.tabControl.Dock = DockStyle.Fill;
-            //this.tabControl.AutoSize = true;
-            this.tabControl.Resize += new System.EventHandler(this.tabControl1_Resize);
-
+            
             TabPage page1 = new TabPage("Occasions");
             this.checklistBox = new ChecklistBoxPanel(mbApiInterface, this.occasionList);
             checklistBox.Dock = DockStyle.Fill;
-            //checklistBox.AutoSize = true;
             checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
+            this.ignoreEventFromHandler = false;
             page1.Controls.Add(checklistBox);
             this.tabControl.TabPages.Add(page1);
             TabPage page2 = new TabPage("Moods");
             this.tabControl.TabPages.Add(page2);
             TabPage page3 = new TabPage("Genres");
             this.tabControl.TabPages.Add(page3);
-            TabPage page4 = new TabPage("Deezer");
-
-
-        }
-
-
-        private void tabControl1_Resize(object sender, EventArgs e)
-        {
-            e.ToString();
         }
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
@@ -527,7 +496,7 @@ namespace MusicBeePlugin
 
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (this.listUpdate)
+            if (ignoreForBatchSelect)
             {
                 return;
             }
@@ -535,15 +504,15 @@ namespace MusicBeePlugin
             int index = e.Index;
             CheckState state = e.NewValue;
             string name = ((CheckedListBox)sender).Items[index].ToString();
-            //CheckedListBox.CheckedItemCollection checkedItems = ((CheckedListBox)sender).CheckedItems[selectedIndex];
-            SetTagsInPanel(this.selectedFileUrls, state, name);
 
-            //((System.Windows.Forms.DataGridView)sender).EndEdit();
+            ignoreEventFromHandler = true;
+            SetTagsInPanel(this.selectedFileUrls, state, name);
             if (ourPanel != null)
             {
                 ourPanel.Invalidate();
             }
             mbApiInterface.MB_RefreshPanels();
+            ignoreEventFromHandler = false;
         }
 
         private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
@@ -554,24 +523,15 @@ namespace MusicBeePlugin
                 if (selected == CheckState.Checked)
                 {
                     tagsFromFile = AddTag(selectedTag, fileUrl);
-                    //row.Cells[0].Value = 1;
                 }
-                /*else if (selected == CheckState.Indeterminate)
-                {
-                    tagsFromFile = RemoveTag(selectedTag, fileUrl);
-                    //row.Cells[0].Value = 0;
-                }*/
                 else
                 {
                     tagsFromFile = RemoveTag(selectedTag, fileUrl);
-                    //row.Cells[0].Value = 0;
                 }
 
                 string sortedTags = sortTagsAlphabetical(tagsFromFile);
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
-                checklistBox.RemoveItemCheckEventHandler();
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
-                checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             }
         }
 
@@ -623,6 +583,10 @@ namespace MusicBeePlugin
             }
 
             return false;
+        
+        
         }
     }
+
+
 }

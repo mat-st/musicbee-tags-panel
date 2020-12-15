@@ -44,8 +44,7 @@
             this.checkedListBox1.CheckOnClick = true;
             this.checkedListBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.checkedListBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkedListBox1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.checkedListBox1.IntegralHeight = false;
             this.checkedListBox1.Items.AddRange(new object[] {
             "Abgehen",
@@ -59,7 +58,7 @@
             this.checkedListBox1.Margin = new System.Windows.Forms.Padding(0);
             this.checkedListBox1.MultiColumn = true;
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(360, 356);
+            this.checkedListBox1.Size = new System.Drawing.Size(150, 150);
             this.checkedListBox1.TabIndex = 1;
             this.checkedListBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.checkedListBox1_KeyDown);
             this.checkedListBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.checkedListBox1_KeyUp);
@@ -95,12 +94,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.Controls.Add(this.checkedListBox1);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "ChecklistBoxPanel";
-            this.Size = new System.Drawing.Size(360, 356);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
