@@ -79,13 +79,13 @@ namespace MusicBeePlugin
             list.RemoveHandler(obj, list[obj]);
         }
 
-        private void checkedListBox1_KeyUp(object sender, KeyEventArgs e)
+        private void CheckedListBox1_KeyUp(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed
             this.checkedListBox1.CheckOnClick = true;
         }
 
-        private void checkedListBox1_KeyDown(object sender, KeyEventArgs e)
+        private void CheckedListBox1_KeyDown(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed
             this.checkedListBox1.CheckOnClick = false;

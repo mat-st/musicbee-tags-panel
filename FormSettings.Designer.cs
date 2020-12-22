@@ -85,6 +85,7 @@ namespace MusicBeePlugin
             this.lstOccasions.FormattingEnabled = true;
             this.lstOccasions.Location = new System.Drawing.Point(12, 13);
             this.lstOccasions.Name = "lstOccasions";
+            this.lstOccasions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lstOccasions.Size = new System.Drawing.Size(222, 95);
             this.lstOccasions.Sorted = true;
             this.lstOccasions.TabIndex = 4;
