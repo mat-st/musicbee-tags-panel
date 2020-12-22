@@ -14,8 +14,9 @@ namespace MusicBeePlugin
     public partial class ChecklistBoxPanel : UserControl
     {
         private readonly MusicBeeApiInterface mbApiInterface;
+        private ItemCheckEventHandler eventHandler;
 
-        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, OccasionList data)
+        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data)
         {
             this.mbApiInterface = mbApiInterface;
             
@@ -28,28 +29,24 @@ namespace MusicBeePlugin
             StylePanel();
         }
 
-        public void AddDataSource(OccasionList data)
+        public void AddDataSource(Dictionary<String, CheckState> data)
         {
             this.checkedListBox1.Items.Clear();
-            this.checkedListBox1.Items.AddRange(data.ToArray());
+            string longestString = "";
+            foreach (String key in data.Keys.ToArray())
+            {
+                longestString = (key.Length > longestString.Length) ? key : longestString;
+                CheckState value = data[key];
+                this.checkedListBox1.Items.Add(key, value);
+            }
+            this.checkedListBox1.ColumnWidth = TextRenderer.MeasureText(longestString, checkedListBox1.Font).Width + 20;
+
+            //this.checkedListBox1.Items.AddRange(data);
         }
 
         private void StylePanel()
         {
-            /*DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle
-            {
-                BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-                SelectionBackColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateModified, Plugin.ElementComponent.ComponentForeground),
-                SelectionForeColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-            };
-
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle
-            {
-                BackColor = GetElementColor(Plugin.SkinElement.SkinInputPanelLabel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-            };*/
-
-
-            
+                   
             checkedListBox1.BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
             checkedListBox1.ForeColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentForeground);
         }
@@ -59,9 +56,39 @@ namespace MusicBeePlugin
             return Color.FromArgb(colorValue);
         }
 
-        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
+            this.eventHandler = eventHandler;
+            this.checkedListBox1.ItemCheck += eventHandler;
+        }
 
+        public void RemoveItemCheckEventHandler()
+        {
+            //RemoveClickEvent(this.checkedListBox1);
+            this.checkedListBox1.ItemCheck -= this.eventHandler;
+        }
+
+        private void RemoveClickEvent(CheckedListBox b)
+        {
+            System.Reflection.FieldInfo f1 = typeof(Control).GetField("ItemCheck",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            object obj = f1.GetValue(b);
+            System.Reflection.PropertyInfo pi = b.GetType().GetProperty("Events",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            EventHandlerList list = (EventHandlerList)pi.GetValue(b, null);
+            list.RemoveHandler(obj, list[obj]);
+        }
+
+        private void checkedListBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            // this will prevent the item to be checked if a key was pressed
+            this.checkedListBox1.CheckOnClick = true;
+        }
+
+        private void checkedListBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            // this will prevent the item to be checked if a key was pressed
+            this.checkedListBox1.CheckOnClick = false;
         }
     }
 }

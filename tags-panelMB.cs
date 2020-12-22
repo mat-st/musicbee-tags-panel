@@ -20,16 +20,23 @@ namespace MusicBeePlugin
 
         private MusicBeeApiInterface mbApiInterface;
         private PluginInfo about = new PluginInfo();
-        private TextBox textBox1 = new TextBox();
-        private OccasionList occasionList = new OccasionList();
+        private Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
         public static SavedSettingsType SavedSettings = new SavedSettingsType
         {
             occasions = ""
         };
+        string[] allTagsFromConfig = null;
         private string[] temp_occasions;
         private bool sortEnabled;
-        string[] selectedFileUrls = new string[] { };
+        private string[] selectedFileUrls = new string[] { };
         private Logger log;
+
+        private Control ourPanel;
+        private TabControl tabControl;
+        private ChecklistBoxPanel checklistBox;
+
+        private bool ignoreEventFromHandler = true;
+        private bool ignoreForBatchSelect = true;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -81,8 +88,6 @@ namespace MusicBeePlugin
 
             return true;
         }
-
-
 
         // called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
         // its up to you to figure out whether anything has changed and needs updating
@@ -140,7 +145,6 @@ namespace MusicBeePlugin
             file.Close();
         }
 
-        string[] allTagsFromConfig = null;
         private void LoadOccasionsWithDefaultFallback()
         {
             LoadSettings();
@@ -189,16 +193,26 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                    readFileTagList(sourceFileUrl);
                     break;
                 case NotificationType.TrackChanged:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                    readFileTagList(sourceFileUrl);
+                    ignoreForBatchSelect = true;
                     updateOccasionTableData(ourPanel);
+                    ignoreForBatchSelect = false;
                     ourPanel.Invalidate();
                     break;
-                case NotificationType.TagsChanged:
-                    readFileTagList(mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion));
+                case NotificationType.TagsChanging:
+                    if (ignoreEventFromHandler)
+                    {
+                        break;
+                    }
+                    ignoreForBatchSelect = true;
+                    mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
+                    readFileTagList(sourceFileUrl);
+                    updateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
+                    ignoreForBatchSelect = false;
                     break;
             }
         }
@@ -220,7 +234,15 @@ namespace MusicBeePlugin
                 {
                     continue;
                 }
-                occasionList.Add(new OccasionEntry(occasion, 1));
+                CheckState checkState;
+                if (!occasionList.TryGetValue(occasion, out checkState))
+                {
+                    occasionList.Add(occasion, CheckState.Checked);
+                } else
+                {
+                    checkState = CheckState.Checked;
+                }
+                
             }
         }
 
@@ -274,7 +296,7 @@ namespace MusicBeePlugin
             AddControls(ourPanel);
             updateOccasionTableData(ourPanel);
 
-            return -1;
+            return 0;
         }
 
         private void setPanelEnabled(bool enabled = true)
@@ -297,6 +319,12 @@ namespace MusicBeePlugin
             {
                 return;
             }
+            if (filenames.Length <= 0)
+            {
+                ourPanel.Enabled = false;
+                return;
+            }
+
             occasionList.Clear();
             if (filenames == null || filenames.Length < 0)
             {
@@ -307,36 +335,41 @@ namespace MusicBeePlugin
             selectedFileUrls = filenames;
 
             setPanelEnabled(true);
-            Dictionary<OccasionEntry, int> stateOfSelection = new Dictionary<OccasionEntry, int>();
+            Dictionary<String, int> stateOfSelection = new Dictionary<String, int>();
             int numberOfSelectedFiles = filenames.Length;
             foreach (var filename in filenames)
             {
                 string[] occasions = GetTagsFromFile(filename);
                 foreach (var occasion in occasions)
                 {
-                    OccasionEntry occasionEntry = new OccasionEntry(occasion, 2);
-                    int counter;
-                    bool present = stateOfSelection.TryGetValue(occasionEntry, out counter);
-                    counter++;
-                    if (!present)
+                    if (stateOfSelection.ContainsKey(occasion))
                     {
-                        stateOfSelection.Add(occasionEntry, counter);
+                        int count = stateOfSelection[occasion];
+                        stateOfSelection[occasion] = count++;
+                    } else
+                    {
+                        stateOfSelection.Add(occasion, 1);
                     }
                 }
             }
 
-            foreach (KeyValuePair<OccasionEntry, int> entry in stateOfSelection)
+            foreach (KeyValuePair<String, int> entry in stateOfSelection)
             {
                 if (entry.Value == numberOfSelectedFiles)
                 {
-                    entry.Key.selected = 1;
+                    occasionList.Add(entry.Key, CheckState.Checked);
+                } else
+                {
+                    occasionList.Add(entry.Key, CheckState.Indeterminate);
                 }
-                occasionList.Add(entry.Key);
             }
-            //fileTagMoods = String.Join(";", allMoods);
 
+            ignoreEventFromHandler = true;
+            ignoreForBatchSelect = true;
             updateOccasionTableData(ourPanel);
             ourPanel.Invalidate();
+            ignoreEventFromHandler = false;
+            ignoreForBatchSelect = false;
         }
 
         private string[] GetTagsFromFile(string filename)
@@ -357,52 +390,38 @@ namespace MusicBeePlugin
             return tags.ToArray<string>();
         }
 
-        private void updateOccasionTableData(Control panel, OccasionList allOccasions = null)
+        private void updateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
         {
-            /*
-            if (moodList.Count() > 0)
-            {
-                // return;
-            }
-
-            // array with moods from filetag
-            string[] filetagMoodParts = fileTagMoods.Split(';');
-            Collection<MoodEntry> data = new Collection<MoodEntry>();
-            
-            if (moodList != null)
-            {
-            */
             bool add = true;
-            HashSet<OccasionEntry> data = new HashSet<OccasionEntry>();
+            Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
             foreach (string tagFromConfig in allTagsFromConfig)
             {
-                foreach (OccasionEntry occasionEntry in occasionList)
+                foreach (String occasionEntry in occasionList.Keys)
                 {
-                    if (tagFromConfig.Trim() == occasionEntry.occasion.Trim())
+                    if (tagFromConfig.Trim() == occasionEntry.Trim())
                     {
-                        data.Add(occasionEntry);
+                        data.Add(occasionEntry, occasionList[occasionEntry]);
                         add = false;
                         break;
                     }
                 }
                 if (add)
                 {
-                    data.Add(new OccasionEntry(tagFromConfig, 0));
+                    data.Add(tagFromConfig, CheckState.Unchecked);
                 }
                 add = true;
             }
 
-            OccasionList list = new OccasionList(data);
             if (panel.IsHandleCreated)
             {
                 panel.Invoke(new Action(() =>
                 {
-                    this.checklistBox.AddDataSource(list);
+                    this.checklistBox.AddDataSource(data);
                 }));
             }
             else
             {
-                this.checklistBox.AddDataSource(list);
+                this.checklistBox.AddDataSource(data);
             }
 
         }
@@ -435,7 +454,7 @@ namespace MusicBeePlugin
             _panel.SuspendLayout();
             _panel.Controls.AddRange(new Control[]
             {
-                   this.tabControl
+                  this.tabControl
             });
             _panel.ResumeLayout();
             
@@ -445,150 +464,69 @@ namespace MusicBeePlugin
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
             this.tabControl.Dock = DockStyle.Fill;
-
-            TabPage page1 = new TabPage("Moods");
-            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, occasionList);
+            
+            TabPage page1 = new TabPage("Occasions");
+            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, this.occasionList);
             checklistBox.Dock = DockStyle.Fill;
+            checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
+            this.ignoreEventFromHandler = false;
             page1.Controls.Add(checklistBox);
             this.tabControl.TabPages.Add(page1);
-            TabPage page2 = new TabPage("Occassions");
+            TabPage page2 = new TabPage("Moods");
             this.tabControl.TabPages.Add(page2);
             TabPage page3 = new TabPage("Genres");
             this.tabControl.TabPages.Add(page3);
-
         }
 
-        private readonly BindingSource _occasionListBindingSource = new BindingSource();
-        private DataGridView CreateGridView(Control _panel)
+        // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
+        // return the list of ToolStripMenuItems that will be displayed
+        public List<ToolStripItem> GetHeaderMenuItems()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle
-            {
-                BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-                SelectionBackColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateModified, Plugin.ElementComponent.ComponentForeground),
-                SelectionForeColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-            };
-
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle
-            {
-                BackColor = GetElementColor(Plugin.SkinElement.SkinInputPanelLabel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground),
-            };
-            DataGridView occasionsDgv = new DataGridView
-
-            {
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                AllowUserToResizeColumns = false,
-                AllowUserToResizeRows = false,
-                DefaultCellStyle = dataGridViewCellStyle1,
-                AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2,
-                AutoGenerateColumns = false,
-                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
-                BorderStyle = BorderStyle.None,
-                CellBorderStyle = DataGridViewCellBorderStyle.None,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCellsExceptHeader,
-                //GridColor = SystemColors.ActiveBorder,
-                //ColumnCount = 2,
-                ColumnHeadersVisible = false,
-                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
-                DataSource = _occasionListBindingSource,
-                Location = new Point(0, 0),
-                MinimumSize = new Size(100, 100),
-                MultiSelect = false,
-                Name = "occasionsDGV",
-                RowHeadersVisible = false,
-                RowHeadersWidth = 30,
-                RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
-                //SelectionMode = DataGridViewSelectionMode.RowHeaderSelect,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                Size = new Size(_panel.Width - 0, _panel.Height),
-                TabIndex = 0,
-                VirtualMode = true,
-
-                //CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.chaptersDGV_CellEndEdit),
-            };
-            occasionsDgv.BackgroundColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel,
-                Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
-
-
-            occasionsDgv.ScrollBars = ScrollBars.Vertical;
-
-            DataGridViewCheckBoxColumn dgvOccasionSelectionCol = new DataGridViewCheckBoxColumn
-            {
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCellsExceptHeader,
-                DataPropertyName = "selected",
-                HeaderText = "",
-                Name = "selectedCol",
-                SortMode = DataGridViewColumnSortMode.NotSortable,
-                ThreeState = true,
-                TrueValue = 1,
-                FalseValue = 0,
-                IndeterminateValue = 2,
-            };
-
-
-            DataGridViewTextBoxColumn dgvOccasionCol = new DataGridViewTextBoxColumn
-            {
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-                ReadOnly = true,
-                DataPropertyName = "occasion",
-                HeaderText = "Occasion Name",
-                Name = "occasionCol",
-                SortMode = DataGridViewColumnSortMode.NotSortable
-            };
-            occasionsDgv.Columns.AddRange(dgvOccasionSelectionCol, dgvOccasionCol);
-
-            occasionsDgv.CellMouseClick += OccasionsDgv_CellMouseClick;
-            return occasionsDgv;
+           List<ToolStripItem> list = new List<ToolStripItem>();
+           list.Add(new ToolStripMenuItem("A menu item"));
+            list.Add(new ToolStripMenuItem("Another item"));
+            return list;
         }
-        private void OccasionsDgv_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+
+        public class SavedSettingsType
         {
-            SaveTags(sender);
-            ((System.Windows.Forms.DataGridView)sender).EndEdit();
+            public string occasions;
+            public bool sorted = true;
+        }
+
+        private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (ignoreForBatchSelect)
+            {
+                return;
+            }
+
+            int index = e.Index;
+            CheckState state = e.NewValue;
+            string name = ((CheckedListBox)sender).Items[index].ToString();
+
+            ignoreEventFromHandler = true;
+            SetTagsInPanel(this.selectedFileUrls, state, name);
             if (ourPanel != null)
             {
                 ourPanel.Invalidate();
             }
             mbApiInterface.MB_RefreshPanels();
+            ignoreEventFromHandler = false;
         }
 
-        private void SaveTags(object sender)
-        {
-            if (((System.Windows.Forms.DataGridView)sender).CurrentCell.Selected == false)
-            {
-                return;
-            }
-            DataGridViewRow row = ((System.Windows.Forms.DataGridView)sender).CurrentRow;
-            if (row.DataBoundItem == null || row.DataBoundItem.GetType() != typeof(OccasionEntry))
-            {
-                return;
-            }
-            OccasionEntry selectedEntry = (OccasionEntry)row.DataBoundItem;
-            string selectedTag = selectedEntry.occasion;
-            int selectedIndex = selectedEntry.selected;
-
-            SetTagsInPanel(selectedFileUrls, selectedIndex, selectedTag, row);
-        }
-
-        private void SetTagsInPanel(string[] fileUrls, int selected, string selectedTag, DataGridViewRow row)
+        private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
         {
             foreach (string fileUrl in fileUrls)
             {
                 string tagsFromFile;
-                if (selected == 0)
+                if (selected == CheckState.Checked)
                 {
                     tagsFromFile = AddTag(selectedTag, fileUrl);
-                    row.Cells[0].Value = 1;
-                }
-                else if (selected == 2)
-                {
-                    tagsFromFile = RemoveTag(selectedTag, fileUrl);
-                    row.Cells[0].Value = 0;
                 }
                 else
                 {
                     tagsFromFile = RemoveTag(selectedTag, fileUrl);
-                    row.Cells[0].Value = 0;
                 }
 
                 string sortedTags = sortTagsAlphabetical(tagsFromFile);
@@ -645,94 +583,10 @@ namespace MusicBeePlugin
             }
 
             return false;
-        }
-
-        public string[] GetOccasions()
-        {
-            return allTagsFromConfig;
-        }
-
-
-        Control ourPanel;
-        //string fileTagMoods = null;
-        OccasionList selectedOccasions = new OccasionList();
-        private TabControl tabControl;
-        private ChecklistBoxPanel checklistBox;
-
-
-        // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
-        // return the list of ToolStripMenuItems that will be displayed
-        //public List<ToolStripItem> GetHeaderMenuItems()
-        //{
-        //    List<ToolStripItem> list = new List<ToolStripItem>();
-        //    list.Add(new ToolStripMenuItem("A menu item"));
-        //    return list;
-        //}
-
-        // get current skin Colors
-        public Color GetElementColor(SkinElement skinElement, ElementState elementState, ElementComponent elementComponent)
-        {
-            int colorValue = mbApiInterface.Setting_GetSkinElementColour(skinElement, elementState, elementComponent);
-            return Color.FromArgb(colorValue);
-        }
-
-        public class OccasionEntry : IEquatable<OccasionEntry>, IComparable<OccasionEntry>
-        {
-            public CheckState checkState = CheckState.Checked;
-            public int selected { get; set; }
-            public string occasion { get; set; }
-            public OccasionEntry(string occasion, int selected)
-            {
-                this.occasion = occasion.Trim();
-                this.selected = selected;
-            }
-
-            public int CompareTo(OccasionEntry other)
-            {
-                return String.Compare(occasion, other.occasion);
-            }
-
-            public bool Equals(OccasionEntry other)
-            {
-                return occasion == other.occasion ? true : false;
-            }
-
-            public override int GetHashCode()
-            {
-                return occasion.GetHashCode();
-            }
-            /*
-            public override bool Equals(MoodEntry i1, MoodEntry i2)
-            {
-                return i1.mood == i2.mood;
-            }
-
-            public override int GetHashCode(MoodEntry myMood)
-            {
-                return myMood.GetHashCode();
-            }*/
-
-            public override string ToString()
-            {
-                return $"{selected}";
-            }
-        }
-
-        public class OccasionList : HashSet<OccasionEntry>
-        {
-            public OccasionList() : base()
-            {
-            }
-
-            public OccasionList(IEnumerable<OccasionEntry> collection) : base(collection)
-            {
-            }
-        }
-
-        public class SavedSettingsType
-        {
-            public string occasions;
-            public bool sorted = true;
+        
+        
         }
     }
+
+
 }
