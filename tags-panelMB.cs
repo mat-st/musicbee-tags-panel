@@ -27,7 +27,7 @@ namespace MusicBeePlugin
         };
         string[] allTagsFromConfig = null;
         private string[] temp_occasions;
-        private bool sortEnabled;
+        private bool tempSortEnabled;
         private string[] selectedFileUrls = new string[] { };
         private Logger log;
 
@@ -37,6 +37,7 @@ namespace MusicBeePlugin
 
         private bool ignoreEventFromHandler = true;
         private bool ignoreForBatchSelect = true;
+        private TagManipulation tagManipulation;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -61,6 +62,8 @@ namespace MusicBeePlugin
             LoadOccasionsWithDefaultFallback();
 
             InitLogger();
+            tagManipulation = new TagManipulation(mbApiInterface);
+
             log.info("Tagger plugin started");
 
             return about;
@@ -81,10 +84,15 @@ namespace MusicBeePlugin
             // keep in mind the panel width is scaled according to the font the user has selected
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
 
-            fvSettings tagToolsForm = new fvSettings(allTagsFromConfig, this.sortEnabled);
-            tagToolsForm.ShowDialog();
-            temp_occasions = tagToolsForm.getOccasions();
-            sortEnabled = tagToolsForm.isSortEnabled();
+            bool useSort = true;
+            if (SavedSettings != null)
+            {
+                useSort = SavedSettings.sorted;
+            }
+            fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
+            tagsPanelSettingForm.ShowDialog();
+            temp_occasions = tagsPanelSettingForm.getOccasions();
+            tempSortEnabled = tagsPanelSettingForm.isSortEnabled();
 
             return true;
         }
@@ -93,8 +101,8 @@ namespace MusicBeePlugin
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
-            SavedSettings.sorted = this.sortEnabled;
             allTagsFromConfig = temp_occasions;
+            SavedSettings.sorted = tempSortEnabled;
             SavedSettings.occasions = String.Join(",", allTagsFromConfig);
             if (ourPanel != null)
             {
@@ -153,12 +161,10 @@ namespace MusicBeePlugin
             {
                 // put 
                 allTagsFromConfig = SavedSettings.occasions.Split(',');
-                this.sortEnabled = SavedSettings.sorted;
             }
             else
             {
                 allTagsFromConfig = new string[] { };
-                this.sortEnabled = true;
             }
             temp_occasions = allTagsFromConfig;
         }

@@ -96,6 +96,7 @@
     </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
+    <Compile Include="TagManipulation.cs" />
     <Compile Include="tags-panelMB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
