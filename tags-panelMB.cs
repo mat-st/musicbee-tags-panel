@@ -98,7 +98,7 @@ namespace MusicBeePlugin
             SavedSettings.occasions = String.Join(",", allTagsFromConfig);
             if (ourPanel != null)
             {
-                updateOccasionTableData(ourPanel);
+                UpdateOccasionTableData(ourPanel);
             }
             
 
@@ -163,6 +163,11 @@ namespace MusicBeePlugin
             temp_occasions = allTagsFromConfig;
         }
 
+        private void ClearSettings()
+        {
+            
+        }
+
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
         public void Close(PluginCloseReason reason)
         {
@@ -193,14 +198,14 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    readFileTagList(sourceFileUrl);
+                    ReadFileTagList(sourceFileUrl);
                     break;
                 case NotificationType.TrackChanged:
-                    readFileTagList(sourceFileUrl);
+                    ReadFileTagList(sourceFileUrl);
                     ignoreForBatchSelect = true;
-                    updateOccasionTableData(ourPanel);
-                    ignoreForBatchSelect = false;
+                    UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
+                    ignoreForBatchSelect = false;
                     break;
                 case NotificationType.TagsChanging:
                     if (ignoreEventFromHandler)
@@ -209,15 +214,15 @@ namespace MusicBeePlugin
                     }
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    readFileTagList(sourceFileUrl);
-                    updateOccasionTableData(ourPanel);
+                    ReadFileTagList(sourceFileUrl);
+                    UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
             }
         }
 
-        private void readFileTagList(string sourceFileUrl)
+        private void ReadFileTagList(string sourceFileUrl)
         {
             occasionList.Clear();
 
@@ -227,7 +232,7 @@ namespace MusicBeePlugin
             }
 
             string filetagOccasions = mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion);
-            string[] filetagOccasionsParts = filetagOccasions.Split(';');
+            string[] filetagOccasionsParts = filetagOccasions.Split(';').Select(filetagOccasion => filetagOccasion.Trim()).ToArray();
             foreach (string occasion in filetagOccasionsParts)
             {
                 if (occasion.Trim().Length <= 0)
@@ -294,12 +299,12 @@ namespace MusicBeePlugin
 
             ourPanel = panel;
             AddControls(ourPanel);
-            updateOccasionTableData(ourPanel);
+            UpdateOccasionTableData(ourPanel);
 
             return 0;
         }
 
-        private void setPanelEnabled(bool enabled = true)
+        private void SetPanelEnabled(bool enabled = true)
         {
             if (ourPanel.IsHandleCreated)
             {
@@ -328,13 +333,13 @@ namespace MusicBeePlugin
             occasionList.Clear();
             if (filenames == null || filenames.Length < 0)
             {
-                setPanelEnabled(false);
+                SetPanelEnabled(false);
                 return;
             }
             // important to have as a global variable
             selectedFileUrls = filenames;
 
-            setPanelEnabled(true);
+            SetPanelEnabled(true);
             Dictionary<String, int> stateOfSelection = new Dictionary<String, int>();
             int numberOfSelectedFiles = filenames.Length;
             foreach (var filename in filenames)
@@ -366,7 +371,7 @@ namespace MusicBeePlugin
 
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
-            updateOccasionTableData(ourPanel);
+            UpdateOccasionTableData(ourPanel);
             ourPanel.Invalidate();
             ignoreEventFromHandler = false;
             ignoreForBatchSelect = false;
@@ -390,7 +395,7 @@ namespace MusicBeePlugin
             return tags.ToArray<string>();
         }
 
-        private void updateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
+        private void UpdateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
         {
             bool add = true;
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
@@ -437,18 +442,18 @@ namespace MusicBeePlugin
             {
                 _panel.Invoke((MethodInvoker)delegate
                 {
-                    layoutPanel(_panel);
+                    LayoutPanel(_panel);
                 });
             }
             else
             {
-                layoutPanel(_panel);
+                LayoutPanel(_panel);
             }
         }
 
-        private void layoutPanel(Control _panel)
+        private void LayoutPanel(Control _panel)
         {
-            createTabbedPanel();
+            CreateTabbedPanel();
 
             _panel.Enabled = false;
             _panel.SuspendLayout();
@@ -460,7 +465,7 @@ namespace MusicBeePlugin
             
         }
 
-        private void createTabbedPanel()
+        private void CreateTabbedPanel()
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
             this.tabControl.Dock = DockStyle.Fill;
@@ -517,6 +522,7 @@ namespace MusicBeePlugin
 
         private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
         {
+            mbApiInterface.MB_SetBackgroundTaskMessage("Save tags to file");
             foreach (string fileUrl in fileUrls)
             {
                 string tagsFromFile;
@@ -529,13 +535,15 @@ namespace MusicBeePlugin
                     tagsFromFile = RemoveTag(selectedTag, fileUrl);
                 }
 
-                string sortedTags = sortTagsAlphabetical(tagsFromFile);
+                string sortedTags = SortTagsAlphabetical(tagsFromFile);
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
+                
             }
+            mbApiInterface.MB_SetBackgroundTaskMessage("Save tags finished");
         }
 
-        private string sortTagsAlphabetical(string tags)
+        private string SortTagsAlphabetical(string tags)
         {
             string[] occasionsAsArray = tags.Split(';');
             Array.Sort(occasionsAsArray);
