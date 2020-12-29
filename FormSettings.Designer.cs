@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
-    partial class fvSettings
+    partial class tagsPanelSettings
     {
         /// <summary>
         /// Required designer variable.
@@ -38,6 +38,7 @@ namespace MusicBeePlugin
             this.txtOccasionInput = new System.Windows.Forms.TextBox();
             this.lstOccasions = new System.Windows.Forms.ListBox();
             this.btnImportCSV = new System.Windows.Forms.Button();
+            this.linkLblAbout = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // cbEnableMoodSort
@@ -54,6 +55,7 @@ namespace MusicBeePlugin
             // 
             // btnAddMood
             // 
+            this.btnAddMood.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnAddMood.Location = new System.Drawing.Point(12, 140);
             this.btnAddMood.Name = "btnAddMood";
             this.btnAddMood.Size = new System.Drawing.Size(115, 41);
@@ -100,21 +102,37 @@ namespace MusicBeePlugin
             this.btnImportCSV.UseVisualStyleBackColor = true;
             this.btnImportCSV.Click += new System.EventHandler(this.btnImportCSV_Click);
             // 
-            // fvSettings
+            // linkLblAbout
+            // 
+            this.linkLblAbout.AutoSize = true;
+            this.linkLblAbout.Location = new System.Drawing.Point(199, 236);
+            this.linkLblAbout.Name = "linkLblAbout";
+            this.linkLblAbout.Size = new System.Drawing.Size(35, 13);
+            this.linkLblAbout.TabIndex = 6;
+            this.linkLblAbout.TabStop = true;
+            this.linkLblAbout.Text = "About";
+            this.linkLblAbout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLblAbout_LinkClicked);
+            // 
+            // tagsPanelSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(246, 245);
+            this.BackColor = System.Drawing.Color.Red;
+            this.ClientSize = new System.Drawing.Size(246, 259);
+            this.Controls.Add(this.linkLblAbout);
             this.Controls.Add(this.btnImportCSV);
             this.Controls.Add(this.lstOccasions);
             this.Controls.Add(this.txtOccasionInput);
             this.Controls.Add(this.btnRemMood);
             this.Controls.Add(this.btnAddMood);
             this.Controls.Add(this.cbEnableMoodSort);
-            this.Name = "fvSettings";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "tagsPanelSettings";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "occasionTagger Settings";
-            this.TopMost = true;
+            this.Text = "Tags-Panel Settings";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -196,5 +214,6 @@ namespace MusicBeePlugin
         }
 
         private System.Windows.Forms.Button btnImportCSV;
+        private LinkLabel linkLblAbout;
     }
 }

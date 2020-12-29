@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using static MusicBeePlugin.Plugin;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -11,12 +12,15 @@ using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
-    public partial class fvSettings : Form
+    public partial class tagsPanelSettings : Form
     {
-
-        public fvSettings(string[] occasions, bool sortEnabled)
+        private readonly MusicBeeApiInterface mbApiInterface;
+        public tagsPanelSettings(MusicBeeApiInterface mbApiInterface, string[] occasions, bool sortEnabled)
         {
+            this.mbApiInterface = mbApiInterface;
+
             InitializeComponent();
+            StyleSettingsPanel();
             setMoods(occasions);
             setSortEnabled(sortEnabled);
 
@@ -147,6 +151,22 @@ namespace MusicBeePlugin
                     this.lstOccasions.Items.Add(importoccasion);
                 }
             }
+        }
+
+        private void LinkLblAbout_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            AboutBox1 box = new AboutBox1();
+            box.ShowDialog();
+        }
+
+        public Color GetElementColor(SkinElement skinElement, ElementState elementState, ElementComponent elementComponent)
+        {
+            int colorValue = this.mbApiInterface.Setting_GetSkinElementColour(skinElement, elementState, elementComponent);
+            return Color.FromArgb(colorValue);
+        }
+        private void StyleSettingsPanel()
+        {
+            BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
         }
     }
 }
