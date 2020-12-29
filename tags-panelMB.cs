@@ -41,7 +41,7 @@ namespace MusicBeePlugin
             mbApiInterface.Initialise(apiInterfacePtr);
             PluginInfo about = new PluginInfo();
             about.PluginInfoVersion = PluginInfoVersion;
-            about.Name = "tags-panel";
+            about.Name = "Tags-Panel";
             about.Description = "Creates a dockable Panel which lets the user choose from an predefined " +
                 "list of occasions";
             about.Author = "Matthias Steiert + The Anonymous Programmer";
@@ -244,19 +244,19 @@ namespace MusicBeePlugin
             {
                 return;
             }
-            if (filenames.Length <= 0)
+            
+            Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
+
+            if (filenames == null || filenames.Length <= 0)
             {
-                ourPanel.Enabled = false;
+                tagsStorage.SetTags(occasionList);
+
+                updateTagsInPanelOnFileSelection();
+                SetPanelEnabled(false);
+
                 return;
             }
 
-            Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
-            
-            if (filenames == null || filenames.Length < 0)
-            {
-                SetPanelEnabled(false);
-                return;
-            }
             // important to have as a global variable
             selectedFileUrls = filenames;
 
@@ -293,6 +293,11 @@ namespace MusicBeePlugin
             }
             tagsStorage.SetTags(occasionList);
 
+            updateTagsInPanelOnFileSelection();
+        }
+
+        private void updateTagsInPanelOnFileSelection()
+        {
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
             UpdateOccasionTableData(ourPanel);
