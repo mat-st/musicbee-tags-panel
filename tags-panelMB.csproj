@@ -96,9 +96,10 @@
     </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
-    <Compile Include="TagManipulation.cs" />
+    <Compile Include="SettingsStorage.cs" />
     <Compile Include="tags-panelMB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TagsStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

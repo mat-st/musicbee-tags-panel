@@ -16,18 +16,12 @@ namespace MusicBeePlugin
     public partial class Plugin
     {
         private const string LOG_FILE_NAME = "mb_tags-panel.log";
-        private const string SettingsFileName = "mb_tags-panel.Settings.xml";
 
         private MusicBeeApiInterface mbApiInterface;
-        private PluginInfo about = new PluginInfo();
-        private Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
-        public static SavedSettingsType SavedSettings = new SavedSettingsType
-        {
-            occasions = ""
-        };
-        string[] allTagsFromConfig = null;
+
         private string[] temp_occasions;
         private bool tempSortEnabled;
+
         private string[] selectedFileUrls = new string[] { };
         private Logger log;
 
@@ -37,12 +31,15 @@ namespace MusicBeePlugin
 
         private bool ignoreEventFromHandler = true;
         private bool ignoreForBatchSelect = true;
-        private TagManipulation tagManipulation;
+
+        private SettingsStorage settingsStorage;
+        private TagsStorage tagsStorage;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             mbApiInterface = new MusicBeeApiInterface();
             mbApiInterface.Initialise(apiInterfacePtr);
+            PluginInfo about = new PluginInfo();
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "tags-panel";
             about.Description = "Creates a dockable Panel which lets the user choose from an predefined " +
@@ -59,10 +56,12 @@ namespace MusicBeePlugin
             about.ConfigurationPanelHeight = 0;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
             //createMenuItem();
             // Application.EnableVisualStyles();
-            LoadOccasionsWithDefaultFallback();
 
             InitLogger();
-            tagManipulation = new TagManipulation(mbApiInterface);
+            settingsStorage = new SettingsStorage(mbApiInterface);
+            tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Occasion);
+
+            LoadSettings();
 
             log.info("Tagger plugin started");
 
@@ -77,18 +76,17 @@ namespace MusicBeePlugin
 
         public bool Configure(IntPtr panelHandle)
         {
-
-            // save any persistent settings in a sub-folder of this path
-            string dataPath = mbApiInterface.Setting_GetPersistentStoragePath();
             // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
             // keep in mind the panel width is scaled according to the font the user has selected
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
 
             bool useSort = true;
-            if (SavedSettings != null)
+            SavedSettingsType settings = settingsStorage.GetSavedSettings();
+            if (settings != null)
             {
-                useSort = SavedSettings.sorted;
+                useSort = settings.sorted;
             }
+            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
             fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
             tagsPanelSettingForm.ShowDialog();
             temp_occasions = tagsPanelSettingForm.getOccasions();
@@ -101,77 +99,19 @@ namespace MusicBeePlugin
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
-            allTagsFromConfig = temp_occasions;
-            SavedSettings.sorted = tempSortEnabled;
-            SavedSettings.occasions = String.Join(",", allTagsFromConfig);
+            settingsStorage.SaveSettings(tempSortEnabled, temp_occasions);
+
             if (ourPanel != null)
             {
                 UpdateOccasionTableData(ourPanel);
             }
-            
-
-            // save any persistent settings in a sub-folder of this path
-            string settingsPath = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
-            Encoding unicode = Encoding.UTF8;
-            System.IO.FileStream stream = System.IO.File.Open(settingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);
-            System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode);
-
-            System.Xml.Serialization.XmlSerializer controlsDefaultsSerializer = new System.Xml.Serialization.XmlSerializer(typeof(SavedSettingsType));
-
-            controlsDefaultsSerializer.Serialize(file, SavedSettings);
-
-            file.Close();
         }
 
         private void LoadSettings()
         {
-            string filename = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
+            settingsStorage.LoadSettingsWithFallback();
 
-            Encoding unicode = Encoding.UTF8;
-            System.IO.FileStream stream = System.IO.File.Open(filename, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read, System.IO.FileShare.None);
-            System.IO.StreamReader file = new System.IO.StreamReader(stream, unicode);
-
-            System.Xml.Serialization.XmlSerializer controlsDefaultsSerializer = null;
-            try
-            {
-                controlsDefaultsSerializer = new System.Xml.Serialization.XmlSerializer(typeof(SavedSettingsType));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            try
-            {
-                SavedSettings = (SavedSettingsType)controlsDefaultsSerializer.Deserialize(file);
-            }
-            catch
-            {
-                // Ignore ;) 
-            };
-
-            file.Close();
-        }
-
-        private void LoadOccasionsWithDefaultFallback()
-        {
-            LoadSettings();
-
-            if (SavedSettings.occasions != null && SavedSettings.occasions.Length > 0)
-            {
-                // put 
-                allTagsFromConfig = SavedSettings.occasions.Split(',');
-            }
-            else
-            {
-                allTagsFromConfig = new string[] { };
-            }
-            temp_occasions = allTagsFromConfig;
-        }
-
-        private void ClearSettings()
-        {
-            
+            temp_occasions = settingsStorage.GetAllTagsFromConfig();
         }
 
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -185,10 +125,11 @@ namespace MusicBeePlugin
         // uninstall this plugin - clean up any persisted files
         public void Uninstall()
         {
+            string settingsFileName = settingsStorage.GetSettingsFileName();
             //Delete settings file
-            if (System.IO.File.Exists(SettingsFileName))
+            if (System.IO.File.Exists(settingsFileName))
             {
-                System.IO.File.Delete(SettingsFileName);
+                System.IO.File.Delete(settingsFileName);
             }
         }
 
@@ -204,10 +145,10 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    ReadFileTagList(sourceFileUrl);
+                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
                     break;
                 case NotificationType.TrackChanged:
-                    ReadFileTagList(sourceFileUrl);
+                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
                     ignoreForBatchSelect = true;
                     UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
@@ -220,7 +161,7 @@ namespace MusicBeePlugin
                     }
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    ReadFileTagList(sourceFileUrl);
+                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
                     UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
@@ -228,34 +169,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void ReadFileTagList(string sourceFileUrl)
-        {
-            occasionList.Clear();
-
-            if (sourceFileUrl == null || sourceFileUrl.Length <= 0)
-            {
-                return;
-            }
-
-            string filetagOccasions = mbApiInterface.Library_GetFileTag(sourceFileUrl, MetaDataType.Occasion);
-            string[] filetagOccasionsParts = filetagOccasions.Split(';').Select(filetagOccasion => filetagOccasion.Trim()).ToArray();
-            foreach (string occasion in filetagOccasionsParts)
-            {
-                if (occasion.Trim().Length <= 0)
-                {
-                    continue;
-                }
-                CheckState checkState;
-                if (!occasionList.TryGetValue(occasion, out checkState))
-                {
-                    occasionList.Add(occasion, CheckState.Checked);
-                } else
-                {
-                    checkState = CheckState.Checked;
-                }
-                
-            }
-        }
+        
 
         //private void createMenuItem() {
 
@@ -336,7 +250,8 @@ namespace MusicBeePlugin
                 return;
             }
 
-            occasionList.Clear();
+            Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
+            
             if (filenames == null || filenames.Length < 0)
             {
                 SetPanelEnabled(false);
@@ -350,16 +265,17 @@ namespace MusicBeePlugin
             int numberOfSelectedFiles = filenames.Length;
             foreach (var filename in filenames)
             {
-                string[] occasions = GetTagsFromFile(filename);
-                foreach (var occasion in occasions)
+                string[] tagsFromSettings = GetTagsFromFile(filename);
+                foreach (var tag in tagsFromSettings)
                 {
-                    if (stateOfSelection.ContainsKey(occasion))
+                    if (stateOfSelection.ContainsKey(tag))
                     {
-                        int count = stateOfSelection[occasion];
-                        stateOfSelection[occasion] = count++;
-                    } else
+                        int count = stateOfSelection[tag];
+                        stateOfSelection[tag] = count++;
+                    }
+                    else
                     {
-                        stateOfSelection.Add(occasion, 1);
+                        stateOfSelection.Add(tag, 1);
                     }
                 }
             }
@@ -369,11 +285,13 @@ namespace MusicBeePlugin
                 if (entry.Value == numberOfSelectedFiles)
                 {
                     occasionList.Add(entry.Key, CheckState.Checked);
-                } else
+                }
+                else
                 {
                     occasionList.Add(entry.Key, CheckState.Indeterminate);
                 }
             }
+            tagsStorage.SetTags(occasionList);
 
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
@@ -404,6 +322,9 @@ namespace MusicBeePlugin
         private void UpdateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
         {
             bool add = true;
+            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
+            Dictionary<String, CheckState> occasionList = tagsStorage.GetTags();
+
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
             foreach (string tagFromConfig in allTagsFromConfig)
             {
@@ -434,7 +355,6 @@ namespace MusicBeePlugin
             {
                 this.checklistBox.AddDataSource(data);
             }
-
         }
 
         private void AddControls(Control _panel)
@@ -468,16 +388,16 @@ namespace MusicBeePlugin
                   this.tabControl
             });
             _panel.ResumeLayout();
-            
+
         }
 
         private void CreateTabbedPanel()
         {
-            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock) 6);
+            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
             this.tabControl.Dock = DockStyle.Fill;
-            
+
             TabPage page1 = new TabPage("Occasions");
-            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, this.occasionList);
+            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, tagsStorage.GetTags());
             checklistBox.Dock = DockStyle.Fill;
             checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
             this.ignoreEventFromHandler = false;
@@ -493,16 +413,10 @@ namespace MusicBeePlugin
         // return the list of ToolStripMenuItems that will be displayed
         public List<ToolStripItem> GetHeaderMenuItems()
         {
-           List<ToolStripItem> list = new List<ToolStripItem>();
-           list.Add(new ToolStripMenuItem("A menu item"));
+            List<ToolStripItem> list = new List<ToolStripItem>();
+            list.Add(new ToolStripMenuItem("A menu item"));
             list.Add(new ToolStripMenuItem("Another item"));
             return list;
-        }
-
-        public class SavedSettingsType
-        {
-            public string occasions;
-            public bool sorted = true;
         }
 
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -544,7 +458,7 @@ namespace MusicBeePlugin
                 string sortedTags = SortTagsAlphabetical(tagsFromFile);
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
-                
+
             }
             mbApiInterface.MB_SetBackgroundTaskMessage("Save tags finished");
         }
@@ -597,8 +511,8 @@ namespace MusicBeePlugin
             }
 
             return false;
-        
-        
+
+
         }
     }
 
