@@ -9,7 +9,7 @@ namespace MusicBeePlugin
 {
     class TagsStorage
     {
-        private const char Separator = ';';
+        public const char SEPARATOR = ';';
 
         private MetaDataType metaDataField = MetaDataType.Occasion;
         private readonly MusicBeeApiInterface musicBeeApiInterface;
@@ -26,23 +26,14 @@ namespace MusicBeePlugin
             occasionList.Clear();
         }
 
-        public void ReadTagsFromFile(string sourceFileUrl)
+        public void UpdateTagsFromFile(string sourceFileUrl)
         {
             Clear();
 
-            if (sourceFileUrl == null || sourceFileUrl.Length <= 0)
-            {
-                return;
-            }
+            string[] tagParts = ReadTagsFromFile(sourceFileUrl);
 
-            string tagsFromFile = musicBeeApiInterface.Library_GetFileTag(sourceFileUrl, metaDataField);
-            string[] tagParts = tagsFromFile.Split(Separator).Select(filetagOccasion => filetagOccasion.Trim()).ToArray();
             foreach (string tag in tagParts)
             {
-                if (tag.Trim().Length <= 0)
-                {
-                    continue;
-                }
                 CheckState checkState;
                 if (!occasionList.TryGetValue(tag, out checkState))
                 {
@@ -53,6 +44,29 @@ namespace MusicBeePlugin
                     checkState = CheckState.Checked;
                 }
             }
+        }
+
+        public string[] ReadTagsFromFile(string filename)
+        {
+            HashSet<string> tags = new HashSet<string>();
+
+            if (filename == null || filename.Length <= 0)
+            {
+                return tags.ToArray<string>();
+            }
+
+            string filetagOccasions = musicBeeApiInterface.Library_GetFileTag(filename, MetaDataType.Occasion);
+            string[] filetagOccasionssParts = filetagOccasions.Split(';');
+            foreach (string occasion in filetagOccasionssParts)
+            {
+                if (occasion.Trim().Length <= 0)
+                {
+                    continue;
+                }
+                tags.Add(occasion.Trim());
+            }
+
+            return tags.ToArray<string>();
         }
 
         internal Dictionary<string, CheckState> GetTags()

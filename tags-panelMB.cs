@@ -34,6 +34,7 @@ namespace MusicBeePlugin
 
         private SettingsStorage settingsStorage;
         private TagsStorage tagsStorage;
+        private TagsManipulation tagsManipulation;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -60,6 +61,7 @@ namespace MusicBeePlugin
             InitLogger();
             settingsStorage = new SettingsStorage(mbApiInterface);
             tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Occasion);
+            tagsManipulation = new TagsManipulation();
 
             LoadSettings();
 
@@ -145,10 +147,10 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
+                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
                     break;
                 case NotificationType.TrackChanged:
-                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
+                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
                     ignoreForBatchSelect = true;
                     UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
@@ -161,7 +163,7 @@ namespace MusicBeePlugin
                     }
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    tagsStorage.ReadTagsFromFile(sourceFileUrl);
+                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
                     UpdateOccasionTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
@@ -244,7 +246,10 @@ namespace MusicBeePlugin
             {
                 return;
             }
-            
+
+            // important to have as a global variable
+            selectedFileUrls = filenames;
+
             Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
 
             if (filenames == null || filenames.Length <= 0)
@@ -257,40 +262,10 @@ namespace MusicBeePlugin
                 return;
             }
 
-            // important to have as a global variable
-            selectedFileUrls = filenames;
 
             SetPanelEnabled(true);
-            Dictionary<String, int> stateOfSelection = new Dictionary<String, int>();
-            int numberOfSelectedFiles = filenames.Length;
-            foreach (var filename in filenames)
-            {
-                string[] tagsFromSettings = GetTagsFromFile(filename);
-                foreach (var tag in tagsFromSettings)
-                {
-                    if (stateOfSelection.ContainsKey(tag))
-                    {
-                        int count = stateOfSelection[tag];
-                        stateOfSelection[tag] = count++;
-                    }
-                    else
-                    {
-                        stateOfSelection.Add(tag, 1);
-                    }
-                }
-            }
 
-            foreach (KeyValuePair<String, int> entry in stateOfSelection)
-            {
-                if (entry.Value == numberOfSelectedFiles)
-                {
-                    occasionList.Add(entry.Key, CheckState.Checked);
-                }
-                else
-                {
-                    occasionList.Add(entry.Key, CheckState.Indeterminate);
-                }
-            }
+            occasionList = tagsManipulation.combineTagLists(filenames, tagsStorage);
             tagsStorage.SetTags(occasionList);
 
             updateTagsInPanelOnFileSelection();
@@ -306,23 +281,7 @@ namespace MusicBeePlugin
             ignoreForBatchSelect = false;
         }
 
-        private string[] GetTagsFromFile(string filename)
-        {
-            HashSet<string> tags = new HashSet<string>();
-
-            string filetagOccasions = mbApiInterface.Library_GetFileTag(filename, MetaDataType.Occasion);
-            string[] filetagOccasionssParts = filetagOccasions.Split(';');
-            foreach (string occasion in filetagOccasionssParts)
-            {
-                if (occasion.Trim().Length <= 0)
-                {
-                    continue;
-                }
-                tags.Add(occasion.Trim());
-            }
-
-            return tags.ToArray<string>();
-        }
+        
 
         private void UpdateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
         {
@@ -477,7 +436,7 @@ namespace MusicBeePlugin
 
         private string RemoveTag(string selectedTag, string fileUrl)
         {
-            string tags = GetTags(fileUrl);
+            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
             tags = tags.Replace(selectedTag + ";", "");
             tags = tags.Replace(selectedTag, "");
             tags = tags.Trim(';');
@@ -486,7 +445,7 @@ namespace MusicBeePlugin
 
         private string AddTag(string selectedTag, string fileUrl)
         {
-            string tags = GetTags(fileUrl);
+            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
 
             tags = tags.Trim(';');
 
@@ -501,15 +460,11 @@ namespace MusicBeePlugin
 
         }
 
-        private string GetTags(string fileUrl)
-        {
-            string[] tags = GetTagsFromFile(fileUrl);
-            return String.Join(";", tags).Trim();
-        }
+
 
         private bool IsTagAvailable(string tagName, string fileUrl)
         {
-            string tags = GetTags(fileUrl);
+            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
             if (tags.Contains(tagName + ";") || tags.EndsWith(tagName))
             {
                 return true;
