@@ -16,7 +16,7 @@ namespace MusicBeePlugin
         private readonly MusicBeeApiInterface mbApiInterface;
         private ItemCheckEventHandler eventHandler;
 
-        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data)
+        public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data = null)
         {
             this.mbApiInterface = mbApiInterface;
             
@@ -25,7 +25,10 @@ namespace MusicBeePlugin
             this.checkedListBox1.DisplayMember = "occasion";
             this.checkedListBox1.ValueMember = "selected";
 
-            AddDataSource(data);
+            if (data != null)
+            {
+                AddDataSource(data);
+            }
             StylePanel();
         }
 

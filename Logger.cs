@@ -21,17 +21,23 @@
 using System;
 using System.Text;
 using System.IO;
+using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin
 {
     public class Logger
     {
+        private const string LOG_FILE_NAME = "mb_tags-panel.log";
+
+        private readonly MusicBeeApiInterface musicBeeApiInterface;
+
         private readonly FileInfo fileInfo;
         private StreamWriter writer;
 
-        public Logger(string path)
+        public Logger(MusicBeeApiInterface musicBeeApiInterface)
         {
-            fileInfo = new FileInfo(path);
+            this.musicBeeApiInterface = musicBeeApiInterface;
+            fileInfo = new FileInfo(GetLogFilePath());
             writer = null;
         }
 
@@ -49,7 +55,7 @@ namespace MusicBeePlugin
             }
 
             DateTime localTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, TimeZoneInfo.Local);
-            writer.WriteLine(localTime.ToString("dd/MM/yyyy hh:mm:ss") + " [" + type.ToUpper() + "] " + string.Format(message, args));
+            writer.WriteLine(localTime.ToString("dd/MM/yyyy HH:mm:ss") + " [" + type.ToUpper() + "] " + string.Format(message, args));
             writer.Flush();
         }
 
@@ -84,6 +90,11 @@ namespace MusicBeePlugin
         public void Error(string message, params object[] args)
         {
             Write("error", message, args);
+        }
+
+        public string GetLogFilePath()
+        {
+            return System.IO.Path.Combine(musicBeeApiInterface.Setting_GetPersistentStoragePath(), LOG_FILE_NAME);
         }
     }
 }

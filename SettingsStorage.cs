@@ -50,7 +50,7 @@ namespace MusicBeePlugin
 
         private void LoadSettings()
         {
-            string filename = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
+            string filename = GetSettingsPath();
 
             Encoding unicode = Encoding.UTF8;
             System.IO.FileStream stream = System.IO.File.Open(filename, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read, System.IO.FileShare.None);
@@ -78,13 +78,18 @@ namespace MusicBeePlugin
             file.Close();
         }
 
+        public string GetSettingsPath()
+        {
+            return System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
+        }
+
         public void SaveSettings(bool tempSortEnabled, string[] tempTags)
         {
             SavedSettings.sorted = tempSortEnabled;
             SavedSettings.tags = String.Join(SettingsSeparator.ToString(), tempTags);
 
             // save any persistent settings in a sub-folder of this path
-            string settingsPath = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
+            string settingsPath = GetSettingsPath();
             Encoding unicode = Encoding.UTF8;
             System.IO.FileStream stream = System.IO.File.Open(settingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);
             System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode);
@@ -106,11 +111,6 @@ namespace MusicBeePlugin
         public SavedSettingsType GetSavedSettings()
         {
             return SavedSettings;
-        }
-
-        public string GetSettingsFileName()
-        {
-            return SettingsFileName;
         }
     }
 }

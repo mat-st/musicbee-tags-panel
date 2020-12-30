@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using System.Collections.Generic;
-using System.Linq;
-using System.Collections.ObjectModel;
-using System.Text;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
+using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
     public partial class Plugin
     {
-        private const string LOG_FILE_NAME = "mb_tags-panel.log";
-
         private MusicBeeApiInterface mbApiInterface;
 
         private string[] temp_occasions;
@@ -25,15 +14,21 @@ namespace MusicBeePlugin
         private string[] selectedFileUrls = new string[] { };
         private Logger log;
 
-        private Control ourPanel;
-        private TabControl tabControl;
-        private ChecklistBoxPanel checklistBox;
 
         private bool ignoreEventFromHandler = true;
         private bool ignoreForBatchSelect = true;
 
-        private SettingsStorage settingsStorage;
+        private Control ourPanel;
+        private TabControl tabControl;
+
+        // TODO refactore
+        private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
+
+        // TODO use:  private List<TagsStorage> tagsStorage;
         private TagsStorage tagsStorage;
+
+        // TODO change methods accordingly to handle the list of storage classes 
+        private SettingsStorage settingsStorage;
         private TagsManipulation tagsManipulation;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
@@ -43,10 +38,10 @@ namespace MusicBeePlugin
             PluginInfo about = new PluginInfo();
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "Tags-Panel";
-            about.Description = "Creates a dockable Panel which lets the user choose from an predefined " +
-                "list of occasions";
+            about.Description = "Creates a dockable Panel which lets the user choose tags from an predefined " +
+                "list";
             about.Author = "Matthias Steiert + The Anonymous Programmer";
-            about.TargetApplication = "tags-panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
+            about.TargetApplication = "Tags-Panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
             about.Type = PluginType.General;
             about.VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major;  // your plugin version
             about.VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor;
@@ -58,6 +53,8 @@ namespace MusicBeePlugin
             //createMenuItem();
             // Application.EnableVisualStyles();
 
+            checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
+
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
@@ -66,15 +63,14 @@ namespace MusicBeePlugin
 
             LoadSettings();
 
-            log.Info("Tagger plugin started");
+            log.Info("Tags-Panel plugin started");
 
             return about;
         }
 
         private void InitLogger()
         {
-            string logPath = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), LOG_FILE_NAME);
-            log = new Logger(logPath);
+            log = new Logger(mbApiInterface);
         }
 
         public bool Configure(IntPtr panelHandle)
@@ -92,6 +88,7 @@ namespace MusicBeePlugin
             string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
             fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
             tagsPanelSettingForm.ShowDialog();
+            // TODO Variablennamen anpassen
             temp_occasions = tagsPanelSettingForm.getOccasions();
             tempSortEnabled = tagsPanelSettingForm.isSortEnabled();
 
@@ -106,7 +103,8 @@ namespace MusicBeePlugin
 
             if (ourPanel != null)
             {
-                UpdateOccasionTableData(ourPanel);
+                // TODO Methodennamen anpassen
+                UpdateTagsTableData(ourPanel);
             }
         }
 
@@ -122,17 +120,25 @@ namespace MusicBeePlugin
         {
             //ourPanel.Dispose();
             ourPanel = null;
+            log.Info(reason.ToString("g"));
             log.Close();
         }
 
         // uninstall this plugin - clean up any persisted files
         public void Uninstall()
         {
-            string settingsFileName = settingsStorage.GetSettingsFileName();
-            //Delete settings file
+            // Delete settings file
+            string settingsFileName = settingsStorage.GetSettingsPath();
             if (System.IO.File.Exists(settingsFileName))
             {
                 System.IO.File.Delete(settingsFileName);
+            }
+
+            // Delete log file
+            string logFileName = log.GetLogFilePath();
+            if (System.IO.File.Exists(logFileName))
+            {
+                System.IO.File.Delete(logFileName);
             }
         }
 
@@ -153,7 +159,7 @@ namespace MusicBeePlugin
                 case NotificationType.TrackChanged:
                     tagsStorage.UpdateTagsFromFile(sourceFileUrl);
                     ignoreForBatchSelect = true;
-                    UpdateOccasionTableData(ourPanel);
+                    UpdateTagsTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
@@ -165,64 +171,18 @@ namespace MusicBeePlugin
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
                     tagsStorage.UpdateTagsFromFile(sourceFileUrl);
-                    UpdateOccasionTableData(ourPanel);
+                    UpdateTagsTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
             }
         }
 
-        
-
-        //private void createMenuItem() {
-
-        //mbApiInterface.MB_AddMenuItem("mnuTools/Tagtraum", "HotKey For Tagtraum", menuClicked);
-        //mbApiInterface.MB_AddMenuItem("mnuTools/Tagtraum/Einstellungen", "HotKey For Tagdream", menuClickedn);
-        //}
-        //private void menuClicked(object sender, EventArgs args) {Form1 myForm = new Form1(mbApiInterface); myForm.Show();}
-        //private void menuClickedn(object sender, EventArgs args) { Form2 myForm2 = new Form2(mbApiInterface); myForm2.Show(); }
-
-
-
-        // return an array of lyric or artwork provider names this plugin supports
-        // the providers will be iterated through one by one and passed to the RetrieveLyrics/ RetrieveArtwork function in order set by the user in the MusicBee Tags(2) preferences screen until a match is found
-        //public string[] GetProviders()
-        //{
-        //    return null;
-        //}
-
-        // return lyrics for the requested artist/title from the requested provider
-        // only required if PluginType = LyricsRetrieval
-        // return null if no lyrics are found
-        //public string RetrieveLyrics(string sourceFileUrl, string artist, string trackTitle, string album, bool synchronisedPreferred, string provider)
-        //{
-        //    return null;
-        //}
-
-        // return Base64 string representation of the artwork binary data from the requested provider
-        // only required if PluginType = ArtworkRetrieval
-        // return null if no artwork is found
-        //public string RetrieveArtwork(string sourceFileUrl, string albumArtist, string album, string provider)
-        //{
-        //    //Return Convert.ToBase64String(artworkBinaryData)
-        //    return null;
-        //}
-
-        //  presence of this function indicates to MusicBee that this plugin has a dockable panel. MusicBee will create the control and pass it as the panel parameter
-        //  you can add your own controls to the panel if needed
-        //  you can control the scrollable area of the panel using the mbApiInterface.MB_SetPanelScrollableArea function
-        //  to set a MusicBee header for the panel, set about.TargetApplication in the Initialise function above to the panel header text
         public int OnDockablePanelCreated(Control panel)
         {
-            //    return the height of the panel and perform any initialisation here
-            //    MusicBee will call panel.Dispose() when the user removes this panel from the layout configuration
-            //    < 0 indicates to MusicBee this control is resizable and should be sized to fill the panel it is docked to in MusicBee
-            //    = 0 indicates to MusicBee this control resizeable
-            //    > 0 indicates to MusicBee the fixed height for the control.Note it is recommended you scale the height for high DPI screens(create a graphics object and get the DpiY value)
-
             ourPanel = panel;
             AddControls(ourPanel);
-            UpdateOccasionTableData(ourPanel);
+            UpdateTagsTableData(ourPanel);
 
             return 0;
         }
@@ -251,13 +211,14 @@ namespace MusicBeePlugin
             // important to have as a global variable
             selectedFileUrls = filenames;
 
-            Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
+            // TODO For loop
+            Dictionary<String, CheckState> tagsList = new Dictionary<String, CheckState>();
 
             if (filenames == null || filenames.Length <= 0)
             {
-                tagsStorage.SetTags(occasionList);
+                tagsStorage.SetTags(tagsList);
 
-                updateTagsInPanelOnFileSelection();
+                UpdateTagsInPanelOnFileSelection();
                 SetPanelEnabled(false);
 
                 return;
@@ -266,17 +227,17 @@ namespace MusicBeePlugin
 
             SetPanelEnabled(true);
 
-            occasionList = tagsManipulation.combineTagLists(filenames, tagsStorage);
-            tagsStorage.SetTags(occasionList);
+            tagsList = tagsManipulation.combineTagLists(filenames, tagsStorage);
+            tagsStorage.SetTags(tagsList);
 
-            updateTagsInPanelOnFileSelection();
+            UpdateTagsInPanelOnFileSelection();
         }
 
-        private void updateTagsInPanelOnFileSelection()
+        private void UpdateTagsInPanelOnFileSelection()
         {
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
-            UpdateOccasionTableData(ourPanel);
+            UpdateTagsTableData(ourPanel);
             ourPanel.Invalidate();
             ignoreEventFromHandler = false;
             ignoreForBatchSelect = false;
@@ -284,20 +245,20 @@ namespace MusicBeePlugin
 
         
 
-        private void UpdateOccasionTableData(Control panel, Dictionary<String, CheckState> allOccasions = null)
+        private void UpdateTagsTableData(Control panel)
         {
             bool add = true;
             string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
-            Dictionary<String, CheckState> occasionList = tagsStorage.GetTags();
+            Dictionary<String, CheckState> allTags = tagsStorage.GetTags();
 
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
             foreach (string tagFromConfig in allTagsFromConfig)
             {
-                foreach (String occasionEntry in occasionList.Keys)
+                foreach (String tagEntry in allTags.Keys)
                 {
-                    if (tagFromConfig.Trim() == occasionEntry.Trim())
+                    if (tagFromConfig.Trim() == tagEntry.Trim())
                     {
-                        data.Add(occasionEntry, occasionList[occasionEntry]);
+                        data.Add(tagEntry, allTags[tagEntry]);
                         add = false;
                         break;
                     }
@@ -309,17 +270,26 @@ namespace MusicBeePlugin
                 add = true;
             }
 
+            // TODO change data accordingly to the tag name
+            string tagName = tagsStorage.GetTagName();
             if (panel.IsHandleCreated)
             {
                 panel.Invoke(new Action(() =>
                 {
-                    this.checklistBox.AddDataSource(data);
+                    AddTagsToChecklistBoxPanel(tagName, data);
                 }));
             }
             else
             {
-                this.checklistBox.AddDataSource(data);
+                AddTagsToChecklistBoxPanel(tagName, data);
             }
+        }
+
+        private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
+        {
+            ChecklistBoxPanel checklistBoxPanel;
+            this.checklistBoxList.TryGetValue(tagName, out checklistBoxPanel);
+            checklistBoxPanel.AddDataSource(tags);
         }
 
         private void AddControls(Control _panel)
@@ -344,7 +314,7 @@ namespace MusicBeePlugin
 
         private void LayoutPanel(Control _panel)
         {
-            CreateTabbedPanel();
+            CreateTabPanel();
 
             _panel.Enabled = false;
             _panel.SuspendLayout();
@@ -356,22 +326,45 @@ namespace MusicBeePlugin
 
         }
 
-        private void CreateTabbedPanel()
+        private void CreateTabPanel()
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
             this.tabControl.Dock = DockStyle.Fill;
 
-            TabPage page1 = new TabPage("Occasions");
-            this.checklistBox = new ChecklistBoxPanel(mbApiInterface, tagsStorage.GetTags());
-            checklistBox.Dock = DockStyle.Fill;
-            checklistBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck));
-            this.ignoreEventFromHandler = false;
-            page1.Controls.Add(checklistBox);
-            this.tabControl.TabPages.Add(page1);
+            AddTagPanel(this.tagsStorage);
+
             TabPage page2 = new TabPage("Moods");
             this.tabControl.TabPages.Add(page2);
             TabPage page3 = new TabPage("Genres");
             this.tabControl.TabPages.Add(page3);
+        }
+
+        private void AddTagPanel(TagsStorage tagsStorage)
+        {
+            string tagName = tagsStorage.GetTagName();
+            TabPage page = new TabPage(tagName);
+
+            ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
+            checkListBox.AddDataSource(tagsStorage.GetTags());
+
+            checkListBox.Dock = DockStyle.Fill;
+            checkListBox.AddItemCheckEventHandler(
+                new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck)
+            );
+            this.ignoreEventFromHandler = false;
+            page.Controls.Add(checkListBox);
+            this.tabControl.TabPages.Add(page);
+        }
+
+        private ChecklistBoxPanel GetCheckListBoxPanel(string tagName)
+        {
+            ChecklistBoxPanel checkListBox;
+            if (!this.checklistBoxList.TryGetValue(tagName, out checkListBox))
+            {
+                checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                checklistBoxList.Add(tagName, checkListBox);
+            }
+            return checkListBox;
         }
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
@@ -425,7 +418,7 @@ namespace MusicBeePlugin
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
 
             }
-            mbApiInterface.MB_SetBackgroundTaskMessage("Save tags finished");
+            mbApiInterface.MB_SetBackgroundTaskMessage("Added tags to file");
         }
     }
 }

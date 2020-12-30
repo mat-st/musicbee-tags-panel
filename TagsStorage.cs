@@ -11,7 +11,7 @@ namespace MusicBeePlugin
     {
         public const char SEPARATOR = ';';
 
-        private MetaDataType metaDataField = MetaDataType.Occasion;
+        private readonly MetaDataType metaDataField;
         private readonly MusicBeeApiInterface musicBeeApiInterface;
         private Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
 
@@ -119,6 +119,11 @@ namespace MusicBeePlugin
         {
             string[] tags = ReadTagsFromFile(fileUrl);
             return String.Join(TagsStorage.SEPARATOR.ToString(), tags).Trim();
+        }
+
+        public string GetTagName()
+        {
+            return metaDataField.ToString("g");
         }
     }
 }
