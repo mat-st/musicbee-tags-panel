@@ -8,9 +8,9 @@ namespace MusicBeePlugin
 {
     public class TagsManipulation
     {
-        public Dictionary<String, CheckState> combineTagLists(string[] fileNames, TagsStorage tagsStorage)
+        public Dictionary<String, CheckState> CombineTagLists(string[] fileNames, TagsStorage tagsStorage)
         {
-            Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
+            Dictionary<String, CheckState> tagList = new Dictionary<String, CheckState>();
             Dictionary<String, int> stateOfSelection = new Dictionary<String, int>();
             int numberOfSelectedFiles = fileNames.Length;
 
@@ -35,23 +35,22 @@ namespace MusicBeePlugin
             {
                 if (entry.Value == numberOfSelectedFiles)
                 {
-                    occasionList.Add(entry.Key, CheckState.Checked);
+                    tagList.Add(entry.Key, CheckState.Checked);
                 }
                 else
                 {
-                    occasionList.Add(entry.Key, CheckState.Indeterminate);
+                    tagList.Add(entry.Key, CheckState.Indeterminate);
                 }
             }
 
-            return occasionList;
+            return tagList;
         }
 
         public string SortTagsAlphabetical(string tags)
         {
-            //TODO Rename occasionsarray
-            string[] occasionsAsArray = tags.Split(TagsStorage.SEPARATOR);
-            Array.Sort(occasionsAsArray);
-            return String.Join(TagsStorage.SEPARATOR.ToString(), occasionsAsArray);
+            string[] tagsAsArray = tags.Split(TagsStorage.SEPARATOR);
+            Array.Sort(tagsAsArray);
+            return String.Join(TagsStorage.SEPARATOR.ToString(), tagsAsArray);
         }
     }
 }

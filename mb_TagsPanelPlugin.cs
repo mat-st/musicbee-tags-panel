@@ -8,7 +8,7 @@ namespace MusicBeePlugin
     {
         private MusicBeeApiInterface mbApiInterface;
 
-        private string[] temp_occasions;
+        private string[] tempTags;
         private bool tempSortEnabled;
 
         private string[] selectedFileUrls = new string[] { };
@@ -86,16 +86,17 @@ namespace MusicBeePlugin
                 useSort = settings.sorted;
             }
             string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
-            fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
-            tagsPanelSettingForm.ShowDialog();
-            /*List<TagsStorage> tagsStorageList = new List<TagsStorage>();
+            /*fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
+            tagsPanelSettingForm.ShowDialog();*/
+
+            List<TagsStorage> tagsStorageList = new List<TagsStorage>();
             tagsStorageList.Add(tagsStorage);
             TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
-            tagsPanelSettingsForm.ShowDialog();*/
+            tagsPanelSettingsForm.ShowDialog();
 
-            // TODO Variablennamen anpassen
-            temp_occasions = tagsPanelSettingForm.getOccasions();
-            tempSortEnabled = tagsPanelSettingForm.isSortEnabled();
+            TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
+            tempTags = tagsPanelSettingsPanel.GetTags();
+            tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
 
             return true;
         }
@@ -104,11 +105,10 @@ namespace MusicBeePlugin
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
-            settingsStorage.SaveSettings(tempSortEnabled, temp_occasions);
+            settingsStorage.SaveSettings(tempSortEnabled, tempTags);
 
             if (ourPanel != null)
             {
-                // TODO Methodennamen anpassen
                 UpdateTagsTableData(ourPanel);
             }
         }
@@ -117,7 +117,7 @@ namespace MusicBeePlugin
         {
             settingsStorage.LoadSettingsWithFallback();
 
-            temp_occasions = settingsStorage.GetAllTagsFromConfig();
+            tempTags = settingsStorage.GetAllTagsFromConfig();
         }
 
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -232,7 +232,7 @@ namespace MusicBeePlugin
 
             SetPanelEnabled(true);
 
-            tagsList = tagsManipulation.combineTagLists(filenames, tagsStorage);
+            tagsList = tagsManipulation.CombineTagLists(filenames, tagsStorage);
             tagsStorage.SetTags(tagsList);
 
             UpdateTagsInPanelOnFileSelection();
@@ -337,7 +337,7 @@ namespace MusicBeePlugin
             this.tabControl.Dock = DockStyle.Fill;
 
             AddTagPanel(this.tagsStorage);
-
+            // TODO create Tabs dynamically according to user settings
             TabPage page2 = new TabPage("Moods");
             this.tabControl.TabPages.Add(page2);
             TabPage page3 = new TabPage("Genres");

@@ -30,11 +30,11 @@ namespace MusicBeePlugin
         private void InitializeComponent()
         {
             this.btnImportCSV = new System.Windows.Forms.Button();
-            this.lstOccasions = new System.Windows.Forms.ListBox();
-            this.txtOccasionInput = new System.Windows.Forms.TextBox();
-            this.btnRemMood = new System.Windows.Forms.Button();
-            this.btnAddMood = new System.Windows.Forms.Button();
-            this.cbEnableMoodSort = new System.Windows.Forms.CheckBox();
+            this.lstTags = new System.Windows.Forms.ListBox();
+            this.txtNewTagInput = new System.Windows.Forms.TextBox();
+            this.btnRemTag = new System.Windows.Forms.Button();
+            this.btnAddTag = new System.Windows.Forms.Button();
+            this.cbEnableAlphabeticalTagSort = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnImportCSV
@@ -43,56 +43,59 @@ namespace MusicBeePlugin
             this.btnImportCSV.Name = "btnImportCSV";
             this.btnImportCSV.Size = new System.Drawing.Size(222, 23);
             this.btnImportCSV.TabIndex = 11;
-            this.btnImportCSV.Text = "Import Occasions (CSV)";
+            this.btnImportCSV.Text = "Import Tags from CSV";
             this.btnImportCSV.UseVisualStyleBackColor = true;
+            this.btnImportCSV.Click += new System.EventHandler(this.BtnImportCSV_Click);
             // 
-            // lstOccasions
+            // lstTags
             // 
-            this.lstOccasions.BackColor = System.Drawing.Color.White;
-            this.lstOccasions.FormattingEnabled = true;
-            this.lstOccasions.Location = new System.Drawing.Point(3, 3);
-            this.lstOccasions.Name = "lstOccasions";
-            this.lstOccasions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstOccasions.Size = new System.Drawing.Size(222, 95);
-            this.lstOccasions.Sorted = true;
-            this.lstOccasions.TabIndex = 10;
+            this.lstTags.BackColor = System.Drawing.Color.White;
+            this.lstTags.FormattingEnabled = true;
+            this.lstTags.Location = new System.Drawing.Point(3, 3);
+            this.lstTags.Name = "lstTags";
+            this.lstTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lstTags.Size = new System.Drawing.Size(222, 95);
+            this.lstTags.Sorted = true;
+            this.lstTags.TabIndex = 10;
             // 
-            // txtOccasionInput
+            // txtNewTagInput
             // 
-            this.txtOccasionInput.Location = new System.Drawing.Point(3, 104);
-            this.txtOccasionInput.Name = "txtOccasionInput";
-            this.txtOccasionInput.Size = new System.Drawing.Size(222, 20);
-            this.txtOccasionInput.TabIndex = 9;
+            this.txtNewTagInput.Location = new System.Drawing.Point(3, 104);
+            this.txtNewTagInput.Name = "txtNewTagInput";
+            this.txtNewTagInput.Size = new System.Drawing.Size(222, 20);
+            this.txtNewTagInput.TabIndex = 9;
             // 
-            // btnRemMood
+            // btnRemTag
             // 
-            this.btnRemMood.Location = new System.Drawing.Point(124, 130);
-            this.btnRemMood.Name = "btnRemMood";
-            this.btnRemMood.Size = new System.Drawing.Size(101, 41);
-            this.btnRemMood.TabIndex = 8;
-            this.btnRemMood.Text = "Remove Occasion";
-            this.btnRemMood.UseVisualStyleBackColor = true;
+            this.btnRemTag.Location = new System.Drawing.Point(124, 130);
+            this.btnRemTag.Name = "btnRemTag";
+            this.btnRemTag.Size = new System.Drawing.Size(101, 41);
+            this.btnRemTag.TabIndex = 8;
+            this.btnRemTag.Text = "Remove Tag";
+            this.btnRemTag.UseVisualStyleBackColor = true;
+            this.btnRemTag.Click += new System.EventHandler(this.BtnRemTag_Click);
             // 
-            // btnAddMood
+            // btnAddTag
             // 
-            this.btnAddMood.Location = new System.Drawing.Point(3, 130);
-            this.btnAddMood.Name = "btnAddMood";
-            this.btnAddMood.Size = new System.Drawing.Size(115, 41);
-            this.btnAddMood.TabIndex = 7;
-            this.btnAddMood.Text = "Add Occasion";
-            this.btnAddMood.UseVisualStyleBackColor = true;
+            this.btnAddTag.Location = new System.Drawing.Point(3, 130);
+            this.btnAddTag.Name = "btnAddTag";
+            this.btnAddTag.Size = new System.Drawing.Size(115, 41);
+            this.btnAddTag.TabIndex = 7;
+            this.btnAddTag.Text = "Add Tag";
+            this.btnAddTag.UseVisualStyleBackColor = true;
+            this.btnAddTag.Click += new System.EventHandler(this.BtnAddTag_Click);
             // 
-            // cbEnableMoodSort
+            // cbEnableAlphabeticalTagSort
             // 
-            this.cbEnableMoodSort.AutoSize = true;
-            this.cbEnableMoodSort.Checked = true;
-            this.cbEnableMoodSort.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableMoodSort.Location = new System.Drawing.Point(3, 177);
-            this.cbEnableMoodSort.Name = "cbEnableMoodSort";
-            this.cbEnableMoodSort.Size = new System.Drawing.Size(146, 17);
-            this.cbEnableMoodSort.TabIndex = 6;
-            this.cbEnableMoodSort.Text = "Sort moods alphabetically";
-            this.cbEnableMoodSort.UseVisualStyleBackColor = true;
+            this.cbEnableAlphabeticalTagSort.AutoSize = true;
+            this.cbEnableAlphabeticalTagSort.Checked = true;
+            this.cbEnableAlphabeticalTagSort.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(3, 177);
+            this.cbEnableAlphabeticalTagSort.Name = "cbEnableAlphabeticalTagSort";
+            this.cbEnableAlphabeticalTagSort.Size = new System.Drawing.Size(135, 17);
+            this.cbEnableAlphabeticalTagSort.TabIndex = 6;
+            this.cbEnableAlphabeticalTagSort.Text = "Sort tags alphabetically";
+            this.cbEnableAlphabeticalTagSort.UseVisualStyleBackColor = true;
             // 
             // TagsPanelSettingsPanel
             // 
@@ -100,11 +103,11 @@ namespace MusicBeePlugin
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.Controls.Add(this.btnImportCSV);
-            this.Controls.Add(this.lstOccasions);
-            this.Controls.Add(this.txtOccasionInput);
-            this.Controls.Add(this.btnRemMood);
-            this.Controls.Add(this.btnAddMood);
-            this.Controls.Add(this.cbEnableMoodSort);
+            this.Controls.Add(this.lstTags);
+            this.Controls.Add(this.txtNewTagInput);
+            this.Controls.Add(this.btnRemTag);
+            this.Controls.Add(this.btnAddTag);
+            this.Controls.Add(this.cbEnableAlphabeticalTagSort);
             this.Name = "TagsPanelSettingsPanel";
             this.Size = new System.Drawing.Size(232, 231);
             this.ResumeLayout(false);
@@ -115,10 +118,10 @@ namespace MusicBeePlugin
         #endregion
 
         private System.Windows.Forms.Button btnImportCSV;
-        private System.Windows.Forms.ListBox lstOccasions;
-        private System.Windows.Forms.TextBox txtOccasionInput;
-        private System.Windows.Forms.Button btnRemMood;
-        private System.Windows.Forms.Button btnAddMood;
-        private System.Windows.Forms.CheckBox cbEnableMoodSort;
+        private System.Windows.Forms.ListBox lstTags;
+        private System.Windows.Forms.TextBox txtNewTagInput;
+        private System.Windows.Forms.Button btnRemTag;
+        private System.Windows.Forms.Button btnAddTag;
+        private System.Windows.Forms.CheckBox cbEnableAlphabeticalTagSort;
     }
 }

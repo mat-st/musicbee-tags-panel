@@ -12,7 +12,7 @@ namespace MusicBeePlugin
 
     public class SettingsStorage
     {
-        private const char SettingsSeparator = ';';
+        public const char SettingsSeparator = ';';
 
         private static SavedSettingsType SavedSettings = new SavedSettingsType
         {

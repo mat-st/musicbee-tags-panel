@@ -16,79 +16,65 @@ namespace MusicBeePlugin
         {
             InitializeComponent();
 
-            setMoods(settings.GetAllTagsFromConfig());
-            setSortEnabled(settings.GetSavedSettings().sorted);
+            SetTags(settings.GetAllTagsFromConfig());
+            SetSortEnabled(settings.GetSavedSettings().sorted);
 
             // this must be at the very end to supress the events
             MakeOwnModifications();
         }
 
-        private void setSortEnabled(bool sortEnabled)
+        private void SetSortEnabled(bool sortEnabled)
         {
-            this.cbEnableMoodSort.Checked = sortEnabled;
+            this.cbEnableAlphabeticalTagSort.Checked = sortEnabled;
         }
 
         private void MakeOwnModifications()
         {
-            this.lstOccasions.KeyDown += KeyEventHandler;
-            this.txtOccasionInput.KeyDown += KeyEventHandler;
+            this.lstTags.KeyDown += KeyEventHandler;
+            this.txtNewTagInput.KeyDown += KeyEventHandler;
 
-            this.cbEnableMoodSort.CheckedChanged += new System.EventHandler(this.cbEnableMoodSort_CheckedChanged);
+            this.cbEnableAlphabeticalTagSort.CheckedChanged += new System.EventHandler(this.CbEnableTagSort_CheckedChanged);
         }
 
-        private void btnAddMood_Click(object sender, EventArgs e)
+        private void BtnAddTag_Click(object sender, EventArgs e)
         {
-            addNewMoodToList();
+            AddNewTagToList();
         }
 
-        private void btnRemMood_Click(object sender, EventArgs e)
+        private void BtnRemTag_Click(object sender, EventArgs e)
         {
-            removeSelectedItemFromList();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ShowDialogToClearAll();
-        }
-
-        private void ShowDialogToClearAll()
-        {
-            DialogResult dialogResult = MessageBox.Show("Would you really really want to clear to list?", "Clear the list - really?", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
-            {
-                ClearMoods();
-            }
+            RemoveSelectedTagFromList();
         }
 
         private void KeyEventHandler(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter && sender == this.txtOccasionInput)
+            if (e.KeyCode == Keys.Enter && sender == this.txtNewTagInput)
             {
                 e.SuppressKeyPress = true;
-                addNewMoodToList();
+                AddNewTagToList();
                 e.Handled = true;
             }
-            else if (e.KeyCode == Keys.Delete && sender == this.lstOccasions)
+            else if (e.KeyCode == Keys.Delete && sender == this.lstTags)
             {
                 e.SuppressKeyPress = true;
-                removeSelectedItemFromList();
+                RemoveSelectedTagFromList();
                 e.Handled = true;
             }
         }
 
         private void ShowConfirmationDialogToSort()
         {
-            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the moods alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                this.lstOccasions.Sorted = true;
+                this.lstTags.Sorted = true;
             }
             else
             {
-                this.cbEnableMoodSort.Checked = false;
+                this.cbEnableAlphabeticalTagSort.Checked = false;
             }
         }
-        private void cbEnableMoodSort_CheckedChanged(object sender, EventArgs e)
+        private void CbEnableTagSort_CheckedChanged(object sender, EventArgs e)
         {
             if (((CheckBox)sender).Checked)
             {
@@ -96,11 +82,11 @@ namespace MusicBeePlugin
             }
             else
             {
-                this.lstOccasions.Sorted = false;
+                this.lstTags.Sorted = false;
             }
         }
 
-        private void btnImportCSV_Click(object sender, EventArgs e)
+        private void BtnImportCSV_Click(object sender, EventArgs e)
         {
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -137,85 +123,85 @@ namespace MusicBeePlugin
             }
             string[] firstlistA = listA.ToArray();
 
-            foreach (string importoccasion in firstlistA)
+            foreach (string importtag in firstlistA)
             {
-                if (importoccasion.Trim().Length <= 0)
+                if (importtag.Trim().Length <= 0)
                 {
                     continue;
                 }
-                if (!this.lstOccasions.Items.Contains(importoccasion))
+                if (!this.lstTags.Items.Contains(importtag))
                 {
-                    this.lstOccasions.Items.Add(importoccasion);
+                    this.lstTags.Items.Add(importtag);
                 }
             }
         }
 
-        public string[] getOccasions()
+        public string[] GetTags()
         {
-            if (this.lstOccasions.Items.Count > 0)
+            if (this.lstTags.Items.Count > 0)
             {
-                String[] array = new String[this.lstOccasions.Items.Count];
-                this.lstOccasions.Items.CopyTo(array, 0);
+                String[] array = new String[this.lstTags.Items.Count];
+                this.lstTags.Items.CopyTo(array, 0);
                 return array;
             }
 
             return new string[] { };
         }
 
-        public bool isSortEnabled()
+        public bool IsSortEnabled()
         {
-            return this.cbEnableMoodSort.Checked;
+            return this.cbEnableAlphabeticalTagSort.Checked;
         }
 
-        public void setMoods(string[] moods)
+        public void SetTags(string[] moods)
         {
-            this.lstOccasions.Items.AddRange(moods == null ? new string[] { } : moods);
+            this.lstTags.Items.AddRange(moods == null ? new string[] { } : moods);
         }
 
-        public void addNewMoodToList()
+        public void AddNewTagToList()
         {
-            string newOccasion = this.txtOccasionInput.Text;
-            if (newOccasion.Trim().Length <= 0)
+            string newTag = this.txtNewTagInput.Text;
+            if (newTag.Trim().Length <= 0)
             {
                 return;
             }
 
-            this.lstOccasions.BeginUpdate();
-            if (!this.lstOccasions.Items.Contains(newOccasion))
+            this.lstTags.BeginUpdate();
+            if (!this.lstTags.Items.Contains(newTag))
             {
-                this.lstOccasions.Items.Add(newOccasion);
+                this.lstTags.Items.Add(newTag);
             }
             else
             {
                 ShowDialogForDuplicate();
             }
-            this.lstOccasions.EndUpdate();
+            this.lstTags.EndUpdate();
 
             // remove text from input field
-            this.txtOccasionInput.Text = null;
+            this.txtNewTagInput.Text = null;
         }
 
         private void ShowDialogForDuplicate()
         {
-            MessageBox.Show("Mood is already in the list", "Duplicate found", MessageBoxButtons.OK);
+            MessageBox.Show("Tag is already in the list", "Duplicate found", MessageBoxButtons.OK);
 
         }
 
-        public void removeSelectedItemFromList()
+        public void RemoveSelectedTagFromList()
         {
-            System.Windows.Forms.ListBox.SelectedObjectCollection selectedItems = new System.Windows.Forms.ListBox.SelectedObjectCollection(this.lstOccasions);
-            selectedItems = this.lstOccasions.SelectedItems;
+            System.Windows.Forms.ListBox.SelectedObjectCollection selectedItems = new System.Windows.Forms.ListBox.SelectedObjectCollection(this.lstTags);
+            selectedItems = this.lstTags.SelectedItems;
 
-            if (this.lstOccasions.SelectedIndex != -1)
+            if (this.lstTags.SelectedIndex != -1)
             {
                 for (int i = selectedItems.Count - 1; i >= 0; i--)
-                    this.lstOccasions.Items.Remove(selectedItems[i]);
+                    this.lstTags.Items.Remove(selectedItems[i]);
             }
         }
 
-        public void ClearMoods()
+        public void ClearTags()
         {
-            this.lstOccasions.Items.Clear();
+            this.lstTags.Items.Clear();
         }
     }
 }
