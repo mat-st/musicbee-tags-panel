@@ -35,23 +35,25 @@ namespace MusicBeePlugin
             writer = null;
         }
 
-        public FileInfo getFileInfo()
+        public FileInfo GetFileInfo()
         {
             return fileInfo;
         }
 
-        private void write(string type, string message, object[] args)
+        private void Write(string type, string message, object[] args)
         {
             if (writer == null)
             {
                 writer = new StreamWriter(fileInfo.FullName, true, Encoding.UTF8);
                 writer.AutoFlush = false;
             }
-            writer.WriteLine(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " [" + type.ToUpper() + "] " + string.Format(message, args));
+
+            DateTime localTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, TimeZoneInfo.Local);
+            writer.WriteLine(localTime.ToString("dd/MM/yyyy hh:mm:ss") + " [" + type.ToUpper() + "] " + string.Format(message, args));
             writer.Flush();
         }
 
-        public void close()
+        public void Close()
         {
             if (writer != null)
             {
@@ -64,24 +66,24 @@ namespace MusicBeePlugin
             }
         }
 
-        public void debug(string message, params object[] args)
+        public void Debug(string message, params object[] args)
         {
-            write("debug", message, args);
+            Write("debug", message, args);
         }
 
-        public void info(string message, params object[] args)
+        public void Info(string message, params object[] args)
         {
-            write("info", message, args);
+            Write("info", message, args);
         }
 
-        public void warn(string message, params object[] args)
+        public void Warn(string message, params object[] args)
         {
-            write("warn", message, args);
+            Write("warn", message, args);
         }
 
-        public void error(string message, params object[] args)
+        public void Error(string message, params object[] args)
         {
-            write("error", message, args);
+            Write("error", message, args);
         }
     }
 }

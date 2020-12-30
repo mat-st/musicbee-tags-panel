@@ -12,6 +12,8 @@ namespace MusicBeePlugin
 
     class SettingsStorage
     {
+        private const char SettingsSeparator = ';';
+
         private static SavedSettingsType SavedSettings = new SavedSettingsType
         {
             tags = ""
@@ -21,11 +23,14 @@ namespace MusicBeePlugin
 
         private readonly MusicBeeApiInterface mbApiInterface;
 
+        private readonly Logger log;
+
         private string[] allTagsFromConfig = null;
 
-        public SettingsStorage(MusicBeeApiInterface mbApiInterface)
+        public SettingsStorage(MusicBeeApiInterface mbApiInterface, Logger log)
         {
             this.mbApiInterface = mbApiInterface;
+            this.log = log;
         }
 
         public void LoadSettingsWithFallback()
@@ -35,7 +40,7 @@ namespace MusicBeePlugin
             if (SavedSettings.tags != null && SavedSettings.tags.Length > 0)
             {
                 // put 
-                allTagsFromConfig = SavedSettings.tags.Split(',');
+                allTagsFromConfig = SavedSettings.tags.Split(SettingsSeparator);
             }
             else
             {
@@ -58,7 +63,7 @@ namespace MusicBeePlugin
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                log.Error(e.Message);
             }
 
             try
@@ -76,7 +81,7 @@ namespace MusicBeePlugin
         public void SaveSettings(bool tempSortEnabled, string[] tempTags)
         {
             SavedSettings.sorted = tempSortEnabled;
-            SavedSettings.tags = String.Join(",", tempTags);
+            SavedSettings.tags = String.Join(SettingsSeparator.ToString(), tempTags);
 
             // save any persistent settings in a sub-folder of this path
             string settingsPath = System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);

@@ -46,10 +46,11 @@ namespace MusicBeePlugin
             return occasionList;
         }
 
-        public string GetTags(string fileUrl, TagsStorage tagsStorage)
+        public string SortTagsAlphabetical(string tags)
         {
-            string[] tags = tagsStorage.ReadTagsFromFile(fileUrl);
-            return String.Join(TagsStorage.SEPARATOR.ToString(), tags).Trim();
+            string[] occasionsAsArray = tags.Split(TagsStorage.SEPARATOR);
+            Array.Sort(occasionsAsArray);
+            return String.Join(TagsStorage.SEPARATOR.ToString(), occasionsAsArray);
         }
     }
 }

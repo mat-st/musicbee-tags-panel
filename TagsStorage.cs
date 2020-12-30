@@ -56,7 +56,7 @@ namespace MusicBeePlugin
             }
 
             string filetagOccasions = musicBeeApiInterface.Library_GetFileTag(filename, MetaDataType.Occasion);
-            string[] filetagOccasionssParts = filetagOccasions.Split(';');
+            string[] filetagOccasionssParts = filetagOccasions.Split(SEPARATOR);
             foreach (string occasion in filetagOccasionssParts)
             {
                 if (occasion.Trim().Length <= 0)
@@ -77,6 +77,48 @@ namespace MusicBeePlugin
         internal void SetTags(Dictionary<string, CheckState> occasionList)
         {
             this.occasionList = occasionList;
+        }
+
+        public string RemoveTag(string selectedTag, string fileUrl)
+        {
+            string tags = GetTags(fileUrl);
+            tags = tags.Replace(selectedTag + SEPARATOR, "");
+            tags = tags.Replace(selectedTag, "");
+            tags = tags.Trim(SEPARATOR);
+            return tags;
+        }
+
+        public string AddTag(string selectedTag, string fileUrl)
+        {
+            string tags = GetTags(fileUrl);
+
+            tags = tags.Trim(SEPARATOR);
+
+            if (tags.Length <= 0)
+            {
+                return selectedTag;
+            }
+            else
+            {
+                return tags + SEPARATOR + selectedTag;
+            }
+
+        }
+        public bool IsTagAvailable(string tagName, string fileUrl)
+        {
+            string tags = GetTags(fileUrl);
+            if (tags.Contains(tagName + SEPARATOR) || tags.EndsWith(tagName))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public string GetTags(string fileUrl)
+        {
+            string[] tags = ReadTagsFromFile(fileUrl);
+            return String.Join(TagsStorage.SEPARATOR.ToString(), tags).Trim();
         }
     }
 }

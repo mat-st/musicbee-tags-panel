@@ -59,13 +59,14 @@ namespace MusicBeePlugin
             // Application.EnableVisualStyles();
 
             InitLogger();
-            settingsStorage = new SettingsStorage(mbApiInterface);
+
+            settingsStorage = new SettingsStorage(mbApiInterface, log);
             tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Occasion);
             tagsManipulation = new TagsManipulation();
 
             LoadSettings();
 
-            log.info("Tagger plugin started");
+            log.Info("Tagger plugin started");
 
             return about;
         }
@@ -121,7 +122,7 @@ namespace MusicBeePlugin
         {
             //ourPanel.Dispose();
             ourPanel = null;
-            log.close();
+            log.Close();
         }
 
         // uninstall this plugin - clean up any persisted files
@@ -412,69 +413,19 @@ namespace MusicBeePlugin
                 string tagsFromFile;
                 if (selected == CheckState.Checked)
                 {
-                    tagsFromFile = AddTag(selectedTag, fileUrl);
+                    tagsFromFile = tagsStorage.AddTag(selectedTag, fileUrl);
                 }
                 else
                 {
-                    tagsFromFile = RemoveTag(selectedTag, fileUrl);
+                    tagsFromFile = tagsStorage.RemoveTag(selectedTag, fileUrl);
                 }
 
-                string sortedTags = SortTagsAlphabetical(tagsFromFile);
+                string sortedTags = tagsManipulation.SortTagsAlphabetical(tagsFromFile);
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
 
             }
             mbApiInterface.MB_SetBackgroundTaskMessage("Save tags finished");
         }
-
-        private string SortTagsAlphabetical(string tags)
-        {
-            string[] occasionsAsArray = tags.Split(';');
-            Array.Sort(occasionsAsArray);
-            return String.Join(";", occasionsAsArray);
-        }
-
-        private string RemoveTag(string selectedTag, string fileUrl)
-        {
-            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
-            tags = tags.Replace(selectedTag + ";", "");
-            tags = tags.Replace(selectedTag, "");
-            tags = tags.Trim(';');
-            return tags;
-        }
-
-        private string AddTag(string selectedTag, string fileUrl)
-        {
-            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
-
-            tags = tags.Trim(';');
-
-            if (tags.Length <= 0)
-            {
-                return selectedTag;
-            }
-            else
-            {
-                return tags + ";" + selectedTag;
-            }
-
-        }
-
-
-
-        private bool IsTagAvailable(string tagName, string fileUrl)
-        {
-            string tags = tagsManipulation.GetTags(fileUrl, tagsStorage);
-            if (tags.Contains(tagName + ";") || tags.EndsWith(tagName))
-            {
-                return true;
-            }
-
-            return false;
-
-
-        }
     }
-
-
 }
