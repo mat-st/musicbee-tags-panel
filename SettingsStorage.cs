@@ -10,7 +10,7 @@ namespace MusicBeePlugin
         public bool sorted = true;
     }
 
-    class SettingsStorage
+    public class SettingsStorage
     {
         private const char SettingsSeparator = ';';
 

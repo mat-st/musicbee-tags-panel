@@ -58,7 +58,7 @@ namespace MusicBeePlugin
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
-            tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Occasion);
+            tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Mood);
             tagsManipulation = new TagsManipulation();
 
             LoadSettings();
@@ -88,6 +88,11 @@ namespace MusicBeePlugin
             string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
             fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
             tagsPanelSettingForm.ShowDialog();
+            /*List<TagsStorage> tagsStorageList = new List<TagsStorage>();
+            tagsStorageList.Add(tagsStorage);
+            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
+            tagsPanelSettingsForm.ShowDialog();*/
+
             // TODO Variablennamen anpassen
             temp_occasions = tagsPanelSettingForm.getOccasions();
             tempSortEnabled = tagsPanelSettingForm.isSortEnabled();
@@ -243,7 +248,7 @@ namespace MusicBeePlugin
             ignoreForBatchSelect = false;
         }
 
-        
+
 
         private void UpdateTagsTableData(Control panel)
         {
@@ -400,25 +405,7 @@ namespace MusicBeePlugin
 
         private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
         {
-            mbApiInterface.MB_SetBackgroundTaskMessage("Save tags to file");
-            foreach (string fileUrl in fileUrls)
-            {
-                string tagsFromFile;
-                if (selected == CheckState.Checked)
-                {
-                    tagsFromFile = tagsStorage.AddTag(selectedTag, fileUrl);
-                }
-                else
-                {
-                    tagsFromFile = tagsStorage.RemoveTag(selectedTag, fileUrl);
-                }
-
-                string sortedTags = tagsManipulation.SortTagsAlphabetical(tagsFromFile);
-                bool result = mbApiInterface.Library_SetFileTag(fileUrl, MetaDataType.Occasion, sortedTags);
-                mbApiInterface.Library_CommitTagsToFile(fileUrl);
-
-            }
-            mbApiInterface.MB_SetBackgroundTaskMessage("Added tags to file");
+            tagsStorage.SetTagsInFile(fileUrls, selected, selectedTag, tagsManipulation);
         }
-    }
+    }    
 }

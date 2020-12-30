@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
-    class TagsManipulation
+    public class TagsManipulation
     {
         public Dictionary<String, CheckState> combineTagLists(string[] fileNames, TagsStorage tagsStorage)
         {
@@ -48,6 +48,7 @@ namespace MusicBeePlugin
 
         public string SortTagsAlphabetical(string tags)
         {
+            //TODO Rename occasionsarray
             string[] occasionsAsArray = tags.Split(TagsStorage.SEPARATOR);
             Array.Sort(occasionsAsArray);
             return String.Join(TagsStorage.SEPARATOR.ToString(), occasionsAsArray);

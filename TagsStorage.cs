@@ -7,7 +7,7 @@ using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin
 {
-    class TagsStorage
+    public class TagsStorage
     {
         public const char SEPARATOR = ';';
 
@@ -55,7 +55,7 @@ namespace MusicBeePlugin
                 return tags.ToArray<string>();
             }
 
-            string filetagOccasions = musicBeeApiInterface.Library_GetFileTag(filename, MetaDataType.Occasion);
+            string filetagOccasions = musicBeeApiInterface.Library_GetFileTag(filename, metaDataField);
             string[] filetagOccasionssParts = filetagOccasions.Split(SEPARATOR);
             foreach (string occasion in filetagOccasionssParts)
             {
@@ -125,5 +125,29 @@ namespace MusicBeePlugin
         {
             return metaDataField.ToString("g");
         }
+
+        public void SetTagsInFile(string[] fileUrls, CheckState selected, string selectedTag, TagsManipulation tagsManipulation)
+        {
+            foreach (string fileUrl in fileUrls)
+            {
+                string tagsFromFile;
+                if (selected == CheckState.Checked)
+                {
+                    tagsFromFile = AddTag(selectedTag, fileUrl);
+                }
+                else
+                {
+                    tagsFromFile = RemoveTag(selectedTag, fileUrl);
+                }
+
+                string sortedTags = tagsManipulation.SortTagsAlphabetical(tagsFromFile);
+                bool result = musicBeeApiInterface.Library_SetFileTag(fileUrl, metaDataField, sortedTags);
+                musicBeeApiInterface.Library_CommitTagsToFile(fileUrl);
+
+            }
+            musicBeeApiInterface.MB_SetBackgroundTaskMessage("Added tags to file");
+        }
     }
 }
+
+

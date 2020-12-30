@@ -100,6 +100,18 @@
     <Compile Include="mb_TagsPanelPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TagsManipulation.cs" />
+    <Compile Include="TagsPanelSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TagsPanelSettingsForm.Designer.cs">
+      <DependentUpon>TagsPanelSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TagsPanelSettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TagsPanelSettingsPanel.Designer.cs">
+      <DependentUpon>TagsPanelSettingsPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="TagsStorage.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +146,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagsPanelSettingsForm.resx">
+      <DependentUpon>TagsPanelSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagsPanelSettingsPanel.resx">
+      <DependentUpon>TagsPanelSettingsPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,17 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-
 namespace MusicBeePlugin
 {
-    public partial class fvSettings : Form
+    public partial class TagsPanelSettingsPanel : UserControl
     {
-
-        public fvSettings(string[] occasions, bool sortEnabled)
+        public TagsPanelSettingsPanel(TagsStorage storage, SettingsStorage settings)
         {
             InitializeComponent();
-            setMoods(occasions);
-            setSortEnabled(sortEnabled);
+
+            setMoods(settings.GetAllTagsFromConfig());
+            setSortEnabled(settings.GetSavedSettings().sorted);
 
             // this must be at the very end to supress the events
             MakeOwnModifications();
@@ -83,7 +82,8 @@ namespace MusicBeePlugin
             if (dialogResult == DialogResult.Yes)
             {
                 this.lstOccasions.Sorted = true;
-            } else
+            }
+            else
             {
                 this.cbEnableMoodSort.Checked = false;
             }
@@ -93,7 +93,8 @@ namespace MusicBeePlugin
             if (((CheckBox)sender).Checked)
             {
                 ShowConfirmationDialogToSort();
-            } else
+            }
+            else
             {
                 this.lstOccasions.Sorted = false;
             }
@@ -104,8 +105,8 @@ namespace MusicBeePlugin
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            openFileDialog1.CheckFileExists = true;  
-            openFileDialog1.CheckPathExists = true; 
+            openFileDialog1.CheckFileExists = true;
+            openFileDialog1.CheckPathExists = true;
 
             openFileDialog1.Title = "Browse CSV File";
             openFileDialog1.Filter = "csv files (*.csv)|*.csv";
