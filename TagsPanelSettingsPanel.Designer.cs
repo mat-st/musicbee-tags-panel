@@ -41,7 +41,7 @@ namespace MusicBeePlugin
             // 
             this.btnImportCSV.Location = new System.Drawing.Point(3, 200);
             this.btnImportCSV.Name = "btnImportCSV";
-            this.btnImportCSV.Size = new System.Drawing.Size(222, 23);
+            this.btnImportCSV.Size = new System.Drawing.Size(234, 23);
             this.btnImportCSV.TabIndex = 11;
             this.btnImportCSV.Text = "Import Tags from CSV";
             this.btnImportCSV.UseVisualStyleBackColor = true;
@@ -54,7 +54,7 @@ namespace MusicBeePlugin
             this.lstTags.Location = new System.Drawing.Point(3, 3);
             this.lstTags.Name = "lstTags";
             this.lstTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstTags.Size = new System.Drawing.Size(222, 95);
+            this.lstTags.Size = new System.Drawing.Size(234, 95);
             this.lstTags.Sorted = true;
             this.lstTags.TabIndex = 10;
             // 
@@ -62,12 +62,12 @@ namespace MusicBeePlugin
             // 
             this.txtNewTagInput.Location = new System.Drawing.Point(3, 104);
             this.txtNewTagInput.Name = "txtNewTagInput";
-            this.txtNewTagInput.Size = new System.Drawing.Size(222, 20);
+            this.txtNewTagInput.Size = new System.Drawing.Size(234, 20);
             this.txtNewTagInput.TabIndex = 9;
             // 
             // btnRemTag
             // 
-            this.btnRemTag.Location = new System.Drawing.Point(124, 130);
+            this.btnRemTag.Location = new System.Drawing.Point(136, 130);
             this.btnRemTag.Name = "btnRemTag";
             this.btnRemTag.Size = new System.Drawing.Size(101, 41);
             this.btnRemTag.TabIndex = 8;
@@ -109,7 +109,7 @@ namespace MusicBeePlugin
             this.Controls.Add(this.btnAddTag);
             this.Controls.Add(this.cbEnableAlphabeticalTagSort);
             this.Name = "TagsPanelSettingsPanel";
-            this.Size = new System.Drawing.Size(232, 231);
+            this.Size = new System.Drawing.Size(240, 231);
             this.ResumeLayout(false);
             this.PerformLayout();
 

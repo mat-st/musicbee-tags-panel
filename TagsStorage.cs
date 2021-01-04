@@ -13,7 +13,7 @@ namespace MusicBeePlugin
 
         private readonly MetaDataType metaDataField;
         private readonly MusicBeeApiInterface musicBeeApiInterface;
-        private Dictionary<String, CheckState> occasionList = new Dictionary<String, CheckState>();
+        private Dictionary<String, CheckState> tagList = new Dictionary<String, CheckState>();
 
         public TagsStorage(MusicBeeApiInterface musicBeeApiInterface, MetaDataType metaDataField)
         {
@@ -23,7 +23,7 @@ namespace MusicBeePlugin
 
         public void Clear()
         {
-            occasionList.Clear();
+            tagList.Clear();
         }
 
         public void UpdateTagsFromFile(string sourceFileUrl)
@@ -35,9 +35,9 @@ namespace MusicBeePlugin
             foreach (string tag in tagParts)
             {
                 CheckState checkState;
-                if (!occasionList.TryGetValue(tag, out checkState))
+                if (!tagList.TryGetValue(tag, out checkState))
                 {
-                    occasionList.Add(tag, CheckState.Checked);
+                    tagList.Add(tag, CheckState.Checked);
                 }
                 else
                 {
@@ -55,15 +55,15 @@ namespace MusicBeePlugin
                 return tags.ToArray<string>();
             }
 
-            string filetagOccasions = musicBeeApiInterface.Library_GetFileTag(filename, metaDataField);
-            string[] filetagOccasionssParts = filetagOccasions.Split(SEPARATOR);
-            foreach (string occasion in filetagOccasionssParts)
+            string filetagMetaDataFields = musicBeeApiInterface.Library_GetFileTag(filename, metaDataField);
+            string[] filetagMetaDataFieldsParts = filetagMetaDataFields.Split(SEPARATOR);
+            foreach (string tag in filetagMetaDataFieldsParts)
             {
-                if (occasion.Trim().Length <= 0)
+                if (tag.Trim().Length <= 0)
                 {
                     continue;
                 }
-                tags.Add(occasion.Trim());
+                tags.Add(tag.Trim());
             }
 
             return tags.ToArray<string>();
@@ -71,12 +71,12 @@ namespace MusicBeePlugin
 
         internal Dictionary<string, CheckState> GetTags()
         {
-            return occasionList;
+            return tagList;
         }
 
-        internal void SetTags(Dictionary<string, CheckState> occasionList)
+        internal void SetTags(Dictionary<string, CheckState> tagList)
         {
-            this.occasionList = occasionList;
+            this.tagList = tagList;
         }
 
         public string RemoveTag(string selectedTag, string fileUrl)

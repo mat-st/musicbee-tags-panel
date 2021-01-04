@@ -21,15 +21,23 @@ namespace MusicBeePlugin
         private Control ourPanel;
         private TabControl tabControl;
 
-        // TODO refactore
-        private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
+        private List<MetaDataType> tags = new List<MetaDataType>();
 
-        // TODO use:  private List<TagsStorage> tagsStorage;
+        private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
+        private Dictionary<string, TabPage> tabPageList;
+
+        // TODO use:  only one instance of  TagsStorage and switch if 
         private TagsStorage tagsStorage;
 
         // TODO change methods accordingly to handle the list of storage classes 
         private SettingsStorage settingsStorage;
         private TagsManipulation tagsManipulation;
+
+        private void SetTagsStorage(string tagName)
+        {
+            MetaDataType dataType = (MetaDataType) Enum.Parse(typeof(MetaDataType), tagName, true);
+            tagsStorage = new TagsStorage(mbApiInterface, dataType);
+        }
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -54,14 +62,19 @@ namespace MusicBeePlugin
             // Application.EnableVisualStyles();
 
             checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
-
+            tabPageList = new Dictionary<string, TabPage>();
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
-            tagsStorage = new TagsStorage(mbApiInterface, MetaDataType.Mood);
             tagsManipulation = new TagsManipulation();
+            // TODO set this value dynamically 
+            SetTagsStorage(MetaDataType.Mood.ToString("g"));
 
             LoadSettings();
+
+
+            // add Tags-Panel Settings to Tools Menu
+            mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", null, MenuSettingsClicked);
 
             log.Info("Tags-Panel plugin started");
 
@@ -72,6 +85,46 @@ namespace MusicBeePlugin
         {
             log = new Logger(mbApiInterface);
         }
+
+
+
+
+
+
+        // GANZ Schlechter Stil ;)
+        public void MenuSettingsClicked(object sender, EventArgs args)
+        {
+
+            bool useSort = true;
+            SavedSettingsType settings = settingsStorage.GetSavedSettings();
+            if (settings != null)
+            {
+                useSort = settings.sorted;
+            }
+            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
+            /*fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
+            tagsPanelSettingForm.ShowDialog();*/
+
+            List<TagsStorage> tagsStorageList = new List<TagsStorage>();
+            tagsStorageList.Add(tagsStorage);
+            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
+            tagsPanelSettingsForm.ShowDialog();
+
+            TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
+            tempTags = tagsPanelSettingsPanel.GetTags();
+            tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
+
+            SaveSettings();
+            UpdateTagsTableData(ourPanel);
+
+            return;
+        }
+
+
+
+
+
+
 
         public bool Configure(IntPtr panelHandle)
         {
@@ -336,23 +389,29 @@ namespace MusicBeePlugin
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
             this.tabControl.Dock = DockStyle.Fill;
 
-            AddTagPanel(this.tagsStorage);
-            // TODO create Tabs dynamically according to user settings
-            TabPage page2 = new TabPage("Moods");
-            this.tabControl.TabPages.Add(page2);
-            TabPage page3 = new TabPage("Genres");
-            this.tabControl.TabPages.Add(page3);
+            AddVisibleTagPanel(MetaDataType.Mood.ToString("g"));
+            AddInvisibleTagPanel(MetaDataType.Occasion.ToString("g"));
+            AddInvisibleTagPanel(MetaDataType.Genre.ToString("g"));
         }
 
-        private void AddTagPanel(TagsStorage tagsStorage)
+        private void AddInvisibleTagPanel(string tagName)
         {
-            string tagName = tagsStorage.GetTagName();
-            TabPage page = new TabPage(tagName);
+            TabPage page = GetTagPage(tagName);
+            page.Controls.Clear();
+            this.tabControl.TabPages.Add(page);
+        }
+
+        private void AddVisibleTagPanel(string tagName)
+        {
+            SetTagsStorage(tagName);
+            
+            TabPage page = GetTagPage(tagName);
 
             ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
-            checkListBox.AddDataSource(tagsStorage.GetTags());
+            checkListBox.AddDataSource(this.tagsStorage.GetTags());
 
             checkListBox.Dock = DockStyle.Fill;
+            // TODO only do this once 
             checkListBox.AddItemCheckEventHandler(
                 new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck)
             );
@@ -372,15 +431,27 @@ namespace MusicBeePlugin
             return checkListBox;
         }
 
+        private TabPage GetTagPage(string tagName)
+        {
+            TabPage tabPage;
+            if (!this.tabPageList.TryGetValue(tagName, out tabPage))
+            {
+                tabPage = new TabPage(tagName);
+                this.tabPageList.Add(tagName, tabPage);
+            }
+            return tabPage;
+        }
+
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
         // return the list of ToolStripMenuItems that will be displayed
         public List<ToolStripItem> GetHeaderMenuItems()
         {
             List<ToolStripItem> list = new List<ToolStripItem>();
-            list.Add(new ToolStripMenuItem("A menu item"));
-            list.Add(new ToolStripMenuItem("Another item"));
+            list.Add(new ToolStripMenuItem("Tag-Panel Settings"));
+            list.Add(new ToolStripMenuItem("About"));
             return list;
         }
+
 
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {

@@ -46,5 +46,21 @@ namespace MusicBeePlugin
 
             return tagsPanelSettingsPanel;
         }
+
+        private void LinkAbout_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+
+            MessageBox.Show("Tags-Panel Plugin " + Environment.NewLine + "Version " + version + Environment.NewLine +
+                "Visit us on GitHub", "About Tags-Panel Plugin", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void LinkGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/mat-st/musicbee-tags-panel");
+        }
     }
 }

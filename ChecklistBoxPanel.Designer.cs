@@ -39,11 +39,11 @@
             this.checkedListBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkedListBox1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             this.checkedListBox1.IntegralHeight = false;
-            this.checkedListBox1.Location = new System.Drawing.Point(0, 0);
+            this.checkedListBox1.Location = new System.Drawing.Point(6, 6);
             this.checkedListBox1.Margin = new System.Windows.Forms.Padding(0);
             this.checkedListBox1.MultiColumn = true;
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(150, 150);
+            this.checkedListBox1.Size = new System.Drawing.Size(138, 138);
             this.checkedListBox1.TabIndex = 1;
             this.checkedListBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckedListBox1_KeyDown);
             this.checkedListBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckedListBox1_KeyUp);
@@ -56,6 +56,7 @@
             this.Controls.Add(this.checkedListBox1);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "ChecklistBoxPanel";
+            this.Padding = new System.Windows.Forms.Padding(6);
             this.ResumeLayout(false);
 
         }
