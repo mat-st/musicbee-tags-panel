@@ -88,6 +88,9 @@
     <Compile Include="ChecklistBoxPanel.Designer.cs">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="CueTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FormSettings.cs">
       <SubType>Form</SubType>
     </Compile>

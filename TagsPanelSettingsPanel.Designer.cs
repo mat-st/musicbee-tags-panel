@@ -31,19 +31,21 @@ namespace MusicBeePlugin
         {
             this.btnImportCSV = new System.Windows.Forms.Button();
             this.lstTags = new System.Windows.Forms.ListBox();
-            this.txtNewTagInput = new System.Windows.Forms.TextBox();
             this.btnRemTag = new System.Windows.Forms.Button();
             this.btnAddTag = new System.Windows.Forms.Button();
             this.cbEnableAlphabeticalTagSort = new System.Windows.Forms.CheckBox();
+            this.btnClearTagSettings = new System.Windows.Forms.Button();
+            this.txtNewTagInput = new System.Windows.Forms.TextBox();
+            this.cueTextBox1 = new CueTextBox();
             this.SuspendLayout();
             // 
             // btnImportCSV
             // 
             this.btnImportCSV.Location = new System.Drawing.Point(3, 200);
             this.btnImportCSV.Name = "btnImportCSV";
-            this.btnImportCSV.Size = new System.Drawing.Size(234, 23);
+            this.btnImportCSV.Size = new System.Drawing.Size(231, 23);
             this.btnImportCSV.TabIndex = 11;
-            this.btnImportCSV.Text = "Import Tags from CSV";
+            this.btnImportCSV.Text = "Import tags from CSV";
             this.btnImportCSV.UseVisualStyleBackColor = true;
             this.btnImportCSV.Click += new System.EventHandler(this.BtnImportCSV_Click);
             // 
@@ -54,24 +56,17 @@ namespace MusicBeePlugin
             this.lstTags.Location = new System.Drawing.Point(3, 3);
             this.lstTags.Name = "lstTags";
             this.lstTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstTags.Size = new System.Drawing.Size(234, 95);
+            this.lstTags.Size = new System.Drawing.Size(231, 95);
             this.lstTags.Sorted = true;
             this.lstTags.TabIndex = 10;
             // 
-            // txtNewTagInput
-            // 
-            this.txtNewTagInput.Location = new System.Drawing.Point(3, 104);
-            this.txtNewTagInput.Name = "txtNewTagInput";
-            this.txtNewTagInput.Size = new System.Drawing.Size(234, 20);
-            this.txtNewTagInput.TabIndex = 9;
-            // 
             // btnRemTag
             // 
-            this.btnRemTag.Location = new System.Drawing.Point(136, 130);
+            this.btnRemTag.Location = new System.Drawing.Point(121, 130);
             this.btnRemTag.Name = "btnRemTag";
-            this.btnRemTag.Size = new System.Drawing.Size(101, 41);
+            this.btnRemTag.Size = new System.Drawing.Size(112, 41);
             this.btnRemTag.TabIndex = 8;
-            this.btnRemTag.Text = "Remove Tag";
+            this.btnRemTag.Text = "Remove tag";
             this.btnRemTag.UseVisualStyleBackColor = true;
             this.btnRemTag.Click += new System.EventHandler(this.BtnRemTag_Click);
             // 
@@ -79,9 +74,9 @@ namespace MusicBeePlugin
             // 
             this.btnAddTag.Location = new System.Drawing.Point(3, 130);
             this.btnAddTag.Name = "btnAddTag";
-            this.btnAddTag.Size = new System.Drawing.Size(115, 41);
+            this.btnAddTag.Size = new System.Drawing.Size(112, 41);
             this.btnAddTag.TabIndex = 7;
-            this.btnAddTag.Text = "Add Tag";
+            this.btnAddTag.Text = "Add tag";
             this.btnAddTag.UseVisualStyleBackColor = true;
             this.btnAddTag.Click += new System.EventHandler(this.BtnAddTag_Click);
             // 
@@ -97,11 +92,38 @@ namespace MusicBeePlugin
             this.cbEnableAlphabeticalTagSort.Text = "Sort tags alphabetically";
             this.cbEnableAlphabeticalTagSort.UseVisualStyleBackColor = true;
             // 
+            // btnClearTagSettings
+            // 
+            this.btnClearTagSettings.Location = new System.Drawing.Point(3, 229);
+            this.btnClearTagSettings.Name = "btnClearTagSettings";
+            this.btnClearTagSettings.Size = new System.Drawing.Size(231, 23);
+            this.btnClearTagSettings.TabIndex = 12;
+            this.btnClearTagSettings.Text = "Clear list";
+            this.btnClearTagSettings.UseVisualStyleBackColor = true;
+            this.btnClearTagSettings.Click += new System.EventHandler(this.BtnClearTagSettings_Click);
+            // 
+            // txtNewTagInput
+            // 
+            this.txtNewTagInput.Location = new System.Drawing.Point(3, 104);
+            this.txtNewTagInput.Name = "txtNewTagInput";
+            this.txtNewTagInput.Size = new System.Drawing.Size(112, 20);
+            this.txtNewTagInput.TabIndex = 9;
+            // 
+            // cueTextBox1
+            // 
+            this.cueTextBox1.Cue = "Enter new tag here";
+            this.cueTextBox1.Location = new System.Drawing.Point(122, 104);
+            this.cueTextBox1.Name = "cueTextBox1";
+            this.cueTextBox1.Size = new System.Drawing.Size(112, 20);
+            this.cueTextBox1.TabIndex = 13;
+            // 
             // TagsPanelSettingsPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
+            this.Controls.Add(this.cueTextBox1);
+            this.Controls.Add(this.btnClearTagSettings);
             this.Controls.Add(this.btnImportCSV);
             this.Controls.Add(this.lstTags);
             this.Controls.Add(this.txtNewTagInput);
@@ -109,7 +131,8 @@ namespace MusicBeePlugin
             this.Controls.Add(this.btnAddTag);
             this.Controls.Add(this.cbEnableAlphabeticalTagSort);
             this.Name = "TagsPanelSettingsPanel";
-            this.Size = new System.Drawing.Size(240, 231);
+            this.Padding = new System.Windows.Forms.Padding(3);
+            this.Size = new System.Drawing.Size(240, 258);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -119,9 +142,11 @@ namespace MusicBeePlugin
 
         private System.Windows.Forms.Button btnImportCSV;
         private System.Windows.Forms.ListBox lstTags;
-        private System.Windows.Forms.TextBox txtNewTagInput;
         private System.Windows.Forms.Button btnRemTag;
         private System.Windows.Forms.Button btnAddTag;
         private System.Windows.Forms.CheckBox cbEnableAlphabeticalTagSort;
+        private System.Windows.Forms.Button btnClearTagSettings;
+        private System.Windows.Forms.TextBox txtNewTagInput;
+        private CueTextBox cueTextBox1;
     }
 }

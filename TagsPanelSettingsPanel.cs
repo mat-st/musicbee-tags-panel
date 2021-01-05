@@ -64,7 +64,7 @@ namespace MusicBeePlugin
 
         private void ShowConfirmationDialogToSort()
         {
-            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult == DialogResult.Yes)
             {
                 this.lstTags.Sorted = true;
@@ -160,7 +160,7 @@ namespace MusicBeePlugin
 
         public void AddNewTagToList()
         {
-            string newTag = this.txtNewTagInput.Text;
+            string newTag = this.txtNewTagInput.Text.Trim();
             if (newTag.Trim().Length <= 0)
             {
                 return;
@@ -183,8 +183,7 @@ namespace MusicBeePlugin
 
         private void ShowDialogForDuplicate()
         {
-            MessageBox.Show("Tag is already in the list", "Duplicate found", MessageBoxButtons.OK);
-
+            MessageBox.Show("Tag is already in the list!", "Duplicate found!", MessageBoxButtons.OK);
         }
 
         public void RemoveSelectedTagFromList()
@@ -199,9 +198,30 @@ namespace MusicBeePlugin
             }
         }
 
-        public void ClearTags()
+        public void ClearTagsListInSettings()
         {
             this.lstTags.Items.Clear();
+        }
+
+        private void BtnClearTagSettings_Click(object sender, EventArgs e)
+        {
+            if (lstTags.Items.Count != 0)
+            {
+                ShowDialogToClearList();
+            }
+        }
+
+        private void ShowDialogToClearList()
+        {
+            DialogResult dialogResult = MessageBox.Show("This will clear your current tag list. Continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult == DialogResult.Yes)
+            {
+                ClearTagsListInSettings();
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }
