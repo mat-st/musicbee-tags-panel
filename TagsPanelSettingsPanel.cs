@@ -16,7 +16,7 @@ namespace MusicBeePlugin
         {
             InitializeComponent();
 
-            SetTags(settings.GetAllTagsFromConfig());
+            SetTags(settings.GetFirstTagsStorage());
             SetSortEnabled(settings.GetSavedSettings().sorted);
 
             // this must be at the very end to supress the events
@@ -154,9 +154,9 @@ namespace MusicBeePlugin
             return this.cbEnableAlphabeticalTagSort.Checked;
         }
 
-        public void SetTags(string[] moods)
+        public void SetTags(string[] tags)
         {
-            this.lstTags.Items.AddRange(moods == null ? new string[] { } : moods);
+            this.lstTags.Items.AddRange(tags == null ? new string[] { } : tags);
         }
 
         public void AddNewTagToList()

@@ -14,6 +14,7 @@ namespace MusicBeePlugin
         private readonly MetaDataType metaDataField;
         private readonly MusicBeeApiInterface musicBeeApiInterface;
         private Dictionary<String, CheckState> tagList = new Dictionary<String, CheckState>();
+        private bool sorted = true;
 
         public TagsStorage(MusicBeeApiInterface musicBeeApiInterface, MetaDataType metaDataField)
         {
@@ -147,6 +148,8 @@ namespace MusicBeePlugin
             }
             musicBeeApiInterface.MB_SetBackgroundTaskMessage("Added tags to file");
         }
+
+        public bool Sorted { get => sorted; set => sorted = value; }
     }
 }
 

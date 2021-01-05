@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -123,7 +124,7 @@ namespace MusicBeePlugin
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
-            settingsStorage.SaveSettings(tempSortEnabled, tempTags);
+            settingsStorage.SaveSettings(tagsStorage);
 
             if (ourPanel != null)
             {
@@ -134,8 +135,8 @@ namespace MusicBeePlugin
         private void LoadSettings()
         {
             settingsStorage.LoadSettingsWithFallback();
-
-            tempTags = settingsStorage.GetAllTagsFromConfig();
+            tagsStorage = settingsStorage.GetAllTagsFromConfig(tagsStorage.GetTagName());
+            tempTags = (string[]) tagsStorage.GetTags().Keys.ToArray();
         }
 
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -271,7 +272,8 @@ namespace MusicBeePlugin
         private void UpdateTagsTableData(Control panel)
         {
             bool add = true;
-            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
+            TagsStorage tagsStorage = settingsStorage.GetAllTagsFromConfig(this.tagsStorage.GetTagName());
+            string[] allTagsFromConfig = tagsStorage.GetTags().Keys.ToArray<string>();
             Dictionary<String, CheckState> allTags = tagsStorage.GetTags();
 
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();

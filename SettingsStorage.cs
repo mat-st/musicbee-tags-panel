@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using static MusicBeePlugin.Plugin;
 
@@ -6,17 +9,16 @@ namespace MusicBeePlugin
 {
     public class SavedSettingsType
     {
-        public string tags;
-        public bool sorted = true;
+        public Dictionary<string, TagsStorage> tagStorages;
     }
 
     public class SettingsStorage
     {
         public const char SettingsSeparator = ';';
 
-        private static SavedSettingsType SavedSettings = new SavedSettingsType
+        private static SavedSettingsType savedSettings = new SavedSettingsType
         {
-            tags = ""
+            tagStorages = new Dictionary<string, TagsStorage>()
         };
 
         private const string SettingsFileName = "mb_tags-panel.Settings.xml";
@@ -24,8 +26,6 @@ namespace MusicBeePlugin
         private readonly MusicBeeApiInterface mbApiInterface;
 
         private readonly Logger log;
-
-        private string[] allTagsFromConfig = null;
 
         public SettingsStorage(MusicBeeApiInterface mbApiInterface, Logger log)
         {
@@ -36,16 +36,6 @@ namespace MusicBeePlugin
         public void LoadSettingsWithFallback()
         {
             LoadSettings();
-
-            if (SavedSettings.tags != null && SavedSettings.tags.Length > 0)
-            {
-                // put 
-                allTagsFromConfig = SavedSettings.tags.Split(SettingsSeparator);
-            }
-            else
-            {
-                allTagsFromConfig = new string[] { };
-            }
         }
 
         private void LoadSettings()
@@ -54,28 +44,13 @@ namespace MusicBeePlugin
 
             Encoding unicode = Encoding.UTF8;
             System.IO.FileStream stream = System.IO.File.Open(filename, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Read, System.IO.FileShare.None);
-            System.IO.StreamReader file = new System.IO.StreamReader(stream, unicode);
-
-            System.Xml.Serialization.XmlSerializer controlsDefaultsSerializer = null;
-            try
+            
+            using (System.IO.StreamReader file = new System.IO.StreamReader(stream, unicode))
             {
-                controlsDefaultsSerializer = new System.Xml.Serialization.XmlSerializer(typeof(SavedSettingsType));
+                JsonSerializer serializer = new JsonSerializer();
+                savedSettings = (SavedSettingsType) serializer.Deserialize(file, typeof(SavedSettingsType));
+                file.Close();
             }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-
-            try
-            {
-                SavedSettings = (SavedSettingsType)controlsDefaultsSerializer.Deserialize(file);
-            }
-            catch
-            {
-                // Ignore ;) 
-            };
-
-            file.Close();
         }
 
         public string GetSettingsPath()
@@ -83,34 +58,56 @@ namespace MusicBeePlugin
             return System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
         }
 
-        public void SaveSettings(bool tempSortEnabled, string[] tempTags)
+        public void SaveSettings(TagsStorage tagsStorage)
         {
-            SavedSettings.sorted = tempSortEnabled;
-            SavedSettings.tags = String.Join(SettingsSeparator.ToString(), tempTags);
+            SetTagsStorage(tagsStorage);
 
             // save any persistent settings in a sub-folder of this path
             string settingsPath = GetSettingsPath();
             Encoding unicode = Encoding.UTF8;
             System.IO.FileStream stream = System.IO.File.Open(settingsPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);
-            System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode);
+            
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, savedSettings);
+                file.Close();
+            }
+        }
+        public TagsStorage GetFirstTagsStorage()
+        {
+            if (savedSettings.tagStorages.Count <= 0)
+            {
+                return null;
+            }
 
-            System.Xml.Serialization.XmlSerializer controlsDefaultsSerializer = new System.Xml.Serialization.XmlSerializer(typeof(SavedSettingsType));
-
-            controlsDefaultsSerializer.Serialize(file, SavedSettings);
-
-            file.Close();
-
-            allTagsFromConfig = tempTags;
+            var e = savedSettings.tagStorages.GetEnumerator();
+            e.MoveNext();
+            return e.Current.Value;
         }
 
-        public string[] GetAllTagsFromConfig()
+        public TagsStorage GetAllTagsFromConfig(string tagName)
         {
-            return allTagsFromConfig;
+            TagsStorage tagStorage;
+            if (false == savedSettings.tagStorages.TryGetValue(tagName, out tagStorage))
+            {
+                MetaDataType metaDataType = (MetaDataType) Enum.Parse(typeof(MetaDataType), tagName);
+                tagStorage = new TagsStorage(mbApiInterface, metaDataType);
+                savedSettings.tagStorages.Add(tagName, tagStorage);
+            }
+           
+            return tagStorage;
+        }
+
+        public void SetTagsStorage(TagsStorage tagsStorage)
+        {
+            savedSettings.tagStorages.Remove(tagsStorage.GetTagName());
+            savedSettings.tagStorages.Add(tagsStorage.GetTagName(), tagsStorage);
         }
 
         public SavedSettingsType GetSavedSettings()
         {
-            return SavedSettings;
+            return savedSettings;
         }
     }
 }
