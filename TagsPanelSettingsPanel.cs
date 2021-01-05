@@ -26,12 +26,13 @@ namespace MusicBeePlugin
         private void SetSortEnabled(bool sortEnabled)
         {
             this.cbEnableAlphabeticalTagSort.Checked = sortEnabled;
+            this.lstTags.Sorted = sortEnabled;
         }
 
         private void MakeOwnModifications()
         {
             this.lstTags.KeyDown += KeyEventHandler;
-            this.txtNewTagInput.KeyDown += KeyEventHandler;
+            this.txtNewTagCueInput.KeyDown += KeyEventHandler;
 
             this.cbEnableAlphabeticalTagSort.CheckedChanged += new System.EventHandler(this.CbEnableTagSort_CheckedChanged);
         }
@@ -48,7 +49,7 @@ namespace MusicBeePlugin
 
         private void KeyEventHandler(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter && sender == this.txtNewTagInput)
+            if (e.KeyCode == Keys.Enter && sender == this.txtNewTagCueInput)
             {
                 e.SuppressKeyPress = true;
                 AddNewTagToList();
@@ -160,8 +161,8 @@ namespace MusicBeePlugin
 
         public void AddNewTagToList()
         {
-            string newTag = this.txtNewTagInput.Text.Trim();
-            if (newTag.Trim().Length <= 0)
+            string newTag = this.txtNewTagCueInput.Text.Trim();
+            if (newTag.Length <= 0)
             {
                 return;
             }
@@ -178,7 +179,7 @@ namespace MusicBeePlugin
             this.lstTags.EndUpdate();
 
             // remove text from input field
-            this.txtNewTagInput.Text = null;
+            this.txtNewTagCueInput.Text = null;
         }
 
         private void ShowDialogForDuplicate()

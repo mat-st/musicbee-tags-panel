@@ -74,7 +74,7 @@ namespace MusicBeePlugin
 
 
             // add Tags-Panel Settings to Tools Menu
-            mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", null, MenuSettingsClicked);
+            mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
 
             log.Info("Tags-Panel plugin started");
 
@@ -86,62 +86,29 @@ namespace MusicBeePlugin
             log = new Logger(mbApiInterface);
         }
 
-
-
-
-
-
-        // GANZ Schlechter Stil ;)
         public void MenuSettingsClicked(object sender, EventArgs args)
         {
-
-            bool useSort = true;
-            SavedSettingsType settings = settingsStorage.GetSavedSettings();
-            if (settings != null)
-            {
-                useSort = settings.sorted;
-            }
-            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
-            /*fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
-            tagsPanelSettingForm.ShowDialog();*/
-
-            List<TagsStorage> tagsStorageList = new List<TagsStorage>();
-            tagsStorageList.Add(tagsStorage);
-            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
-            tagsPanelSettingsForm.ShowDialog();
-
-            TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
-            tempTags = tagsPanelSettingsPanel.GetTags();
-            tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
+            openSettingsDialog();
 
             SaveSettings();
-            UpdateTagsTableData(ourPanel);
 
             return;
         }
-
-
-
-
-
-
 
         public bool Configure(IntPtr panelHandle)
         {
             // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
             // keep in mind the panel width is scaled according to the font the user has selected
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
+            openSettingsDialog();
 
-            bool useSort = true;
-            SavedSettingsType settings = settingsStorage.GetSavedSettings();
-            if (settings != null)
-            {
-                useSort = settings.sorted;
-            }
-            string[] allTagsFromConfig = settingsStorage.GetAllTagsFromConfig();
-            /*fvSettings tagsPanelSettingForm = new fvSettings(allTagsFromConfig, useSort);
-            tagsPanelSettingForm.ShowDialog();*/
+            SaveSettings();
 
+            return true;
+        }
+
+        private void openSettingsDialog()
+        {
             List<TagsStorage> tagsStorageList = new List<TagsStorage>();
             tagsStorageList.Add(tagsStorage);
             TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
@@ -150,8 +117,6 @@ namespace MusicBeePlugin
             TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
             tempTags = tagsPanelSettingsPanel.GetTags();
             tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
-
-            return true;
         }
 
         // called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
