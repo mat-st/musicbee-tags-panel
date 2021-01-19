@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,26 +17,34 @@ namespace MusicBeePlugin
     {
         public const char SettingsSeparator = ';';
 
-        private static SavedSettingsType savedSettings = new SavedSettingsType
-        {
-            tagStorages = new Dictionary<string, TagsStorage>()
-        };
+        private Dictionary<String, TagsStorage> storages;
 
-        private const string SettingsFileName = "mb_tags-panel.Settings.xml";
+        private const string SettingsFileName = "mb_tags-panel.Settings.json";
 
         private readonly MusicBeeApiInterface mbApiInterface;
 
         private readonly Logger log;
 
+        public Dictionary<string, TagsStorage> TagsStorages { get => storages; set => storages = value; }
+
         public SettingsStorage(MusicBeeApiInterface mbApiInterface, Logger log)
         {
             this.mbApiInterface = mbApiInterface;
             this.log = log;
+            this.TagsStorages = new Dictionary<String, TagsStorage>();
         }
 
         public void LoadSettingsWithFallback()
         {
             LoadSettings();
+
+            if (null == TagsStorages)
+            {
+                this.TagsStorages = new Dictionary<String, TagsStorage>();
+                TagsStorage tagsStorage = new TagsStorage();
+                tagsStorage.MetaDataType = MetaDataType.Mood.ToString("g");
+                this.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
+            }
         }
 
         private void LoadSettings()
@@ -48,7 +57,7 @@ namespace MusicBeePlugin
             using (System.IO.StreamReader file = new System.IO.StreamReader(stream, unicode))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                savedSettings = (SavedSettingsType) serializer.Deserialize(file, typeof(SavedSettingsType));
+                TagsStorages = (Dictionary<string, TagsStorage>) serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
                 file.Close();
             }
         }
@@ -70,18 +79,18 @@ namespace MusicBeePlugin
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, savedSettings);
+                serializer.Serialize(file, TagsStorages);
                 file.Close();
             }
         }
         public TagsStorage GetFirstTagsStorage()
         {
-            if (savedSettings.tagStorages.Count <= 0)
+            if (TagsStorages.Count <= 0)
             {
                 return null;
             }
 
-            var e = savedSettings.tagStorages.GetEnumerator();
+            var e = TagsStorages.GetEnumerator();
             e.MoveNext();
             return e.Current.Value;
         }
@@ -89,11 +98,11 @@ namespace MusicBeePlugin
         public TagsStorage GetAllTagsFromConfig(string tagName)
         {
             TagsStorage tagStorage;
-            if (false == savedSettings.tagStorages.TryGetValue(tagName, out tagStorage))
+            if (false == TagsStorages.TryGetValue(tagName, out tagStorage))
             {
-                MetaDataType metaDataType = (MetaDataType) Enum.Parse(typeof(MetaDataType), tagName);
-                tagStorage = new TagsStorage(mbApiInterface, metaDataType);
-                savedSettings.tagStorages.Add(tagName, tagStorage);
+                tagStorage = new TagsStorage();
+                tagStorage.MetaDataType = tagName;
+                TagsStorages.Add(tagName, tagStorage);
             }
            
             return tagStorage;
@@ -101,13 +110,14 @@ namespace MusicBeePlugin
 
         public void SetTagsStorage(TagsStorage tagsStorage)
         {
-            savedSettings.tagStorages.Remove(tagsStorage.GetTagName());
-            savedSettings.tagStorages.Add(tagsStorage.GetTagName(), tagsStorage);
+            TagsStorages.Remove(tagsStorage.GetTagName());
+            TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
+            
         }
 
-        public SavedSettingsType GetSavedSettings()
+        public TagsStorage GetFirstOne()
         {
-            return savedSettings;
+            return TagsStorages.Values.First();
         }
     }
 }

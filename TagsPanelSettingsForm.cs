@@ -32,7 +32,7 @@ namespace MusicBeePlugin
                 return;
             }
 
-            tagsPanelSettingsPanel = new TagsPanelSettingsPanel(storage, settingsStorage);
+            tagsPanelSettingsPanel = new TagsPanelSettingsPanel(settingsStorage);
             tagPanels.Add(storage.GetTagName(), tagsPanelSettingsPanel);
             TabPage tabPage = new System.Windows.Forms.TabPage(storage.GetTagName());
             tabPage.Controls.Add(tagsPanelSettingsPanel);

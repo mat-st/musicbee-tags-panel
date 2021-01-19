@@ -12,12 +12,13 @@ namespace MusicBeePlugin
 {
     public partial class TagsPanelSettingsPanel : UserControl
     {
-        public TagsPanelSettingsPanel(TagsStorage storage, SettingsStorage settings)
+        public TagsPanelSettingsPanel(SettingsStorage settings)
         {
             InitializeComponent();
 
-            SetTags(settings.GetFirstTagsStorage());
-            SetSortEnabled(settings.GetSavedSettings().sorted);
+            TagsStorage tagStorage = settings.GetFirstTagsStorage();
+            SetTags(tagStorage);
+            SetSortEnabled(tagStorage.Sorted);
 
             // this must be at the very end to supress the events
             MakeOwnModifications();
@@ -137,16 +138,18 @@ namespace MusicBeePlugin
             }
         }
 
-        public string[] GetTags()
+        public Dictionary<string, CheckState> GetTags()
         {
+            Dictionary<String, CheckState> tagList = new Dictionary<string, CheckState>();
             if (this.lstTags.Items.Count > 0)
             {
-                String[] array = new String[this.lstTags.Items.Count];
-                this.lstTags.Items.CopyTo(array, 0);
-                return array;
+                foreach (string tagFromSetting in this.lstTags.Items)
+                {
+                    tagList.Add(tagFromSetting, CheckState.Unchecked);
+                }
             }
 
-            return new string[] { };
+            return tagList;
         }
 
         public bool IsSortEnabled()
@@ -154,8 +157,10 @@ namespace MusicBeePlugin
             return this.cbEnableAlphabeticalTagSort.Checked;
         }
 
-        public void SetTags(string[] tags)
+        public void SetTags(TagsStorage tagsStorage)
         {
+            Dictionary<String, CheckState> tagsDict = tagsStorage.GetTags();
+            string[] tags = tagsDict.Keys.ToArray<String>();
             this.lstTags.Items.AddRange(tags == null ? new string[] { } : tags);
         }
 

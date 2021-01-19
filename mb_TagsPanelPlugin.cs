@@ -9,7 +9,7 @@ namespace MusicBeePlugin
     {
         private MusicBeeApiInterface mbApiInterface;
 
-        private string[] tempTags;
+        private Dictionary<String, CheckState> tempTags;
         private bool tempSortEnabled;
 
         private string[] selectedFileUrls = new string[] { };
@@ -36,8 +36,8 @@ namespace MusicBeePlugin
 
         private void SetTagsStorage(string tagName)
         {
-            MetaDataType dataType = (MetaDataType) Enum.Parse(typeof(MetaDataType), tagName, true);
-            tagsStorage = new TagsStorage(mbApiInterface, dataType);
+            tagsStorage = new TagsStorage();
+            tagsStorage.MetaDataType = tagName;
         }
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
@@ -67,9 +67,9 @@ namespace MusicBeePlugin
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
-            tagsManipulation = new TagsManipulation();
+            tagsManipulation = new TagsManipulation(this.mbApiInterface);
             // TODO set this value dynamically 
-            SetTagsStorage(MetaDataType.Mood.ToString("g"));
+            //SetTagsStorage(MetaDataType.Mood.ToString("g"));
 
             LoadSettings();
 
@@ -103,8 +103,6 @@ namespace MusicBeePlugin
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
             openSettingsDialog();
 
-            SaveSettings();
-
             return true;
         }
 
@@ -124,6 +122,9 @@ namespace MusicBeePlugin
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
+            tagsStorage.SetTags(tempTags);
+            tagsStorage.Sorted = this.tempSortEnabled;
+
             settingsStorage.SaveSettings(tagsStorage);
 
             if (ourPanel != null)
@@ -135,8 +136,9 @@ namespace MusicBeePlugin
         private void LoadSettings()
         {
             settingsStorage.LoadSettingsWithFallback();
-            tagsStorage = settingsStorage.GetAllTagsFromConfig(tagsStorage.GetTagName());
-            tempTags = (string[]) tagsStorage.GetTags().Keys.ToArray();
+            tagsStorage = settingsStorage.GetFirstOne();
+            // TODO check if necessary 
+            tempTags = tagsStorage.GetTags();
         }
 
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -178,10 +180,10 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
+                    tagsManipulation.UpdateTagsFromFile(sourceFileUrl, tagsStorage);
                     break;
                 case NotificationType.TrackChanged:
-                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
+                    tagsManipulation.UpdateTagsFromFile(sourceFileUrl, tagsStorage);
                     ignoreForBatchSelect = true;
                     UpdateTagsTableData(ourPanel);
                     ourPanel.Invalidate();
@@ -194,7 +196,7 @@ namespace MusicBeePlugin
                     }
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    tagsStorage.UpdateTagsFromFile(sourceFileUrl);
+                    tagsManipulation.UpdateTagsFromFile(sourceFileUrl, tagsStorage);
                     UpdateTagsTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
@@ -272,7 +274,7 @@ namespace MusicBeePlugin
         private void UpdateTagsTableData(Control panel)
         {
             bool add = true;
-            TagsStorage tagsStorage = settingsStorage.GetAllTagsFromConfig(this.tagsStorage.GetTagName());
+            TagsStorage tagsStorage = settingsStorage.GetFirstOne();
             string[] allTagsFromConfig = tagsStorage.GetTags().Keys.ToArray<string>();
             Dictionary<String, CheckState> allTags = tagsStorage.GetTags();
 
@@ -314,7 +316,10 @@ namespace MusicBeePlugin
         {
             ChecklistBoxPanel checklistBoxPanel;
             this.checklistBoxList.TryGetValue(tagName, out checklistBoxPanel);
-            checklistBoxPanel.AddDataSource(tags);
+            if (null != checklistBoxPanel)
+            {
+                checklistBoxPanel.AddDataSource(tags);
+            }
         }
 
         private void AddControls(Control _panel)
@@ -356,9 +361,18 @@ namespace MusicBeePlugin
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
             this.tabControl.Dock = DockStyle.Fill;
 
-            AddVisibleTagPanel(MetaDataType.Mood.ToString("g"));
-            AddInvisibleTagPanel(MetaDataType.Occasion.ToString("g"));
-            AddInvisibleTagPanel(MetaDataType.Genre.ToString("g"));
+            TagsStorage firstOne = null;
+            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
+            {
+                if (null == firstOne)
+                {
+                    AddVisibleTagPanel(tagsStorage.MetaDataType);
+                    firstOne = tagsStorage;
+                } else
+                {
+                    AddInvisibleTagPanel(tagsStorage.MetaDataType);
+                }
+            }
         }
 
         private void AddInvisibleTagPanel(string tagName)
@@ -443,7 +457,7 @@ namespace MusicBeePlugin
 
         private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
         {
-            tagsStorage.SetTagsInFile(fileUrls, selected, selectedTag, tagsManipulation);
+            tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, tagsStorage.GetMetaDataType());
         }
     }    
 }
