@@ -9,7 +9,6 @@ namespace MusicBeePlugin
 {
     public class TagsStorage
     {
-        // TODO serialize this string instead of the index/number
         private string metaDataType;
         private Dictionary<String, CheckState> tagList = new Dictionary<String, CheckState>();
         private bool sorted = true;

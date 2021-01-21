@@ -26,8 +26,8 @@ namespace MusicBeePlugin
 
             foreach (var filename in fileNames)
             {
-                string[] tagsFromSettings = ReadTagsFromFile(filename, tagsStorage.GetMetaDataType());
-                foreach (var tag in tagsFromSettings)
+                string[] tagsFromFile = ReadTagsFromFile(filename, tagsStorage.GetMetaDataType());
+                foreach (var tag in tagsFromFile)
                 {
                     if (stateOfSelection.ContainsKey(tag))
                     {
@@ -130,7 +130,7 @@ namespace MusicBeePlugin
         {
             HashSet<string> tags = new HashSet<string>();
 
-            if (filename == null || filename.Length <= 0 || 0 <= metaDataField)
+            if (filename == null || filename.Length <= 0 || 0 == metaDataField)
             {
                 return tags.ToArray<string>();
             }
@@ -149,25 +149,17 @@ namespace MusicBeePlugin
             return tags.ToArray<string>();
         }
 
-        public void UpdateTagsFromFile(string sourceFileUrl, TagsStorage storage)
+        public Dictionary<string, CheckState> UpdateTagsFromFile(string sourceFileUrl, MetaDataType metaDataType)
         {
-            storage.Clear();
+            string[] tagParts = ReadTagsFromFile(sourceFileUrl, metaDataType);
 
-            string[] tagParts = ReadTagsFromFile(sourceFileUrl, storage.GetMetaDataType());
-
+            Dictionary<string, CheckState> tagsFromFile = new Dictionary<string, CheckState>();
             foreach (string tag in tagParts)
             {
-                CheckState checkState;
-                if (!storage.GetTags().TryGetValue(tag, out checkState))
-                {
-                    storage.GetTags().Add(tag, CheckState.Checked);
-                }
-                else
-                {
-                    // TODO check if this code works with 'out' 
-                    checkState = CheckState.Checked;
-                }
+               tagsFromFile[tag] = CheckState.Checked;
             }
+
+            return tagsFromFile;
         }
     }
 }
