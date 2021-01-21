@@ -58,9 +58,8 @@ namespace MusicBeePlugin
 
         public string SortTagsAlphabetical(string tags)
         {
-            string[] tagsAsArray = tags.Split(SEPARATOR);
-            Array.Sort(tagsAsArray);
-            return String.Join(SEPARATOR.ToString(), tagsAsArray);
+            SortedSet<string> tagsWithoutDuplicates = new SortedSet<string>(tags.Split(SEPARATOR));
+            return String.Join(SEPARATOR.ToString(), tagsWithoutDuplicates.ToArray<string>());
         }
         public string RemoveTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
         {

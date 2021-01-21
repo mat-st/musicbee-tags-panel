@@ -95,7 +95,7 @@ namespace MusicBeePlugin
             return e.Current.Value;
         }
 
-        public TagsStorage GetAllTagsFromConfig(string tagName)
+        public TagsStorage GetTagsStorage(string tagName)
         {
             TagsStorage tagStorage;
             if (false == TagsStorages.TryGetValue(tagName, out tagStorage))

@@ -36,8 +36,7 @@ namespace MusicBeePlugin
 
         private void SetTagsStorage(string tagName)
         {
-            tagsStorage = new TagsStorage();
-            tagsStorage.MetaDataType = tagName;
+            tagsStorage = settingsStorage.GetTagsStorage(tagName);
         }
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
@@ -235,11 +234,16 @@ namespace MusicBeePlugin
             // important to have as a global variable
             selectedFileUrls = filenames;
 
+            SetTagsFromFilesInPanel(filenames);
+        }
 
+        private void SetTagsFromFilesInPanel(string[] filenames)
+        {
             if (filenames != null && filenames.Length > 0)
             {
                 tagsFromFiles = tagsManipulation.CombineTagLists(filenames, tagsStorage);
-            } else
+            }
+            else
             {
                 tagsFromFiles.Clear();
             }
@@ -348,7 +352,13 @@ namespace MusicBeePlugin
         {
             this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
             this.tabControl.Dock = DockStyle.Fill;
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
+            addTabPages();
+        }
+
+        private void addTabPages()
+        {
             TagsStorage firstOne = null;
             foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
             {
@@ -356,27 +366,54 @@ namespace MusicBeePlugin
                 {
                     AddVisibleTagPanel(tagsStorage.MetaDataType);
                     firstOne = tagsStorage;
-                } else
+                }
+                else
                 {
                     AddInvisibleTagPanel(tagsStorage.MetaDataType);
                 }
             }
         }
 
+        private void TabControl1_Selected(Object sender, TabControlEventArgs e)
+        {
+            string metaDataTypeName = e.TabPage.Text;
+            SetTagsStorage(metaDataTypeName);
+            SwitchVisibleTagPanel(metaDataTypeName);
+        }
+
         private void AddInvisibleTagPanel(string tagName)
         {
-            TabPage page = GetTagPage(tagName);
-            page.Controls.Clear();
-            this.tabControl.TabPages.Add(page);
+            GetTagPage(tagName);
         }
 
         private void AddVisibleTagPanel(string tagName)
-        {
-            // TODO set tagsStorage when swithing the tab page
-            //SetTagsStorage(tagName);
-            
+        {            
             TabPage page = GetTagPage(tagName);
 
+            ChecklistBoxPanel checkListBox = createChecklistBoxForTag(tagName);
+
+            this.ignoreEventFromHandler = false;
+            page.Controls.Add(checkListBox);
+        }
+
+
+        private void SwitchVisibleTagPanel(string visibleTag)
+        {
+            // remove checklistBox from all panels
+            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
+            {
+                string tagName = tagsStorage.GetTagName();
+                TabPage page = GetTagPage(tagName);
+                page.Controls.Clear();
+            }
+
+            // add checklistBox to visible panel 
+            AddVisibleTagPanel(visibleTag);
+            SetTagsFromFilesInPanel(this.selectedFileUrls);
+        }
+
+        private ChecklistBoxPanel createChecklistBoxForTag(string tagName)
+        {
             ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
             checkListBox.AddDataSource(this.tagsStorage.GetTags());
 
@@ -385,9 +422,8 @@ namespace MusicBeePlugin
             checkListBox.AddItemCheckEventHandler(
                 new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck)
             );
-            this.ignoreEventFromHandler = false;
-            page.Controls.Add(checkListBox);
-            this.tabControl.TabPages.Add(page);
+
+            return checkListBox;
         }
 
         private ChecklistBoxPanel GetCheckListBoxPanel(string tagName)
@@ -408,6 +444,7 @@ namespace MusicBeePlugin
             {
                 tabPage = new TabPage(tagName);
                 this.tabPageList.Add(tagName, tabPage);
+                this.tabControl.TabPages.Add(tabPage);
             }
             return tabPage;
         }
