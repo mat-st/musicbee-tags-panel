@@ -30,6 +30,10 @@ namespace MusicBeePlugin
 
         internal void SetTags(Dictionary<String, CheckState> tagList)
         {
+            if (tagList == null)
+            {
+                tagList = new Dictionary<string, CheckState>();
+            }
             this.tagList = tagList;
         }
 

@@ -105,6 +105,12 @@
     <Compile Include="SettingsStorage.cs" />
     <Compile Include="mb_TagsPanelPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TabPageSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabPageSelector.Designer.cs">
+      <DependentUpon>TabPageSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="TagsManipulation.cs" />
     <Compile Include="TagsPanelSettingsForm.cs">
       <SubType>Form</SubType>
@@ -153,6 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormSettings.resx">
       <DependentUpon>FormSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabPageSelector.resx">
+      <DependentUpon>TabPageSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TagsPanelSettingsForm.resx">
       <DependentUpon>TagsPanelSettingsForm.cs</DependentUpon>

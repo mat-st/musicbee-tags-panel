@@ -54,6 +54,7 @@ namespace MusicBeePlugin
             this.btnAddTabPage.TabIndex = 2;
             this.btnAddTabPage.Text = "Add TabPage";
             this.btnAddTabPage.UseVisualStyleBackColor = true;
+            this.btnAddTabPage.Click += new System.EventHandler(this.Btn_AddTabPage_Click);
             // 
             // btnRemoveTabPage
             // 
@@ -63,6 +64,7 @@ namespace MusicBeePlugin
             this.btnRemoveTabPage.TabIndex = 3;
             this.btnRemoveTabPage.Text = "Remove TabPage";
             this.btnRemoveTabPage.UseVisualStyleBackColor = true;
+            this.btnRemoveTabPage.Click += new System.EventHandler(this.btnRemoveTabPage_Click);
             // 
             // linkAbout
             // 
@@ -94,7 +96,6 @@ namespace MusicBeePlugin
             this.Btn_Save.TabIndex = 6;
             this.Btn_Save.Text = "Save";
             this.Btn_Save.UseVisualStyleBackColor = true;
-            this.Btn_Save.Click += new System.EventHandler(this.Btn_Save_Click);
             // 
             // Btn_Cancel
             // 
@@ -105,13 +106,11 @@ namespace MusicBeePlugin
             this.Btn_Cancel.TabIndex = 7;
             this.Btn_Cancel.Text = "Cancel";
             this.Btn_Cancel.UseVisualStyleBackColor = true;
-            this.Btn_Cancel.Click += new System.EventHandler(this.Btn_Cancel_Click);
             // 
             // TagsPanelSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.Btn_Cancel;
             this.ClientSize = new System.Drawing.Size(284, 418);
             this.Controls.Add(this.Btn_Cancel);
             this.Controls.Add(this.Btn_Save);

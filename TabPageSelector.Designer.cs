@@ -1,0 +1,85 @@
+﻿
+namespace MusicBeePlugin
+{
+    partial class TabPageSelectorForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.comboBoxTagSelect = new System.Windows.Forms.ComboBox();
+            this.Btn_ComboBoxAddTag = new System.Windows.Forms.Button();
+            this.Btn_ComboBoxCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // comboBoxTagSelect
+            // 
+            this.comboBoxTagSelect.FormattingEnabled = true;
+            this.comboBoxTagSelect.Location = new System.Drawing.Point(12, 12);
+            this.comboBoxTagSelect.Name = "comboBoxTagSelect";
+            this.comboBoxTagSelect.Size = new System.Drawing.Size(179, 21);
+            this.comboBoxTagSelect.TabIndex = 0;
+            // 
+            // Btn_ComboBoxAddTag
+            // 
+            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 49);
+            this.Btn_ComboBoxAddTag.Name = "Btn_ComboBoxAddTag";
+            this.Btn_ComboBoxAddTag.Size = new System.Drawing.Size(75, 23);
+            this.Btn_ComboBoxAddTag.TabIndex = 1;
+            this.Btn_ComboBoxAddTag.Text = "Add";
+            this.Btn_ComboBoxAddTag.UseVisualStyleBackColor = true;
+            // 
+            // Btn_ComboBoxCancel
+            // 
+            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(116, 49);
+            this.Btn_ComboBoxCancel.Name = "Btn_ComboBoxCancel";
+            this.Btn_ComboBoxCancel.Size = new System.Drawing.Size(75, 23);
+            this.Btn_ComboBoxCancel.TabIndex = 2;
+            this.Btn_ComboBoxCancel.Text = "Cancel";
+            this.Btn_ComboBoxCancel.UseVisualStyleBackColor = true;
+            // 
+            // TabPageSelectorForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(203, 83);
+            this.Controls.Add(this.Btn_ComboBoxCancel);
+            this.Controls.Add(this.Btn_ComboBoxAddTag);
+            this.Controls.Add(this.comboBoxTagSelect);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Name = "TabPageSelectorForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Choose a tag";
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.ComboBox comboBoxTagSelect;
+        private System.Windows.Forms.Button Btn_ComboBoxAddTag;
+        private System.Windows.Forms.Button Btn_ComboBoxCancel;
+    }
+}

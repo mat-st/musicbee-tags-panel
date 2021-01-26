@@ -67,10 +67,8 @@ namespace MusicBeePlugin
             return System.IO.Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), SettingsFileName);
         }
 
-        public void SaveSettings(TagsStorage tagsStorage)
+        public void SaveAllSettings()
         {
-            SetTagsStorage(tagsStorage);
-
             // save any persistent settings in a sub-folder of this path
             string settingsPath = GetSettingsPath();
             Encoding unicode = Encoding.UTF8;
@@ -83,6 +81,7 @@ namespace MusicBeePlugin
                 file.Close();
             }
         }
+
         public TagsStorage GetFirstTagsStorage()
         {
             if (TagsStorages.Count <= 0)
@@ -118,6 +117,11 @@ namespace MusicBeePlugin
         public TagsStorage GetFirstOne()
         {
             return TagsStorages.Values.First();
+        }
+
+        public void RemoveTagStorage(string tagName)
+        {
+            TagsStorages.Remove(tagName);
         }
     }
 }

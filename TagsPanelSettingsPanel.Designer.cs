@@ -108,7 +108,7 @@ namespace MusicBeePlugin
             this.txtNewTagCueInput.Location = new System.Drawing.Point(3, 104);
             this.txtNewTagCueInput.Name = "txtNewTagCueInput";
             this.txtNewTagCueInput.Size = new System.Drawing.Size(231, 20);
-            this.txtNewTagCueInput.TabIndex = 0;
+            this.txtNewTagCueInput.TabIndex = 1;
             // 
             // BtnExportCSV
             // 

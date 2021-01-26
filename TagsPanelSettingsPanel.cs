@@ -8,32 +8,37 @@ namespace MusicBeePlugin
 {
     public partial class TagsPanelSettingsPanel : UserControl
     {
-        public TagsPanelSettingsPanel(SettingsStorage settings)
+        private TagsStorage tagsStorage;
+        public TagsPanelSettingsPanel(SettingsStorage settings, string tagName)
         {
             InitializeComponent();
-            
-            // TODO check how to get focus to textbox when opening settings panel
-            txtNewTagCueInput.Focus();
-            txtNewTagCueInput.Select(0, 0);     
-            
-            TagsStorage tagStorage = settings.GetFirstTagsStorage();
-            SetTags(tagStorage);
-            SetSortEnabled(tagStorage.Sorted);
+
+            tagsStorage = settings.GetTagsStorage(tagName);
+            UpdateTags();
+            UpdateSortOption();
 
             // this must be at the very end to supress the events
             MakeOwnModifications();
+        }
 
+        public void SetUpPanelForFirstUse()
+        {
             // TODO select first item in listbox after opening settings form
             if (this.lstTags.Items.Count != 0)
             {
                 lstTags.SelectedIndex = 0;
             }
-        }
+            // TODO check how to get focus to textbox when opening settings panel
+            if (txtNewTagCueInput.CanFocus)
+            {
+                txtNewTagCueInput.Focus();
+            }
+        } 
 
-        private void SetSortEnabled(bool sortEnabled)
+        private void UpdateSortOption()
         {
-            this.cbEnableAlphabeticalTagSort.Checked = sortEnabled;
-            this.lstTags.Sorted = sortEnabled;
+            this.cbEnableAlphabeticalTagSort.Checked = tagsStorage.Sorted;
+            this.lstTags.Sorted = tagsStorage.Sorted;
         }
 
         private void MakeOwnModifications()
@@ -75,26 +80,12 @@ namespace MusicBeePlugin
         }
 
 
-        public Dictionary<string, CheckState> GetTags()
-        {
-            Dictionary<String, CheckState> tagList = new Dictionary<string, CheckState>();
-            if (this.lstTags.Items.Count > 0)
-            {
-                foreach (string tagFromSetting in this.lstTags.Items)
-                {
-                    tagList.Add(tagFromSetting, CheckState.Unchecked);
-                }
-            }
-
-            return tagList;
-        }
-
         public bool IsSortEnabled()
         {
             return this.cbEnableAlphabeticalTagSort.Checked;
         }
 
-        public void SetTags(TagsStorage tagsStorage)
+        public void UpdateTags()
         {
             Dictionary<String, CheckState> tagsDict = tagsStorage.GetTags();
             string[] tags = tagsDict.Keys.ToArray<String>();
@@ -112,6 +103,7 @@ namespace MusicBeePlugin
             this.lstTags.BeginUpdate();
             if (!this.lstTags.Items.Contains(newTag))
             {
+                this.tagsStorage.TagList[newTag] = CheckState.Unchecked;
                 this.lstTags.Items.Add(newTag);
             }
             else
@@ -132,7 +124,12 @@ namespace MusicBeePlugin
             if (this.lstTags.SelectedIndex != -1 && this.lstTags.Items.Count != 0)
             {
                 for (int i = selectedItems.Count - 1; i >= 0; i--)
-                    this.lstTags.Items.Remove(selectedItems[i]);
+                {
+                    object selectedItem = selectedItems[i];
+                    this.lstTags.Items.Remove(selectedItem);
+                    this.tagsStorage.TagList.Remove((string)selectedItem);
+                }
+                    
                 
                 // TODO set selection on next listbox item after removing item
                 //this.lstTags.SelectedIndex = 0;

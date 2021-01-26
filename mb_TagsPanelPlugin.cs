@@ -9,8 +9,8 @@ namespace MusicBeePlugin
     {
         private MusicBeeApiInterface mbApiInterface;
 
-        private Dictionary<String, CheckState> tempTags;
-        private bool tempSortEnabled;
+        //private Dictionary<String, CheckState> tempTags;
+        //private bool tempSortEnabled;
 
         private string[] selectedFileUrls = new string[] { };
         private Logger log;
@@ -107,27 +107,36 @@ namespace MusicBeePlugin
 
         private void OpenSettingsDialog()
         {
-            List<TagsStorage> tagsStorageList = new List<TagsStorage>();
-            tagsStorageList.Add(tagsStorage);
-            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(tagsStorageList, settingsStorage);
-            tagsPanelSettingsForm.ShowDialog();
-
-            TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
-            tempTags = tagsPanelSettingsPanel.GetTags();
-            tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
+            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(settingsStorage);
+            DialogResult result = tagsPanelSettingsForm.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                //TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
+                settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+                // TODO we probably need a tempSettingsStorage
+                //tempTags = tagsPanelSettingsPanel.GetTags();
+                // tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
+            } else
+            {
+                /*tempTags = new Dictionary<string, CheckState>();
+                tempSortEnabled = true;*/
+            }
         }
 
         // called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
         // its up to you to figure out whether anything has changed and needs updating
         public void SaveSettings()
         {
-            tagsStorage.SetTags(tempTags);
-            tagsStorage.Sorted = this.tempSortEnabled;
+            //tagsStorage.SetTags(tempTags);
+            //tagsStorage.Sorted = this.tempSortEnabled;
 
-            settingsStorage.SaveSettings(tagsStorage);
+            settingsStorage.SaveAllSettings();
 
             if (ourPanel != null)
             {
+                // TODO make sure everything will be fine and keep you towel with you (always remember the 42!)
+                ClearAllTagPages();
+                AddTabPages();
                 UpdateTagsTableData(ourPanel);
             }
         }
@@ -355,6 +364,7 @@ namespace MusicBeePlugin
             this.tabControl.Dock = DockStyle.Fill;
             this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
+            ClearAllTagPages();
             AddTabPages();
         }
 
@@ -377,6 +387,11 @@ namespace MusicBeePlugin
 
         private void TabControl1_Selected(Object sender, TabControlEventArgs e)
         {
+            if (e.TabPage == null)
+            {
+                return;
+            }
+
             string metaDataTypeName = e.TabPage.Text;
             SetTagsStorage(metaDataTypeName);
             SwitchVisibleTagPanel(metaDataTypeName);
@@ -448,6 +463,12 @@ namespace MusicBeePlugin
                 this.tabControl.TabPages.Add(tabPage);
             }
             return tabPage;
+        }
+
+        private void ClearAllTagPages()
+        {
+            this.tabPageList.Clear();
+            this.tabControl.TabPages.Clear();
         }
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
