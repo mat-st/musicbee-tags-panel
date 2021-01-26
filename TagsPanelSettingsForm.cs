@@ -62,5 +62,16 @@ namespace MusicBeePlugin
         {
             System.Diagnostics.Process.Start("https://github.com/mat-st/musicbee-tags-panel");
         }
+
+        private void Btn_Cancel_Click(object sender, EventArgs e)
+        {
+            // TODO Cancel button should not save settings
+            Close();
+        }
+
+        private void Btn_Save_Click(object sender, EventArgs e)
+        {
+       
+        }
     }
 }

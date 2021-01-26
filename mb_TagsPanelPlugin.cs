@@ -46,9 +46,9 @@ namespace MusicBeePlugin
             PluginInfo about = new PluginInfo();
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "Tags-Panel";
-            about.Description = "Creates a dockable Panel which lets the user choose tags from an predefined " +
-                "list";
-            about.Author = "Matthias Steiert + The Anonymous Programmer";
+            about.Description = "Creates a dockable Panel with user defined tabed pages which let the user choose tags from user defined " +
+                "lists";
+            about.Author = "mat-st & The Anonymous Programmer";
             about.TargetApplication = "Tags-Panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
             about.Type = PluginType.General;
             about.VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major;  // your plugin version
@@ -99,6 +99,7 @@ namespace MusicBeePlugin
             // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
             // keep in mind the panel width is scaled according to the font the user has selected
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
+            
             OpenSettingsDialog();
 
             return true;
@@ -354,10 +355,10 @@ namespace MusicBeePlugin
             this.tabControl.Dock = DockStyle.Fill;
             this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
-            addTabPages();
+            AddTabPages();
         }
 
-        private void addTabPages()
+        private void AddTabPages()
         {
             TagsStorage firstOne = null;
             foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
@@ -390,7 +391,7 @@ namespace MusicBeePlugin
         {            
             TabPage page = GetTagPage(tagName);
 
-            ChecklistBoxPanel checkListBox = createChecklistBoxForTag(tagName);
+            ChecklistBoxPanel checkListBox = CreateChecklistBoxForTag(tagName);
 
             this.ignoreEventFromHandler = false;
             page.Controls.Add(checkListBox);
@@ -412,7 +413,7 @@ namespace MusicBeePlugin
             SetTagsFromFilesInPanel(this.selectedFileUrls);
         }
 
-        private ChecklistBoxPanel createChecklistBoxForTag(string tagName)
+        private ChecklistBoxPanel CreateChecklistBoxForTag(string tagName)
         {
             ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
             checkListBox.AddDataSource(this.tagsStorage.GetTags());

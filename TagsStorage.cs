@@ -23,9 +23,6 @@ namespace MusicBeePlugin
         }
 
 
-
-
-
         internal Dictionary<String, CheckState> GetTags()
         {
             return tagList;
@@ -36,9 +33,7 @@ namespace MusicBeePlugin
             this.tagList = tagList;
         }
 
-       
      
-
         public string GetTagName()
         {
             return this.metaDataType;
@@ -53,7 +48,6 @@ namespace MusicBeePlugin
         public bool Sorted { get => sorted; set => sorted = value; }
         public string MetaDataType { get => metaDataType; set => metaDataType = value; }
         public Dictionary<string, CheckState> TagList { get => tagList; set => tagList = value; }
-     
     }
 }
 
