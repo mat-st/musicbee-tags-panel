@@ -29,6 +29,7 @@ namespace MusicBeePlugin
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControlSettings = new System.Windows.Forms.TabControl();
             this.btnAddTabPage = new System.Windows.Forms.Button();
             this.btnRemoveTabPage = new System.Windows.Forms.Button();
@@ -36,43 +37,45 @@ namespace MusicBeePlugin
             this.linkGitHub = new System.Windows.Forms.LinkLabel();
             this.Btn_Save = new System.Windows.Forms.Button();
             this.Btn_Cancel = new System.Windows.Forms.Button();
+            this.toolTipAddTagPage = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // tabControlSettings
             // 
-            this.tabControlSettings.Location = new System.Drawing.Point(17, 12);
+            this.tabControlSettings.Location = new System.Drawing.Point(12, 12);
             this.tabControlSettings.Name = "tabControlSettings";
+            this.tabControlSettings.Padding = new System.Drawing.Point(3, 3);
             this.tabControlSettings.SelectedIndex = 0;
-            this.tabControlSettings.Size = new System.Drawing.Size(250, 311);
-            this.tabControlSettings.TabIndex = 1;
+            this.tabControlSettings.Size = new System.Drawing.Size(280, 320);
+            this.tabControlSettings.TabIndex = 0;
             // 
             // btnAddTabPage
             // 
-            this.btnAddTabPage.Location = new System.Drawing.Point(17, 329);
+            this.btnAddTabPage.Location = new System.Drawing.Point(12, 338);
             this.btnAddTabPage.Name = "btnAddTabPage";
-            this.btnAddTabPage.Size = new System.Drawing.Size(112, 23);
-            this.btnAddTabPage.TabIndex = 2;
-            this.btnAddTabPage.Text = "Add TabPage";
+            this.btnAddTabPage.Size = new System.Drawing.Size(110, 23);
+            this.btnAddTabPage.TabIndex = 1;
+            this.btnAddTabPage.Text = "Add Tag";
             this.btnAddTabPage.UseVisualStyleBackColor = true;
-            this.btnAddTabPage.Click += new System.EventHandler(this.Btn_AddTabPage_Click);
+            this.btnAddTabPage.Click += new System.EventHandler(this.Btn_AddTagPage_Click);
             // 
             // btnRemoveTabPage
             // 
-            this.btnRemoveTabPage.Location = new System.Drawing.Point(144, 329);
+            this.btnRemoveTabPage.Location = new System.Drawing.Point(182, 338);
             this.btnRemoveTabPage.Name = "btnRemoveTabPage";
-            this.btnRemoveTabPage.Size = new System.Drawing.Size(123, 23);
-            this.btnRemoveTabPage.TabIndex = 3;
-            this.btnRemoveTabPage.Text = "Remove TabPage";
+            this.btnRemoveTabPage.Size = new System.Drawing.Size(110, 23);
+            this.btnRemoveTabPage.TabIndex = 2;
+            this.btnRemoveTabPage.Text = "Remove Tag";
             this.btnRemoveTabPage.UseVisualStyleBackColor = true;
-            this.btnRemoveTabPage.Click += new System.EventHandler(this.btnRemoveTabPage_Click);
+            this.btnRemoveTabPage.Click += new System.EventHandler(this.BtnRemoveTagPage_Click);
             // 
             // linkAbout
             // 
             this.linkAbout.AutoSize = true;
-            this.linkAbout.Location = new System.Drawing.Point(232, 396);
+            this.linkAbout.Location = new System.Drawing.Point(253, 399);
             this.linkAbout.Name = "linkAbout";
-            this.linkAbout.Size = new System.Drawing.Size(35, 13);
-            this.linkAbout.TabIndex = 5;
+            this.linkAbout.Size = new System.Drawing.Size(39, 13);
+            this.linkAbout.TabIndex = 6;
             this.linkAbout.TabStop = true;
             this.linkAbout.Text = "About";
             this.linkAbout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkAbout_LinkClicked);
@@ -80,38 +83,42 @@ namespace MusicBeePlugin
             // linkGitHub
             // 
             this.linkGitHub.AutoSize = true;
-            this.linkGitHub.Location = new System.Drawing.Point(14, 396);
+            this.linkGitHub.Location = new System.Drawing.Point(12, 399);
             this.linkGitHub.Name = "linkGitHub";
-            this.linkGitHub.Size = new System.Drawing.Size(91, 13);
-            this.linkGitHub.TabIndex = 4;
+            this.linkGitHub.Size = new System.Drawing.Size(101, 13);
+            this.linkGitHub.TabIndex = 5;
             this.linkGitHub.TabStop = true;
             this.linkGitHub.Text = "Visit us on GitHub";
             this.linkGitHub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkGitHub_LinkClicked);
             // 
             // Btn_Save
             // 
-            this.Btn_Save.Location = new System.Drawing.Point(17, 358);
+            this.Btn_Save.Location = new System.Drawing.Point(12, 370);
             this.Btn_Save.Name = "Btn_Save";
-            this.Btn_Save.Size = new System.Drawing.Size(112, 23);
-            this.Btn_Save.TabIndex = 6;
+            this.Btn_Save.Size = new System.Drawing.Size(110, 23);
+            this.Btn_Save.TabIndex = 3;
             this.Btn_Save.Text = "Save";
             this.Btn_Save.UseVisualStyleBackColor = true;
             // 
             // Btn_Cancel
             // 
             this.Btn_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Btn_Cancel.Location = new System.Drawing.Point(144, 358);
+            this.Btn_Cancel.Location = new System.Drawing.Point(182, 370);
             this.Btn_Cancel.Name = "Btn_Cancel";
-            this.Btn_Cancel.Size = new System.Drawing.Size(123, 23);
-            this.Btn_Cancel.TabIndex = 7;
+            this.Btn_Cancel.Size = new System.Drawing.Size(110, 23);
+            this.Btn_Cancel.TabIndex = 4;
             this.Btn_Cancel.Text = "Cancel";
             this.Btn_Cancel.UseVisualStyleBackColor = true;
+            // 
+            // toolTipAddTagPage
+            // 
+            this.toolTipAddTagPage.AutomaticDelay = 1000;
             // 
             // TagsPanelSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 418);
+            this.ClientSize = new System.Drawing.Size(304, 421);
             this.Controls.Add(this.Btn_Cancel);
             this.Controls.Add(this.Btn_Save);
             this.Controls.Add(this.linkGitHub);
@@ -119,6 +126,7 @@ namespace MusicBeePlugin
             this.Controls.Add(this.btnRemoveTabPage);
             this.Controls.Add(this.btnAddTabPage);
             this.Controls.Add(this.tabControlSettings);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -140,5 +148,6 @@ namespace MusicBeePlugin
         private System.Windows.Forms.LinkLabel linkGitHub;
         private System.Windows.Forms.Button Btn_Save;
         private System.Windows.Forms.Button Btn_Cancel;
+        private System.Windows.Forms.ToolTip toolTipAddTagPage;
     }
 }

@@ -14,6 +14,15 @@ namespace MusicBeePlugin
     {
         HashSet<string> blacklist = new HashSet<string> { 
             MetaDataType.Artwork.ToString("g"),
+            MetaDataType.DiscNo.ToString("g"),
+            MetaDataType.DiscCount.ToString("g"),
+            MetaDataType.Encoder.ToString("g"),
+            MetaDataType.HasLyrics.ToString("g"),
+            MetaDataType.Lyrics.ToString("g"),
+            MetaDataType.TrackCount.ToString("g"),
+            MetaDataType.Rating.ToString("g"),
+            MetaDataType.RatingAlbum.ToString("g"),
+            MetaDataType.RatingLove.ToString("g"),
         };
 
         public TabPageSelectorForm()

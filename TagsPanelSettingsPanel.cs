@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,27 +13,60 @@ namespace MusicBeePlugin
         public TagsPanelSettingsPanel(SettingsStorage settings, string tagName)
         {
             InitializeComponent();
-
+            
+            //TxtNewTagInput.Focus();
             tagsStorage = settings.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
+            SetWatermarkText();
 
             // this must be at the very end to supress the events
             MakeOwnModifications();
         }
 
+        public void SetWatermarkText()
+        {
+            TxtNewTagInput.ForeColor = SystemColors.GrayText;
+            TxtNewTagInput.Text = "Please Enter A Tag";
+            this.TxtNewTagInput.Leave += new System.EventHandler(this.TxtNewTagInput_Leave);
+            this.TxtNewTagInput.Enter += new System.EventHandler(this.TxtNewTagInput_Enter);
+        }
+
+        private void TxtNewTagInput_Leave(object sender, EventArgs e)
+        {
+            if (TxtNewTagInput.Text.Length == 0)
+            {
+                TxtNewTagInput.Text = "Please Enter A Tag";
+                TxtNewTagInput.ForeColor = SystemColors.GrayText;
+            }
+        }
+
+        private void TxtNewTagInput_Enter(object sender, EventArgs e)
+        {
+            if (TxtNewTagInput.Text == "Please Enter A Tag")
+            {
+                TxtNewTagInput.Text = "";
+                TxtNewTagInput.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+
         public void SetUpPanelForFirstUse()
         {
+            
             // TODO select first item in listbox after opening settings form
             if (this.lstTags.Items.Count != 0)
             {
                 lstTags.SelectedIndex = 0;
             }
-            // TODO check how to get focus to textbox when opening settings panel
-            if (txtNewTagCueInput.CanFocus)
+            // TODO check how to get focus to textbox when opening settings panel          
+            
+            //this.ActiveControl = TxtNewTagInput;
+            /*if (TxtNewTagInput.CanFocus)
             {
-                txtNewTagCueInput.Focus();
-            }
+                //TxtNewTagInput.Focus();
+                //TxtNewTagInput.Select();
+            }*/
         } 
 
         private void UpdateSortOption()
@@ -44,7 +78,7 @@ namespace MusicBeePlugin
         private void MakeOwnModifications()
         {
             this.lstTags.KeyDown += KeyEventHandler;
-            this.txtNewTagCueInput.KeyDown += KeyEventHandler;
+            this.TxtNewTagInput.KeyDown += KeyEventHandler;
 
             this.cbEnableAlphabeticalTagSort.CheckedChanged += new System.EventHandler(this.CbEnableTagSort_CheckedChanged);
         }
@@ -52,7 +86,7 @@ namespace MusicBeePlugin
 
         private void KeyEventHandler(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter && sender == this.txtNewTagCueInput)
+            if (e.KeyCode == Keys.Enter && sender == this.TxtNewTagInput)
             {
                 e.SuppressKeyPress = true;
                 AddNewTagToList();
@@ -94,7 +128,7 @@ namespace MusicBeePlugin
 
         public void AddNewTagToList()
         {
-            string newTag = this.txtNewTagCueInput.Text.Trim();
+            string newTag = this.TxtNewTagInput.Text.Trim();
             if (newTag.Length <= 0)
             {
                 return;
@@ -113,7 +147,7 @@ namespace MusicBeePlugin
             this.lstTags.EndUpdate();
 
             // remove text from input field
-            this.txtNewTagCueInput.Text = null;
+            this.TxtNewTagInput.Text = null;
         }
 
         public void RemoveSelectedTagFromList()
@@ -284,8 +318,6 @@ namespace MusicBeePlugin
             {
                 return;
             }
-        }
-
-        
+        } 
     }
 }

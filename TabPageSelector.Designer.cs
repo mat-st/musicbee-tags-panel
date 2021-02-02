@@ -36,15 +36,20 @@ namespace MusicBeePlugin
             // 
             // comboBoxTagSelect
             // 
+            this.comboBoxTagSelect.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.comboBoxTagSelect.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.comboBoxTagSelect.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBoxTagSelect.FormattingEnabled = true;
             this.comboBoxTagSelect.Location = new System.Drawing.Point(12, 12);
+            this.comboBoxTagSelect.MaxDropDownItems = 12;
             this.comboBoxTagSelect.Name = "comboBoxTagSelect";
             this.comboBoxTagSelect.Size = new System.Drawing.Size(179, 21);
             this.comboBoxTagSelect.TabIndex = 0;
+            this.comboBoxTagSelect.Text = "Click here";
             // 
             // Btn_ComboBoxAddTag
             // 
-            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 49);
+            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 46);
             this.Btn_ComboBoxAddTag.Name = "Btn_ComboBoxAddTag";
             this.Btn_ComboBoxAddTag.Size = new System.Drawing.Size(75, 23);
             this.Btn_ComboBoxAddTag.TabIndex = 1;
@@ -53,7 +58,7 @@ namespace MusicBeePlugin
             // 
             // Btn_ComboBoxCancel
             // 
-            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(116, 49);
+            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(116, 46);
             this.Btn_ComboBoxCancel.Name = "Btn_ComboBoxCancel";
             this.Btn_ComboBoxCancel.Size = new System.Drawing.Size(75, 23);
             this.Btn_ComboBoxCancel.TabIndex = 2;
@@ -64,14 +69,18 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(203, 83);
+            this.ClientSize = new System.Drawing.Size(204, 81);
             this.Controls.Add(this.Btn_ComboBoxCancel);
             this.Controls.Add(this.Btn_ComboBoxAddTag);
             this.Controls.Add(this.comboBoxTagSelect);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
             this.Name = "TabPageSelectorForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Choose a tag";
+            this.Text = "Choose A Tag";
             this.ResumeLayout(false);
 
         }

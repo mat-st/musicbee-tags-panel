@@ -20,6 +20,7 @@ namespace MusicBeePlugin
         {
             this.settingsStorage = settingsStorage;
             InitializeComponent();
+     
             this.Btn_Save.DialogResult = DialogResult.OK;
             this.Btn_Cancel.DialogResult = DialogResult.Cancel;
 
@@ -27,7 +28,14 @@ namespace MusicBeePlugin
             {
                 AddPanel(storage);
             }
+
+            // Tooltips
+
+            toolTipAddTagPage.SetToolTip(this.btnAddTabPage, "Add & select a new tag and a new tabpage");
+
         }
+
+
 
         private bool AddPanel(TagsStorage storage)
         {
@@ -45,7 +53,7 @@ namespace MusicBeePlugin
             tabPage.Controls.Add(tagsPanelSettingsPanel);
             this.tabControlSettings.TabPages.Add(tabPage);
             tagsPanelSettingsPanel.SetUpPanelForFirstUse();
-            
+
             return true;
         }
 
@@ -64,7 +72,7 @@ namespace MusicBeePlugin
             string version = fvi.FileVersion;
 
             MessageBox.Show("Tags-Panel Plugin " + Environment.NewLine + "Version " + version + Environment.NewLine +
-                "Visit us on GitHub", "About Tags-Panel Plugin", 
+                "Visit us on GitHub", "About Tags-Panel Plugin",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -80,8 +88,8 @@ namespace MusicBeePlugin
         }
 
 
-        
-        private void Btn_AddTabPage_Click(object sender, EventArgs e)
+
+        private void Btn_AddTagPage_Click(object sender, EventArgs e)
         {
 
             TabPageSelectorForm form = new TabPageSelectorForm();
@@ -102,7 +110,12 @@ namespace MusicBeePlugin
             }
         }
 
-        private void btnRemoveTabPage_Click(object sender, EventArgs e)
+        private void BtnRemoveTagPage_Click(object sender, EventArgs e)
+        {
+            ShowDialogToRemoveTagPage();
+        }
+
+        private void RemoveTagPage()
         {
             TabPage tabToRemove = this.tabControlSettings.SelectedTab;
             if (tabToRemove == null)
@@ -113,6 +126,22 @@ namespace MusicBeePlugin
             this.tabControlSettings.TabPages.Remove(tabToRemove);
             settingsStorage.RemoveTagStorage(tagName);
             tagPanels.Remove(tagName);
+        }
+
+        /***************************
+        DIALOGS
+        ***************************/
+        private void ShowDialogToRemoveTagPage()
+        {
+            DialogResult dialogResult = MessageBox.Show("This will remove the current tag page and you will lose your current tag list. Continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult == DialogResult.Yes)
+            {
+                RemoveTagPage();
+            }
+            else
+            {
+                return;
+            }
         }
     }
 }
