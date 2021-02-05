@@ -123,5 +123,12 @@ namespace MusicBeePlugin
         {
             TagsStorages.Remove(tagName);
         }
+
+        public SettingsStorage DeepCopy()
+        {
+            SettingsStorage other = (SettingsStorage)this.MemberwiseClone();
+            other.storages = JsonConvert.DeserializeObject<Dictionary<String, TagsStorage>>(JsonConvert.SerializeObject(TagsStorages));
+            return other;
+        }
     }
 }

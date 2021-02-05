@@ -22,9 +22,6 @@ namespace MusicBeePlugin
             
             InitializeComponent();
 
-            // TODO check if still necessary
-            //this.checkedListBox1.DisplayMember = "tag";
-            //this.checkedListBox1.ValueMember = "selected";
 
             if (data != null)
             {
@@ -72,21 +69,8 @@ namespace MusicBeePlugin
         {
             //RemoveClickEvent(this.checkedListBox1);
             this.checkedListBox1.ItemCheck -= this.eventHandler;
-        }
-
-        
-        private void RemoveClickEvent(CheckedListBox b)
-        {
-            // TODO check if still necessary
-            System.Reflection.FieldInfo f1 = typeof(Control).GetField("ItemCheck",
-                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-            object obj = f1.GetValue(b);
-            System.Reflection.PropertyInfo pi = b.GetType().GetProperty("Events",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            EventHandlerList list = (EventHandlerList)pi.GetValue(b, null);
-            list.RemoveHandler(obj, list[obj]);
-        }
-
+        }       
+      
         private void CheckedListBox1_KeyUp(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed

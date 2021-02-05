@@ -57,7 +57,7 @@ namespace MusicBeePlugin
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents);
-            about.ConfigurationPanelHeight = 0;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
+            about.ConfigurationPanelHeight = 20;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
             //createMenuItem();
             // Application.EnableVisualStyles();
 
@@ -88,7 +88,7 @@ namespace MusicBeePlugin
         public void MenuSettingsClicked(object sender, EventArgs args)
         {
             OpenSettingsDialog();
-
+           
             SaveSettings();
 
             return;
@@ -99,15 +99,15 @@ namespace MusicBeePlugin
             // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
             // keep in mind the panel width is scaled according to the font the user has selected
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
-            
-            OpenSettingsDialog();
+            //TODO OpenSettingsDialog(); in configure panel
 
-            return true;
+            return false;
         }
 
         private void OpenSettingsDialog()
         {
-            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(settingsStorage);
+            SettingsStorage copy = settingsStorage.DeepCopy();
+            TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(copy);
             DialogResult result = tagsPanelSettingsForm.ShowDialog();
             if (result == DialogResult.OK)
             {
@@ -135,7 +135,7 @@ namespace MusicBeePlugin
             if (ourPanel != null)
             {
                 // TODO make sure everything will be fine and keep you towel with you (always remember the 42!)
-                ClearAllTagPages();
+                //ClearAllTagPages();
                 AddTabPages();
                 UpdateTagsTableData(ourPanel);
             }
@@ -221,7 +221,11 @@ namespace MusicBeePlugin
 
         private void SetPanelEnabled(bool enabled = true)
         {
-            if (ourPanel.IsHandleCreated)
+            ourPanel.Invoke((MethodInvoker)delegate
+            {
+                ourPanel.Enabled = enabled;
+            });
+            /*if (ourPanel.IsHandleCreated)
             {
                 ourPanel.Invoke(new Action(() =>
                 {
@@ -231,7 +235,7 @@ namespace MusicBeePlugin
             else
             {
                 ourPanel.Enabled = enabled;
-            }
+            }*/
         }
 
         public void OnSelectedFilesChanged(string[] filenames)
@@ -301,7 +305,12 @@ namespace MusicBeePlugin
             }
 
             string tagName = tagsStorage.GetTagName();
-            if (panel.IsHandleCreated)
+            panel.Invoke((MethodInvoker)delegate
+            {
+                AddTagsToChecklistBoxPanel(tagName, data);
+                panel.Invalidate();
+            });
+            /*if (panel.IsHandleCreated)
             {
                 panel.Invoke(new Action(() =>
                 {
@@ -311,7 +320,7 @@ namespace MusicBeePlugin
             else
             {
                 AddTagsToChecklistBoxPanel(tagName, data);
-            }
+            }*/
         }
 
         private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
@@ -330,8 +339,11 @@ namespace MusicBeePlugin
             {
                 return;
             }
-
-            if (_panel.IsHandleCreated)
+            _panel.Invoke((MethodInvoker)delegate
+            {
+                LayoutPanel(_panel);
+            });
+            /*if (_panel.IsHandleCreated)
             {
                 _panel.Invoke((MethodInvoker)delegate
                 {
@@ -341,7 +353,7 @@ namespace MusicBeePlugin
             else
             {
                 LayoutPanel(_panel);
-            }
+            }*/
         }
 
         private void LayoutPanel(Control _panel)
@@ -364,7 +376,7 @@ namespace MusicBeePlugin
             this.tabControl.Dock = DockStyle.Fill;
             this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
-            ClearAllTagPages();
+            //ClearAllTagPages();
             AddTabPages();
         }
 
@@ -383,6 +395,26 @@ namespace MusicBeePlugin
                     AddInvisibleTagPanel(tagsStorage.MetaDataType);
                 }
             }
+            // TODO removing tabPages is not working properly
+            List<string> tabPagesToRemove = new List<string>();
+            foreach (TabPage tabPage in this.tabPageList.Values)
+            {
+                string tagName = tabPage.Text;
+                if(!settingsStorage.TagsStorages.ContainsKey(tagName))
+                {
+                    RemoveTabPage(tagName, tabPage);
+                    tabPagesToRemove.Add(tagName);
+                }
+            }
+            foreach (string tagPageName in tabPagesToRemove)
+            {
+                this.tabPageList.Remove(tagPageName);
+            }
+        }
+
+        private void RemoveTabPage(string tabName, TabPage tabPage)
+        {
+            this.tabControl.TabPages.Remove(tabPage);
         }
 
         private void TabControl1_Selected(Object sender, TabControlEventArgs e)
@@ -409,6 +441,8 @@ namespace MusicBeePlugin
             ChecklistBoxPanel checkListBox = CreateChecklistBoxForTag(tagName);
 
             this.ignoreEventFromHandler = false;
+
+
             page.Controls.Add(checkListBox);
         }
 
@@ -420,7 +454,15 @@ namespace MusicBeePlugin
             {
                 string tagName = tagsStorage.GetTagName();
                 TabPage page = GetTagPage(tagName);
-                page.Controls.Clear();
+                if (page.Controls.Count > 0)
+                {
+                    ChecklistBoxPanel checklistBoxPanel = (ChecklistBoxPanel)page.Controls[0];
+                    checklistBoxPanel.RemoveItemCheckEventHandler();
+                }
+                page.Invoke((MethodInvoker)delegate
+                {
+                    page.Controls.Clear();
+                });
             }
 
             // add checklistBox to visible panel 
@@ -465,11 +507,11 @@ namespace MusicBeePlugin
             return tabPage;
         }
 
-        private void ClearAllTagPages()
+        /*private void ClearAllTagPages()
         {
             this.tabPageList.Clear();
             this.tabControl.TabPages.Clear();
-        }
+        }*/
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
         // return the list of ToolStripMenuItems that will be displayed

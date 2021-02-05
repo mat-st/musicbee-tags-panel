@@ -173,6 +173,7 @@ namespace MusicBeePlugin
         public void ClearTagsListInSettings()
         {
             this.lstTags.Items.Clear();
+            this.tagsStorage.Clear();
         }
 
         public void ImportCsv()

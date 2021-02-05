@@ -28,16 +28,6 @@ namespace MusicBeePlugin
             return tagList;
         }
 
-        // TODO check why it isn't used
-        internal void SetTags(Dictionary<String, CheckState> tagList)
-        {
-            if (tagList == null)
-            {
-                tagList = new Dictionary<string, CheckState>();
-            }
-            this.tagList = tagList;
-        }
-
      
         public string GetTagName()
         {

@@ -55,14 +55,6 @@ namespace MusicBeePlugin
             return true;
         }
 
-        public TagsPanelSettingsPanel GetPanel(string tagName)
-        {   
-            //TODO Check if still needed
-            TagsPanelSettingsPanel tagsPanelSettingsPanel;
-            tagPanels.TryGetValue(tagName, out tagsPanelSettingsPanel);
-            // TODO check if panel exists to prevent exceptions
-            return tagsPanelSettingsPanel;
-        }
 
         private void AddTagPage()
         {
@@ -74,7 +66,6 @@ namespace MusicBeePlugin
                 storage.MetaDataType = form.GetMetaDataType();
                 if (storage.MetaDataType != null && AddPanel(storage))
                 {
-                    settingsStorage.TagsStorages[storage.MetaDataType] = storage;
                     form.Close();
                 }
             }
