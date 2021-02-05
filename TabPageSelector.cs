@@ -12,7 +12,8 @@ namespace MusicBeePlugin
 {
     public partial class TabPageSelectorForm : Form
     {
-        HashSet<string> blacklist = new HashSet<string> { 
+        // Tags in this list will be ignored in the TagSelector form
+        readonly HashSet<string> blacklist = new HashSet<string> { 
             MetaDataType.Artwork.ToString("g"),
             MetaDataType.DiscNo.ToString("g"),
             MetaDataType.DiscCount.ToString("g"),

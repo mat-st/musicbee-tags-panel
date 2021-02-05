@@ -94,12 +94,6 @@
     <Compile Include="CueTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FormSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormSettings.Designer.cs">
-      <DependentUpon>FormSettings.cs</DependentUpon>
-    </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="SettingsStorage.cs" />
@@ -156,9 +150,6 @@
   <ItemGroup>
     <EmbeddedResource Include="ChecklistBoxPanel.resx">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormSettings.resx">
-      <DependentUpon>FormSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabPageSelector.resx">
       <DependentUpon>TabPageSelector.cs</DependentUpon>

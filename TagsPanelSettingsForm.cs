@@ -32,9 +32,7 @@ namespace MusicBeePlugin
             // Tooltips
 
             toolTipAddTagPage.SetToolTip(this.btnAddTabPage, "Add & select a new tag and a new tabpage");
-
         }
-
 
 
         private bool AddPanel(TagsStorage storage)
@@ -58,12 +56,50 @@ namespace MusicBeePlugin
         }
 
         public TagsPanelSettingsPanel GetPanel(string tagName)
-        {
+        {   
+            //TODO Check if still needed
             TagsPanelSettingsPanel tagsPanelSettingsPanel;
             tagPanels.TryGetValue(tagName, out tagsPanelSettingsPanel);
             // TODO check if panel exists to prevent exceptions
             return tagsPanelSettingsPanel;
         }
+
+        private void AddTagPage()
+        {
+            TabPageSelectorForm form = new TabPageSelectorForm();
+            DialogResult result = form.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                TagsStorage storage = new TagsStorage();
+                storage.MetaDataType = form.GetMetaDataType();
+                if (storage.MetaDataType != null && AddPanel(storage))
+                {
+                    settingsStorage.TagsStorages[storage.MetaDataType] = storage;
+                    form.Close();
+                }
+            }
+            else if (result == DialogResult.Cancel)
+            {
+                form.Close();
+            }
+        }
+
+        private void RemoveTagPage()
+        {
+            TabPage tabToRemove = this.tabControlSettings.SelectedTab;
+            if (tabToRemove == null)
+            {
+                return;
+            }
+            string tagName = tabToRemove.Text;
+            this.tabControlSettings.TabPages.Remove(tabToRemove);
+            settingsStorage.RemoveTagStorage(tagName);
+            tagPanels.Remove(tagName);
+        }
+
+        /***************************
+        LINKLABELS
+        ***************************/
 
         private void LinkAbout_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -87,27 +123,13 @@ namespace MusicBeePlugin
             System.Diagnostics.Process.Start("https://github.com/mat-st/musicbee-tags-panel");
         }
 
-
+        /***************************
+        BUTTONS
+        ***************************/
 
         private void Btn_AddTagPage_Click(object sender, EventArgs e)
         {
-
-            TabPageSelectorForm form = new TabPageSelectorForm();
-            DialogResult result = form.ShowDialog(this);
-            if (result == DialogResult.OK)
-            {
-                TagsStorage storage = new TagsStorage();
-                storage.MetaDataType = form.GetMetaDataType();
-                if (storage.MetaDataType != null && AddPanel(storage))
-                {
-                    settingsStorage.TagsStorages[storage.MetaDataType] = storage;
-                    form.Close();
-                }
-            }
-            else if (result == DialogResult.Cancel)
-            {
-                form.Close();
-            }
+            AddTagPage();            
         }
 
         private void BtnRemoveTagPage_Click(object sender, EventArgs e)
@@ -115,18 +137,14 @@ namespace MusicBeePlugin
             ShowDialogToRemoveTagPage();
         }
 
-        private void RemoveTagPage()
+        private void Btn_Save_Click(object sender, EventArgs e)
         {
-            TabPage tabToRemove = this.tabControlSettings.SelectedTab;
-            if (tabToRemove == null)
-            {
-                return;
-            }
-            string tagName = tabToRemove.Text;
-            this.tabControlSettings.TabPages.Remove(tabToRemove);
-            settingsStorage.RemoveTagStorage(tagName);
-            tagPanels.Remove(tagName);
+            
         }
+
+        
+
+        
 
         /***************************
         DIALOGS
@@ -143,5 +161,12 @@ namespace MusicBeePlugin
                 return;
             }
         }
+
+        private void LinkBuyCoffee_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // TODO set link to donation page
+            System.Diagnostics.Process.Start("https://duckduckgo.com");
+        }
+
     }
 }

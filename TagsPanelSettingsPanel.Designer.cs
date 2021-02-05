@@ -41,7 +41,7 @@ namespace MusicBeePlugin
             // 
             // BtnImportCSV
             // 
-            this.BtnImportCSV.Location = new System.Drawing.Point(6, 200);
+            this.BtnImportCSV.Location = new System.Drawing.Point(6, 201);
             this.BtnImportCSV.Name = "BtnImportCSV";
             this.BtnImportCSV.Size = new System.Drawing.Size(248, 23);
             this.BtnImportCSV.TabIndex = 4;
@@ -62,7 +62,7 @@ namespace MusicBeePlugin
             // 
             // btnRemTag
             // 
-            this.btnRemTag.Location = new System.Drawing.Point(146, 130);
+            this.btnRemTag.Location = new System.Drawing.Point(146, 133);
             this.btnRemTag.Name = "btnRemTag";
             this.btnRemTag.Size = new System.Drawing.Size(110, 41);
             this.btnRemTag.TabIndex = 2;
@@ -72,7 +72,7 @@ namespace MusicBeePlugin
             // 
             // btnAddTag
             // 
-            this.btnAddTag.Location = new System.Drawing.Point(6, 130);
+            this.btnAddTag.Location = new System.Drawing.Point(6, 133);
             this.btnAddTag.Name = "btnAddTag";
             this.btnAddTag.Size = new System.Drawing.Size(110, 41);
             this.btnAddTag.TabIndex = 1;
@@ -85,7 +85,7 @@ namespace MusicBeePlugin
             this.cbEnableAlphabeticalTagSort.AutoSize = true;
             this.cbEnableAlphabeticalTagSort.Checked = true;
             this.cbEnableAlphabeticalTagSort.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(6, 177);
+            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(6, 179);
             this.cbEnableAlphabeticalTagSort.Name = "cbEnableAlphabeticalTagSort";
             this.cbEnableAlphabeticalTagSort.Size = new System.Drawing.Size(146, 17);
             this.cbEnableAlphabeticalTagSort.TabIndex = 3;
@@ -94,7 +94,7 @@ namespace MusicBeePlugin
             // 
             // btnClearTagSettings
             // 
-            this.btnClearTagSettings.Location = new System.Drawing.Point(5, 258);
+            this.btnClearTagSettings.Location = new System.Drawing.Point(5, 257);
             this.btnClearTagSettings.Name = "btnClearTagSettings";
             this.btnClearTagSettings.Size = new System.Drawing.Size(248, 23);
             this.btnClearTagSettings.TabIndex = 6;
@@ -114,7 +114,7 @@ namespace MusicBeePlugin
             // 
             // TxtNewTagInput
             // 
-            this.TxtNewTagInput.Location = new System.Drawing.Point(6, 107);
+            this.TxtNewTagInput.Location = new System.Drawing.Point(6, 106);
             this.TxtNewTagInput.Name = "TxtNewTagInput";
             this.TxtNewTagInput.Size = new System.Drawing.Size(250, 22);
             this.TxtNewTagInput.TabIndex = 0;

@@ -129,7 +129,7 @@ namespace MusicBeePlugin
         public void AddNewTagToList()
         {
             string newTag = this.TxtNewTagInput.Text.Trim();
-            if (newTag.Length <= 0)
+            if (newTag.Length <= 0 || newTag == "Please Enter A Tag")
             {
                 return;
             }
@@ -175,24 +175,8 @@ namespace MusicBeePlugin
             this.lstTags.Items.Clear();
         }
 
-
-
-        /***************************
-        BUTTONS
-        ***************************/
-        private void BtnAddTag_Click(object sender, EventArgs e)
+        public void ImportCsv()
         {
-            AddNewTagToList();
-        }
-
-        private void BtnRemTag_Click(object sender, EventArgs e)
-        {
-            RemoveSelectedTagFromList();
-        }
-
-        private void BtnImportCsv_Click(object sender, EventArgs e)
-        {
-
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
             openFileDialog1.CheckFileExists = true;
@@ -207,13 +191,13 @@ namespace MusicBeePlugin
 
             openFileDialog1.ShowDialog();
 
-            string importCSVfilename = openFileDialog1.FileName;
-            if (importCSVfilename.Length <= 0)
+            string importCsvFilename = openFileDialog1.FileName;
+            if (importCsvFilename.Length <= 0)
             {
                 return;
             }
 
-            StreamReader reader = new StreamReader(File.OpenRead(importCSVfilename));
+            StreamReader reader = new StreamReader(File.OpenRead(importCsvFilename));
             List<string> listA = new List<String>();
 
             while (!reader.EndOfStream)
@@ -235,13 +219,13 @@ namespace MusicBeePlugin
                 }
                 if (!this.lstTags.Items.Contains(importtag))
                 {
+                    this.tagsStorage.TagList[importtag] = CheckState.Unchecked;
                     this.lstTags.Items.Add(importtag);
                 }
             }
         }
 
-
-        private void BtnExportCsv_Click(object sender, EventArgs e)
+        public void ExportCsv()
         {
             // TODO complete export CSV functionality and move import and export to seperate methods
 
@@ -260,7 +244,6 @@ namespace MusicBeePlugin
 
             if (saveFileDialog1.FileName != "" && saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-
                 string exportCSVFilename = saveFileDialog1.FileName;
 
                 StreamWriter csvWriter = new StreamWriter(File.OpenWrite(exportCSVFilename));
@@ -275,7 +258,31 @@ namespace MusicBeePlugin
             }
             else
                 return;
+        }
 
+
+        /***************************
+        BUTTONS
+        ***************************/
+        private void BtnAddTag_Click(object sender, EventArgs e)
+        {
+            AddNewTagToList();
+        }
+
+        private void BtnRemTag_Click(object sender, EventArgs e)
+        {
+            RemoveSelectedTagFromList();
+        }
+
+        private void BtnImportCsv_Click(object sender, EventArgs e)
+        {
+            ImportCsv();
+        }
+
+
+        private void BtnExportCsv_Click(object sender, EventArgs e)
+        {
+            ExportCsv();
         }
         private void BtnClearTagSettings_Click(object sender, EventArgs e)
         {

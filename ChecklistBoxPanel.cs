@@ -22,8 +22,9 @@ namespace MusicBeePlugin
             
             InitializeComponent();
 
-            this.checkedListBox1.DisplayMember = "occasion";
-            this.checkedListBox1.ValueMember = "selected";
+            // TODO check if still necessary
+            //this.checkedListBox1.DisplayMember = "tag";
+            //this.checkedListBox1.ValueMember = "selected";
 
             if (data != null)
             {
@@ -49,12 +50,14 @@ namespace MusicBeePlugin
 
         private void StylePanel()
         {
+            // apply current skin colors to tag panel
             BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
             checkedListBox1.BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
             checkedListBox1.ForeColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentForeground);
         }
         public Color GetElementColor(SkinElement skinElement, ElementState elementState, ElementComponent elementComponent)
         {
+            //get current skin colors
             int colorValue = this.mbApiInterface.Setting_GetSkinElementColour(skinElement, elementState, elementComponent);
             return Color.FromArgb(colorValue);
         }
@@ -71,8 +74,10 @@ namespace MusicBeePlugin
             this.checkedListBox1.ItemCheck -= this.eventHandler;
         }
 
+        
         private void RemoveClickEvent(CheckedListBox b)
         {
+            // TODO check if still necessary
             System.Reflection.FieldInfo f1 = typeof(Control).GetField("ItemCheck",
                 System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
             object obj = f1.GetValue(b);
