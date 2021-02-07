@@ -93,6 +93,11 @@
     </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SettingsStorage.cs" />
     <Compile Include="mb_TagsPanelPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -147,6 +152,10 @@
   <ItemGroup>
     <EmbeddedResource Include="ChecklistBoxPanel.resx">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="TabPageSelector.resx">
       <DependentUpon>TabPageSelector.cs</DependentUpon>

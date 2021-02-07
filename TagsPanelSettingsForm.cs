@@ -11,6 +11,13 @@ namespace MusicBeePlugin
 {
     public partial class TagsPanelSettingsForm : Form
     {
+        // TODO set link to donation page
+        const string BUYUSACOFFEE = "https://duckduckgo.com";
+        const string GITHUBLINK = "https://github.com/mat-st/musicbee-tags-panel";
+
+        const string TOOLTIPADDTAGPAGE = "Add & select a new tag and a new tabpage";
+
+
         private Dictionary<string, TagsPanelSettingsPanel> tagPanels = new Dictionary<string, TagsPanelSettingsPanel>();
         private SettingsStorage settingsStorage;
 
@@ -31,7 +38,7 @@ namespace MusicBeePlugin
 
             // Tooltips
 
-            toolTipAddTagPage.SetToolTip(this.btnAddTabPage, "Add & select a new tag and a new tabpage");
+            toolTipAddTagPage.SetToolTip(this.btnAddTabPage, TOOLTIPADDTAGPAGE);
         }
 
 
@@ -103,15 +110,15 @@ namespace MusicBeePlugin
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void ShowWarningMetaDataTypeExists()
+        private void LinkBuyCoffee_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            MessageBox.Show("This Metadata Type was already added", "Tag exists already",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            System.Diagnostics.Process.Start(BUYUSACOFFEE);
         }
+
 
         private void LinkGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/mat-st/musicbee-tags-panel");
+            System.Diagnostics.Process.Start(GITHUBLINK);
         }
 
         /***************************
@@ -126,11 +133,6 @@ namespace MusicBeePlugin
         private void BtnRemoveTagPage_Click(object sender, EventArgs e)
         {
             ShowDialogToRemoveTagPage();
-        }
-
-        private void Btn_Save_Click(object sender, EventArgs e)
-        {
-            
         }
 
         
@@ -153,11 +155,12 @@ namespace MusicBeePlugin
             }
         }
 
-        private void LinkBuyCoffee_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void ShowWarningMetaDataTypeExists()
         {
-            // TODO set link to donation page
-            System.Diagnostics.Process.Start("https://duckduckgo.com");
+            MessageBox.Show("This Metadata Type was already added", "Tag exists already",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+
 
     }
 }

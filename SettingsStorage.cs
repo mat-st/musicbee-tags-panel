@@ -116,6 +116,7 @@ namespace MusicBeePlugin
 
         public TagsStorage GetFirstOne()
         {
+            // TODO fox excepetion that occurs when starting MusicBee when no tag page is set
             return TagsStorages.Values.First();
         }
 
