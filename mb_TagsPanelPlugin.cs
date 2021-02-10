@@ -27,7 +27,7 @@ namespace MusicBeePlugin
         private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
         private Dictionary<string, TabPage> tabPageList;
 
- //       private TagsStorage tagsStorage;
+ 
 
         private Dictionary<String, CheckState> tagsFromFiles;
 
@@ -35,11 +35,8 @@ namespace MusicBeePlugin
         private TagsManipulation tagsManipulation;
         private string metaDataTypeName;
 
-        /*private void SetTagsStorage(string tagName)
-        {
-            tagsStorage = settingsStorage.GetTagsStorage(tagName);
-        }
-*/
+       
+
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             mbApiInterface = new MusicBeeApiInterface();
@@ -156,9 +153,20 @@ namespace MusicBeePlugin
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
         public void Close(PluginCloseReason reason)
         {
-            //ourPanel.Dispose();
-            ourPanel = null;
-            log.Info(reason.ToString("g"));
+        /*    
+         *    TODO: Check if it is possible to get                      the userdisbled reason
+         *    public enum PluginCloseReason
+        {
+            MusicBeeClosing = 1,
+            UserDisabled = 2,
+            StopNoUnload = 3
+        }*/
+
+
+        //ourPanel.Dispose();
+        ourPanel = null;
+
+            log.Info(reason.ToString("G"));
             log.Close();
         }
 
@@ -188,6 +196,7 @@ namespace MusicBeePlugin
             {
                 return;
             }
+
 
             MetaDataType metaDataType = 0;
             // perform some action depending on the notification type
@@ -220,6 +229,10 @@ namespace MusicBeePlugin
                     InvokeUpdateTagsTableData(ourPanel);
                     ourPanel.Invalidate();
                     ignoreForBatchSelect = false;
+                    break;
+                // TODO: For me to remember
+                case NotificationType.ApplicationWindowChanged:
+                    log.Debug("Application Window changes notification");
                     break;
             }
         }
@@ -295,7 +308,9 @@ namespace MusicBeePlugin
             //tagsStorage.SetTags(tagsFromFiles);
 
             UpdateTagsInPanelOnFileSelection();
+
             SetPanelEnabled(true);
+
         }
 
         private void UpdateTagsInPanelOnFileSelection()
@@ -400,11 +415,12 @@ namespace MusicBeePlugin
 
         private void CreateTabPanel()
         {
-            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(null, (PluginPanelDock)6);
+
+            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(this.tabControl, (PluginPanelDock)6);
+            // TODO 
             this.tabControl.Dock = DockStyle.Fill;
             this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
-            //ClearAllTagPages();
             AddTabPages();
         }
 
@@ -543,14 +559,19 @@ namespace MusicBeePlugin
 
         // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
         // return the list of ToolStripMenuItems that will be displayed
-        public List<ToolStripItem> GetHeaderMenuItems()
+        public List<ToolStripItem> GetMenuItems()
         {
             List<ToolStripItem> list = new List<ToolStripItem>();
-            list.Add(new ToolStripMenuItem("Tag-Panel Settings"));
-            list.Add(new ToolStripMenuItem("About"));
+            list.Add(new ToolStripMenuItem("Tag-Panel Settings", null, MenuSettingsClicked));
+            list.Add(new ToolStripMenuItem("About", null, ToolstripAbout_Clicked));
             return list;
         }
+        
 
+        private void ToolstripAbout_Clicked(object sender, EventArgs e)
+        {
+            MessageBox.Show("TODO: Link to About dialog box");  // Write your code here
+        }
 
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
