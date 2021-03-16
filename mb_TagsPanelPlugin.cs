@@ -15,11 +15,10 @@ namespace MusicBeePlugin
         private string[] selectedFileUrls = new string[] { };
         private Logger log;
 
-
         private bool ignoreEventFromHandler = true;
         private bool ignoreForBatchSelect = true;
 
-        private Control ourPanel;
+        private Control panel;
         private TabControl tabControl;
 
         private List<MetaDataType> tags = new List<MetaDataType>();
@@ -27,15 +26,13 @@ namespace MusicBeePlugin
         private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
         private Dictionary<string, TabPage> tabPageList;
 
- 
-
         private Dictionary<String, CheckState> tagsFromFiles;
 
         private SettingsStorage settingsStorage;
         private TagsManipulation tagsManipulation;
         private string metaDataTypeName;
 
-       
+        #region Initialise plugin
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -56,19 +53,16 @@ namespace MusicBeePlugin
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents);
             about.ConfigurationPanelHeight = 20;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
-            //createMenuItem();
-            // Application.EnableVisualStyles();
 
-            checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
-            tagsFromFiles = new Dictionary<String, CheckState>();
-            tabPageList = new Dictionary<string, TabPage>();
+            this.checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
+            this.tagsFromFiles = new Dictionary<String, CheckState>();
+            this.tabPageList = new Dictionary<string, TabPage>();
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
             tagsManipulation = new TagsManipulation(this.mbApiInterface);
 
             LoadSettings();
-
 
             // add Tags-Panel Settings to Tools Menu
             mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
@@ -83,23 +77,19 @@ namespace MusicBeePlugin
             log = new Logger(mbApiInterface);
         }
 
-        public void MenuSettingsClicked(object sender, EventArgs args)
+        #endregion
+
+        #region Settings dialog
+
+        private void LoadSettings()
         {
-            OpenSettingsDialog();
-           
-            SaveSettings();
+            this.settingsStorage.LoadSettingsWithFallback();
 
-            return;
-        }
-
-        public bool Configure(IntPtr panelHandle)
-        {
-            // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
-            // keep in mind the panel width is scaled according to the font the user has selected
-            // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
-            //TODO OpenSettingsDialog(); in configure panel
-
-            return false;
+            TagsStorage tagsStorage = this.settingsStorage.GetFirstOne();
+            if (tagsStorage != null)
+            {
+                this.metaDataTypeName = tagsStorage.MetaDataType;
+            }
         }
 
         private void OpenSettingsDialog()
@@ -107,183 +97,155 @@ namespace MusicBeePlugin
             SettingsStorage copy = settingsStorage.DeepCopy();
             TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(copy);
             DialogResult result = tagsPanelSettingsForm.ShowDialog();
-            if (result == DialogResult.OK)
+
+            if (result != DialogResult.OK)
             {
-                //TagsPanelSettingsPanel tagsPanelSettingsPanel = tagsPanelSettingsForm.GetPanel(tagsStorage.GetTagName());
-                settingsStorage = tagsPanelSettingsForm.SettingsStorage;
-                // TODO we probably need a tempSettingsStorage
-                //tempTags = tagsPanelSettingsPanel.GetTags();
-                // tempSortEnabled = tagsPanelSettingsPanel.IsSortEnabled();
-            } else
-            {
-                /*tempTags = new Dictionary<string, CheckState>();
-                tempSortEnabled = true;*/
+                return;
             }
+
+            settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+            // TODO we probably need a tempSettingsStorage
         }
 
-        // called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
-        // its up to you to figure out whether anything has changed and needs updating
+        /// <summary>
+        /// called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
+        /// </summary>
         public void SaveSettings()
         {
-            //tagsStorage.SetTags(tempTags);
-            //tagsStorage.Sorted = this.tempSortEnabled;
+            this.settingsStorage.SaveAllSettings();
 
-            settingsStorage.SaveAllSettings();
-
-            if (ourPanel != null)
+            if (this.panel != null)
             {
                 // TODO make sure everything will be fine and keep you towel with you (always remember the 42!)
                 //ClearAllTagPages();
-                AddTabPages();
-                InvokeUpdateTagsTableData(ourPanel);
+                this.AddTabPages();
+                this.InvokeUpdateTagsTableData(this.panel);
             }
         }
 
-        private void LoadSettings()
-        {
-            settingsStorage.LoadSettingsWithFallback();
-            
-            TagsStorage tagsStorage = settingsStorage.GetFirstOne();
-            if (tagsStorage != null)
-            {
-                this.metaDataTypeName = tagsStorage.MetaDataType;
-            }
+        #endregion
+
+        #region Tag panels
+
+        private void AddVisibleTagPanel(string tagName)
+        {            
+            TabPage page = GetTagPage(tagName);
+            ChecklistBoxPanel checkListBox = CreateChecklistBoxForTag(tagName);
+            this.ignoreEventFromHandler = false;
+
+            page.Controls.Add(checkListBox);
         }
 
-        // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
-        public void Close(PluginCloseReason reason)
+        private void AddTabPages()
         {
-        /*    
-         *    TODO: Check if it is possible to get                      the userdisbled reason
-         *    public enum PluginCloseReason
-        {
-            MusicBeeClosing = 1,
-            UserDisabled = 2,
-            StopNoUnload = 3
-        }*/
-
-
-        //ourPanel.Dispose();
-        ourPanel = null;
-
-            log.Info(reason.ToString("G"));
-            log.Close();
-        }
-
-        // uninstall this plugin - clean up any persisted files
-        public void Uninstall()
-        {
-            // Delete settings file
-            string settingsFileName = settingsStorage.GetSettingsPath();
-            if (System.IO.File.Exists(settingsFileName))
+            TagsStorage firstOne = null;
+            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
             {
-                System.IO.File.Delete(settingsFileName);
+                AddVisibleTagPanel(tagsStorage.MetaDataType);
+
+                if (null == firstOne)
+                {
+                    firstOne = tagsStorage;
+                }
             }
-
-            // Delete log file
-            string logFileName = log.GetLogFilePath();
-            if (System.IO.File.Exists(logFileName))
+            // TODO removing tabPages is not working properly
+            List<string> tabPagesToRemove = new List<string>();
+            foreach (TabPage tabPage in this.tabPageList.Values)
             {
-                System.IO.File.Delete(logFileName);
+                string tagName = tabPage.Text;
+                if(!settingsStorage.TagsStorages.ContainsKey(tagName))
+                {
+                    this.RemoveTabPage(tagName, tabPage);
+                    tabPagesToRemove.Add(tagName);
+                }
+            }
+            foreach (string tagPageName in tabPagesToRemove)
+            {
+                this.tabPageList.Remove(tagPageName);
             }
         }
-
-        // receive event notifications from MusicBee
-        // you need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event
-        public void ReceiveNotification(string sourceFileUrl, NotificationType type)
+       
+        /// <summary>
+        /// Removes a tab from the panel.
+        /// </summary>
+        /// <param name="tabName"></param>
+        /// <param name="tabPage"></param>
+        private void RemoveTabPage(string tabName, TabPage tabPage)
         {
-            if (ourPanel == null)
-            {
-                return;
-            }
-
-
-            MetaDataType metaDataType = 0;
-            // perform some action depending on the notification type
-            switch (type)
-            {
-                case NotificationType.PluginStartup:
-                    metaDataType = GetVisibleTabPageName();
-                    if (metaDataType == 0) { return; }
-                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
-                    break;
-                case NotificationType.TrackChanged:
-                    metaDataType = GetVisibleTabPageName();
-                    if (metaDataType == 0) { return; }
-                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
-                    ignoreForBatchSelect = true;
-                    InvokeUpdateTagsTableData(ourPanel);
-                    ourPanel.Invalidate();
-                    ignoreForBatchSelect = false;
-                    break;
-                case NotificationType.TagsChanging:
-                    if (ignoreEventFromHandler)
-                    {
-                        break;
-                    }
-                    ignoreForBatchSelect = true;
-                    mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    metaDataType = GetVisibleTabPageName();
-                    if (metaDataType == 0) { return; }
-                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
-                    InvokeUpdateTagsTableData(ourPanel);
-                    ourPanel.Invalidate();
-                    ignoreForBatchSelect = false;
-                    break;
-                // TODO: For me to remember
-                case NotificationType.ApplicationWindowChanged:
-                    log.Debug("Application Window changes notification");
-                    break;
-            }
+            this.tabControl.TabPages.Remove(tabPage);
         }
+
+        private TabPage GetTagPage(string tagName)
+        {
+            TabPage tabPage;
+
+            // TODO check why this adds more pages than it should
+            // we cannot recreate on every invocation of GetTagPage
+            if (this.tabPageList.TryGetValue(tagName, out tabPage))
+            {
+                this.tabPageList.Remove(tagName);
+                this.tabControl.TabPages.Remove(tabPage);
+            }
+
+            if (this.tabPageList.ContainsKey(tagName))
+            {
+                return tabPage;
+            }
+
+            tabPage = new TabPage(tagName);
+            this.tabPageList.Add(tagName, tabPage);
+            this.tabControl.TabPages.Add(tabPage);
+
+            return tabPage;
+        }
+
+        private ChecklistBoxPanel CreateChecklistBoxForTag(string tagName)
+        {
+            ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
+            checkListBox.AddDataSource(this.settingsStorage.GetTagsStorage(tagName).GetTags());
+
+            checkListBox.Dock = DockStyle.Fill;
+            // TODO only do this once 
+            checkListBox.AddItemCheckEventHandler(
+                new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck)
+            );
+
+            return checkListBox;
+        }
+
+        private ChecklistBoxPanel GetCheckListBoxPanel(string tagName)
+        {
+            ChecklistBoxPanel checkListBox;
+
+            if (this.checklistBoxList.TryGetValue(tagName, out checkListBox))
+            {
+                checklistBoxList.Remove(tagName);
+            }
+
+            checkListBox = new ChecklistBoxPanel(mbApiInterface);
+            checklistBoxList.Add(tagName, checkListBox);
+            return checkListBox;
+        }
+
+        private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
+        {
+            MetaDataType metaDataType = GetVisibleTabPageName();
+            if (metaDataType == 0) { return; }
+            tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, metaDataType);
+        }
+
+        #endregion
+
+        #region Helper methods
 
         public MetaDataType GetVisibleTabPageName()
         {
-                if (this.metaDataTypeName == null) { return 0; }
-
-                return (MetaDataType)Enum.Parse(typeof(MetaDataType), this.metaDataTypeName, true);
-                
-        }
-
-        public int OnDockablePanelCreated(Control panel)
-        {
-            ourPanel = panel;
-            AddControls(ourPanel);
-            InvokeUpdateTagsTableData(ourPanel);
-
-            return 0;
-        }
-
-        private void SetPanelEnabled(bool enabled = true)
-        {
-            /*ourPanel.Invoke((MethodInvoker)delegate
-            {
-                ourPanel.Enabled = enabled;
-            });*/
-            if (ourPanel.IsHandleCreated)
-            {
-                ourPanel.Invoke(new Action(() =>
-                {
-                    ourPanel.Enabled = enabled;
-                }));
-            }
-            else
-            {
-                ourPanel.Enabled = enabled;
-            }
-        }
-
-        public void OnSelectedFilesChanged(string[] filenames)
-        {
-            if (ourPanel == null)
-            {
-                return;
+            if (this.metaDataTypeName == null) 
+            { 
+                return 0; 
             }
 
-            // important to have as a global variable
-            selectedFileUrls = filenames;
-
-            SetTagsFromFilesInPanel(filenames);
+            return (MetaDataType)Enum.Parse(typeof(MetaDataType), this.metaDataTypeName, true);   
         }
 
         private TagsStorage GetCurrentTagsStorage()
@@ -292,51 +254,24 @@ namespace MusicBeePlugin
             if (metaDataType == 0) { return null; }
             return settingsStorage.GetTagsStorage(metaDataType.ToString());
         }
-        private void SetTagsFromFilesInPanel(string[] filenames)
+
+        private void ClearAllTagPages()
         {
-            if (filenames != null && filenames.Length > 0)
-            {
-                TagsStorage currentTagsStorage = GetCurrentTagsStorage();
-                if (currentTagsStorage == null) { return; }
-              
-                tagsFromFiles = tagsManipulation.CombineTagLists(filenames, currentTagsStorage);
-            }
-            else
-            {
-                tagsFromFiles.Clear();
-            }
-            //tagsStorage.SetTags(tagsFromFiles);
+            this.tabPageList.Clear();
+            this.tabControl.TabPages.Clear();
+        }
 
-            UpdateTagsInPanelOnFileSelection();
-
-            SetPanelEnabled(true);
+        private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
+        {
+            ChecklistBoxPanel checklistBoxPanel;
+            this.checklistBoxList.TryGetValue(tagName, out checklistBoxPanel);
+            if (null != checklistBoxPanel)
+            {
+                checklistBoxPanel.AddDataSource(tags);
+            }
 
         }
 
-        private void UpdateTagsInPanelOnFileSelection()
-        {
-            ignoreEventFromHandler = true;
-            ignoreForBatchSelect = true;
-            InvokeUpdateTagsTableData(ourPanel);
-            ourPanel.Invalidate();
-            ignoreEventFromHandler = false;
-            ignoreForBatchSelect = false;
-        }
-
-        private void InvokeUpdateTagsTableData(Control panel)
-        {
-            if (panel.IsHandleCreated)
-            {
-                panel.Invoke((MethodInvoker)delegate
-                {
-                    UpdateTagsTableData(panel);
-                });
-            }
-            else
-            {
-                UpdateTagsTableData(panel);
-            }
-        }
         private void UpdateTagsTableData(Control panel)
         {
             bool add = true;
@@ -370,95 +305,52 @@ namespace MusicBeePlugin
             panel.Invalidate();
         }
 
-        private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
+        private void InvokeUpdateTagsTableData(Control panel)
         {
-            ChecklistBoxPanel checklistBoxPanel;
-            this.checklistBoxList.TryGetValue(tagName, out checklistBoxPanel);
-            if (null != checklistBoxPanel)
+            if (panel.IsHandleCreated)
             {
-                checklistBoxPanel.AddDataSource(tags);
+                panel.Invoke((MethodInvoker)delegate
+                {
+                    UpdateTagsTableData(panel);
+                });
+
+                return;
             }
+
+            UpdateTagsTableData(panel);    
         }
 
-        private void AddControls(Control _panel)
+        #endregion
+
+        #region Event handlers
+
+        public void MenuSettingsClicked(object sender, EventArgs args)
         {
-            if (_panel == null)
+            OpenSettingsDialog();
+            SaveSettings();
+
+            return;
+        }
+
+        private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (ignoreForBatchSelect)
             {
                 return;
             }
-            if (_panel.IsHandleCreated)
+
+            int index = e.Index;
+            CheckState state = e.NewValue;
+            string name = ((CheckedListBox)sender).Items[index].ToString();
+
+            ignoreEventFromHandler = true;
+            SetTagsInPanel(this.selectedFileUrls, state, name);
+            if (this.panel != null)
             {
-                _panel.Invoke((MethodInvoker)delegate
-                {
-                    LayoutPanel(_panel);
-                });
+                this.panel.Invalidate();
             }
-            else
-            {
-                LayoutPanel(_panel);
-            }
-        }
-
-        private void LayoutPanel(Control _panel)
-        {
-            CreateTabPanel();
-
-            _panel.Enabled = false;
-            _panel.SuspendLayout();
-            _panel.Controls.AddRange(new Control[]
-            {
-                  this.tabControl
-            });
-            _panel.ResumeLayout();
-
-        }
-
-        private void CreateTabPanel()
-        {
-
-            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(this.tabControl, (PluginPanelDock)6);
-            // TODO 
-            this.tabControl.Dock = DockStyle.Fill;
-            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
-
-            AddTabPages();
-        }
-
-        private void AddTabPages()
-        {
-            TagsStorage firstOne = null;
-            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
-            {
-                if (null == firstOne)
-                {
-                    AddVisibleTagPanel(tagsStorage.MetaDataType);
-                    firstOne = tagsStorage;
-                }
-                else
-                {
-                    AddInvisibleTagPanel(tagsStorage.MetaDataType);
-                }
-            }
-            // TODO removing tabPages is not working properly
-            List<string> tabPagesToRemove = new List<string>();
-            foreach (TabPage tabPage in this.tabPageList.Values)
-            {
-                string tagName = tabPage.Text;
-                if(!settingsStorage.TagsStorages.ContainsKey(tagName))
-                {
-                    RemoveTabPage(tagName, tabPage);
-                    tabPagesToRemove.Add(tagName);
-                }
-            }
-            foreach (string tagPageName in tabPagesToRemove)
-            {
-                this.tabPageList.Remove(tagPageName);
-            }
-        }
-
-        private void RemoveTabPage(string tabName, TabPage tabPage)
-        {
-            this.tabControl.TabPages.Remove(tabPage);
+            mbApiInterface.MB_RefreshPanels();
+            ignoreEventFromHandler = false;
         }
 
         private void TabControl1_Selected(Object sender, TabControlEventArgs e)
@@ -473,24 +365,66 @@ namespace MusicBeePlugin
             SwitchVisibleTagPanel(metaDataTypeName);
         }
 
-        private void AddInvisibleTagPanel(string tagName)
+        private void ToolstripAbout_Clicked(object sender, EventArgs e)
         {
-            GetTagPage(tagName);
+            MessageBox.Show("TODO: Link to About dialog box");  // Write your code here
         }
 
-        private void AddVisibleTagPanel(string tagName)
-        {            
-            TabPage page = GetTagPage(tagName);
+        #endregion
 
-            ChecklistBoxPanel checkListBox = CreateChecklistBoxForTag(tagName);
+        #region Controls
 
-            this.ignoreEventFromHandler = false;
-
-
-            page.Controls.Add(checkListBox);
+        private void SetPanelEnabled(bool enabled = true)
+        {
+            this.panel.Invoke((MethodInvoker)delegate
+            {
+                this.panel.Enabled = enabled;
+            });
+            if (this.panel.IsHandleCreated)
+            {
+                this.panel.Invoke(new Action(() =>
+                {
+                    this.panel.Enabled = enabled;
+                }));
+            }
+            else
+            {
+                this.panel.Enabled = enabled;
+            }
         }
 
+        private void UpdateTagsInPanelOnFileSelection()
+        {
+            ignoreEventFromHandler = true;
+            ignoreForBatchSelect = true;
+            InvokeUpdateTagsTableData(this.panel);
+            this.panel.Invalidate();
+            ignoreEventFromHandler = false;
+            ignoreForBatchSelect = false;
+        }
 
+        private void SetTagsFromFilesInPanel(string[] filenames)
+        {
+            if (filenames != null && filenames.Length > 0)
+            {
+                TagsStorage currentTagsStorage = GetCurrentTagsStorage();
+                if (currentTagsStorage == null) { return; }
+
+                tagsFromFiles = tagsManipulation.CombineTagLists(filenames, currentTagsStorage);
+            }
+            else
+            {
+                tagsFromFiles.Clear();
+            }
+            // TODO check again
+            // tagsStorage.SetTags(tagsFromFiles);
+
+            UpdateTagsInPanelOnFileSelection();
+
+            SetPanelEnabled(true);
+        }
+
+        // TODO think of another location
         private void SwitchVisibleTagPanel(string visibleTag)
         {
             // remove checklistBox from all panels
@@ -514,51 +448,187 @@ namespace MusicBeePlugin
             SetTagsFromFilesInPanel(this.selectedFileUrls);
         }
 
-        private ChecklistBoxPanel CreateChecklistBoxForTag(string tagName)
+        private void CreateTabPanel()
         {
-            ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
-            checkListBox.AddDataSource(this.settingsStorage.GetTagsStorage(tagName).GetTags());
+            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(this.tabControl, (PluginPanelDock)6);
+            // TODO 
+            this.tabControl.Dock = DockStyle.Fill;
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
-            checkListBox.Dock = DockStyle.Fill;
-            // TODO only do this once 
-            checkListBox.AddItemCheckEventHandler(
-                new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck)
-            );
-
-            return checkListBox;
+            AddTabPages();
         }
 
-        private ChecklistBoxPanel GetCheckListBoxPanel(string tagName)
+        private void LayoutPanel(Control panel)
         {
-            ChecklistBoxPanel checkListBox;
-            if (!this.checklistBoxList.TryGetValue(tagName, out checkListBox))
+            CreateTabPanel();
+
+            panel.Enabled = false;
+            panel.SuspendLayout();
+            panel.Controls.AddRange(new Control[]
             {
-                checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                checklistBoxList.Add(tagName, checkListBox);
-            }
-            return checkListBox;
+                  this.tabControl
+            });
+            panel.ResumeLayout();
         }
-
-        private TabPage GetTagPage(string tagName)
+        
+        private void AddControls(Control panel)
         {
-            TabPage tabPage;
-            if (!this.tabPageList.TryGetValue(tagName, out tabPage))
+            if (panel == null)
             {
-                tabPage = new TabPage(tagName);
-                this.tabPageList.Add(tagName, tabPage);
-                this.tabControl.TabPages.Add(tabPage);
+                return;
             }
-            return tabPage;
+
+            if (panel.IsHandleCreated)
+            {
+                panel.Invoke((MethodInvoker)delegate
+                {
+                    LayoutPanel(panel);
+                });
+
+                return;
+            }
+            
+            LayoutPanel(panel);
         }
 
-        /*private void ClearAllTagPages()
-        {
-            this.tabPageList.Clear();
-            this.tabControl.TabPages.Clear();
-        }*/
+        #endregion
 
-        // presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked
-        // return the list of ToolStripMenuItems that will be displayed
+        #region MusicBee
+
+        /// <summary>
+        /// MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
+        /// </summary>
+        /// <param name="reason">The reason why MusicBee has closed the plugin.</param>
+        public void Close(PluginCloseReason reason)
+        {
+            /*    
+             *    TODO: Check if it is possible to get                      the userdisbled reason
+             *    public enum PluginCloseReason
+            {
+                MusicBeeClosing = 1,
+                UserDisabled = 2,
+                StopNoUnload = 3
+            }*/ 
+
+
+            //this.panel.Dispose();
+            this.panel = null;
+
+            log.Info(reason.ToString("G"));
+            log.Close();
+        }
+
+        /// <summary>
+        /// uninstall this plugin - clean up any persisted files
+        /// </summary>
+        public void Uninstall()
+        {
+            // Delete settings file
+            string settingsFileName = settingsStorage.GetSettingsPath();
+            if (System.IO.File.Exists(settingsFileName))
+            {
+                System.IO.File.Delete(settingsFileName);
+            }
+
+            // Delete log file
+            string logFileName = log.GetLogFilePath();
+            if (System.IO.File.Exists(logFileName))
+            {
+                System.IO.File.Delete(logFileName);
+            }
+        }
+
+        /// <summary>
+        /// Receive event notifications from MusicBee.
+        /// You need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event.
+        /// </summary>
+        /// <param name="sourceFileUrl"></param>
+        /// <param name="type"></param>
+        public void ReceiveNotification(string sourceFileUrl, NotificationType type)
+        {
+            if (this.panel == null)
+            {
+                return;
+            }
+
+            MetaDataType metaDataType = 0;
+            // perform some action depending on the notification type
+            switch (type)
+            {
+                case NotificationType.PluginStartup:
+                    metaDataType = GetVisibleTabPageName();
+                    if (metaDataType == 0) { return; }
+                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
+                    break;
+                case NotificationType.TrackChanged:
+                    metaDataType = GetVisibleTabPageName();
+                    if (metaDataType == 0) { return; }
+                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
+                    ignoreForBatchSelect = true;
+                    InvokeUpdateTagsTableData(this.panel);
+                    this.panel.Invalidate();
+                    ignoreForBatchSelect = false;
+                    break;
+                case NotificationType.TagsChanging:
+                    if (ignoreEventFromHandler)
+                    {
+                        break;
+                    }
+                    ignoreForBatchSelect = true;
+                    mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
+                    metaDataType = GetVisibleTabPageName();
+                    if (metaDataType == 0) { return; }
+                    tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
+                    InvokeUpdateTagsTableData(this.panel);
+                    this.panel.Invalidate();
+                    ignoreForBatchSelect = false;
+                    break;
+                // TODO: For me to remember
+                case NotificationType.ApplicationWindowChanged:
+                    log.Debug("Application Window changes notification");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Event handler that is triggered by MusicBee when a dockable panel has been created.
+        /// </summary>
+        /// <param name="panel">A reference to the new panel.</param>
+        /// <returns>
+        /// &lt; 0 indicates to MusicBee this control is resizable and should be sized to fill the panel it is docked to in MusicBee<br/>
+        ///  = 0 indicates to MusicBee this control resizeable<br/>
+        /// &gt; 0 indicates to MusicBee the fixed height for the control. Note it is recommended you scale the height for high DPI screens(create a graphics object and get the DpiY value)
+        /// </returns>
+        public int OnDockablePanelCreated(Control panel)
+        {
+            this.panel = panel;
+            AddControls(panel);
+            InvokeUpdateTagsTableData(panel);
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Event handler triggered by MusicBee when the user selects files in the library view.
+        /// </summary>
+        /// <param name="filenames">List of selected files.</param>
+        public void OnSelectedFilesChanged(string[] filenames)
+        {
+            if (this.panel == null)
+            {
+                return;
+            }
+
+            // important to have as a global variable
+            selectedFileUrls = filenames;
+
+            SetTagsFromFilesInPanel(filenames);
+        }
+
+        /// <summary>
+        /// The presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked.
+        /// </summary>
+        /// <returns>Returns the list of ToolStripMenuItems that will be displayed.</returns>
         public List<ToolStripItem> GetMenuItems()
         {
             List<ToolStripItem> list = new List<ToolStripItem>();
@@ -566,39 +636,7 @@ namespace MusicBeePlugin
             list.Add(new ToolStripMenuItem("About", null, ToolstripAbout_Clicked));
             return list;
         }
-        
 
-        private void ToolstripAbout_Clicked(object sender, EventArgs e)
-        {
-            MessageBox.Show("TODO: Link to About dialog box");  // Write your code here
-        }
-
-        private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            if (ignoreForBatchSelect)
-            {
-                return;
-            }
-
-            int index = e.Index;
-            CheckState state = e.NewValue;
-            string name = ((CheckedListBox)sender).Items[index].ToString();
-
-            ignoreEventFromHandler = true;
-            SetTagsInPanel(this.selectedFileUrls, state, name);
-            if (ourPanel != null)
-            {
-                ourPanel.Invalidate();
-            }
-            mbApiInterface.MB_RefreshPanels();
-            ignoreEventFromHandler = false;
-        }
-
-        private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
-        {
-            MetaDataType metaDataType = GetVisibleTabPageName();
-            if (metaDataType == 0) { return; }
-            tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, metaDataType);
-        }
-    }    
+        #endregion
+    }
 }

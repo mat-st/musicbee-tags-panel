@@ -38,7 +38,7 @@ namespace MusicBeePlugin
         {
             LoadSettings();
 
-            if (null == TagsStorages)
+            if (null == this.TagsStorages)
             {
                 this.TagsStorages = new Dictionary<String, TagsStorage>();
                 TagsStorage tagsStorage = new TagsStorage();
@@ -116,7 +116,7 @@ namespace MusicBeePlugin
 
         public TagsStorage GetFirstOne()
         {
-            // TODO fox excepetion that occurs when starting MusicBee when no tag page is set
+            // TODO fix excepetion that occurs when starting MusicBee when no tag page is set
             return TagsStorages.Values.First();
         }
 
