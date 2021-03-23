@@ -18,13 +18,13 @@ namespace MusicBeePlugin
         private bool ignoreEventFromHandler = true;
         private bool ignoreForBatchSelect = true;
 
-        private Control panel;
+        private Control _panel;
         private TabControl tabControl;
 
         private List<MetaDataType> tags = new List<MetaDataType>();
 
         private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
-        private Dictionary<string, TabPage> tabPageList;
+        private Dictionary<string, TabPage> _tabPageList;
 
         private Dictionary<String, CheckState> tagsFromFiles;
 
@@ -56,7 +56,7 @@ namespace MusicBeePlugin
 
             this.checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
             this.tagsFromFiles = new Dictionary<String, CheckState>();
-            this.tabPageList = new Dictionary<string, TabPage>();
+            _tabPageList = new Dictionary<string, TabPage>();
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
@@ -114,12 +114,12 @@ namespace MusicBeePlugin
         {
             this.settingsStorage.SaveAllSettings();
 
-            if (this.panel != null)
+            if (_panel != null)
             {
                 // TODO make sure everything will be fine and keep you towel with you (always remember the 42!)
                 //ClearAllTagPages();
                 this.AddTabPages();
-                this.InvokeUpdateTagsTableData(this.panel);
+                this.InvokeUpdateTagsTableData();
             }
         }
 
@@ -138,6 +138,9 @@ namespace MusicBeePlugin
 
         private void AddTabPages()
         {
+            _tabPageList.Clear();
+            this.tabControl.TabPages.Clear();
+
             TagsStorage firstOne = null;
             foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
             {
@@ -149,8 +152,10 @@ namespace MusicBeePlugin
                 }
             }
             // TODO removing tabPages is not working properly
+            
+            /*
             List<string> tabPagesToRemove = new List<string>();
-            foreach (TabPage tabPage in this.tabPageList.Values)
+            foreach (TabPage tabPage in _tabPageList.Values)
             {
                 string tagName = tabPage.Text;
                 if(!settingsStorage.TagsStorages.ContainsKey(tagName))
@@ -161,8 +166,9 @@ namespace MusicBeePlugin
             }
             foreach (string tagPageName in tabPagesToRemove)
             {
-                this.tabPageList.Remove(tagPageName);
+                _tabPageList.Remove(tagPageName);
             }
+            */
         }
        
         /// <summary>
@@ -170,31 +176,40 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="tabName"></param>
         /// <param name="tabPage"></param>
-        private void RemoveTabPage(string tabName, TabPage tabPage)
+        private void RemoveTabPage(string tagName, TabPage tabPage)
         {
+            _tabPageList.Remove(tagName);
             this.tabControl.TabPages.Remove(tabPage);
         }
 
+        private void AddTabPage(string tagName, TabPage tabPage)
+        {
+            _tabPageList.Add(tagName, tabPage);
+            this.tabControl.TabPages.Add(tabPage);
+        }
+
+        /*
         private TabPage GetTagPage(string tagName)
         {
             TabPage tabPage;
 
-            // TODO check why this adds more pages than it should
-            // we cannot recreate on every invocation of GetTagPage
-            if (this.tabPageList.TryGetValue(tagName, out tabPage))
-            {
-                this.tabPageList.Remove(tagName);
-                this.tabControl.TabPages.Remove(tabPage);
-            }
+            _tabPageList.TryGetValue(tagName, out tabPage);
 
-            if (this.tabPageList.ContainsKey(tagName))
+            return tabPage;
+        }
+        */
+
+        private TabPage GetTagPage(string tagName)
+        {
+            TabPage tabPage;
+            
+            if (_tabPageList.TryGetValue(tagName, out tabPage))
             {
-                return tabPage;
+                this.RemoveTabPage(tagName, tabPage);
             }
 
             tabPage = new TabPage(tagName);
-            this.tabPageList.Add(tagName, tabPage);
-            this.tabControl.TabPages.Add(tabPage);
+            this.AddTabPage(tagName, tabPage);
 
             return tabPage;
         }
@@ -257,7 +272,7 @@ namespace MusicBeePlugin
 
         private void ClearAllTagPages()
         {
-            this.tabPageList.Clear();
+            _tabPageList.Clear();
             this.tabControl.TabPages.Clear();
         }
 
@@ -305,19 +320,17 @@ namespace MusicBeePlugin
             panel.Invalidate();
         }
 
-        private void InvokeUpdateTagsTableData(Control panel)
+        private void InvokeUpdateTagsTableData()
         {
-            if (panel.IsHandleCreated)
+            if (_panel.IsHandleCreated)
             {
-                panel.Invoke((MethodInvoker)delegate
+                _panel.Invoke((MethodInvoker)delegate
                 {
-                    UpdateTagsTableData(panel);
+                    UpdateTagsTableData(_panel);
                 });
 
                 return;
             }
-
-            UpdateTagsTableData(panel);    
         }
 
         #endregion
@@ -345,9 +358,9 @@ namespace MusicBeePlugin
 
             ignoreEventFromHandler = true;
             SetTagsInPanel(this.selectedFileUrls, state, name);
-            if (this.panel != null)
+            if (_panel != null)
             {
-                this.panel.Invalidate();
+                _panel.Invalidate();
             }
             mbApiInterface.MB_RefreshPanels();
             ignoreEventFromHandler = false;
@@ -376,20 +389,12 @@ namespace MusicBeePlugin
 
         private void SetPanelEnabled(bool enabled = true)
         {
-            this.panel.Invoke((MethodInvoker)delegate
+            if (_panel.IsHandleCreated)
             {
-                this.panel.Enabled = enabled;
-            });
-            if (this.panel.IsHandleCreated)
-            {
-                this.panel.Invoke(new Action(() =>
+                _panel.Invoke(new Action(() =>
                 {
-                    this.panel.Enabled = enabled;
+                    _panel.Enabled = enabled;
                 }));
-            }
-            else
-            {
-                this.panel.Enabled = enabled;
             }
         }
 
@@ -397,8 +402,8 @@ namespace MusicBeePlugin
         {
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
-            InvokeUpdateTagsTableData(this.panel);
-            this.panel.Invalidate();
+            InvokeUpdateTagsTableData();
+            _panel.Invalidate();
             ignoreEventFromHandler = false;
             ignoreForBatchSelect = false;
         }
@@ -432,15 +437,18 @@ namespace MusicBeePlugin
             {
                 string tagName = tagsStorage.GetTagName();
                 TabPage page = GetTagPage(tagName);
+
                 if (page.Controls.Count > 0)
                 {
                     ChecklistBoxPanel checklistBoxPanel = (ChecklistBoxPanel)page.Controls[0];
                     checklistBoxPanel.RemoveItemCheckEventHandler();
                 }
+                /*
                 page.Invoke((MethodInvoker)delegate
                 {
                     page.Controls.Clear();
                 });
+                */
             }
 
             // add checklistBox to visible panel 
@@ -450,7 +458,7 @@ namespace MusicBeePlugin
 
         private void CreateTabPanel()
         {
-            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(this.tabControl, (PluginPanelDock)6);
+            this.tabControl = (TabControl)mbApiInterface.MB_AddPanel(_panel, (PluginPanelDock)6);
             // TODO 
             this.tabControl.Dock = DockStyle.Fill;
             this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
@@ -458,37 +466,30 @@ namespace MusicBeePlugin
             AddTabPages();
         }
 
-        private void LayoutPanel(Control panel)
+        private void LayoutPanel()
         {
             CreateTabPanel();
 
-            panel.Enabled = false;
-            panel.SuspendLayout();
-            panel.Controls.AddRange(new Control[]
+            _panel.SuspendLayout();
+            _panel.Enabled = false;
+            _panel.Controls.AddRange(new Control[]
             {
                   this.tabControl
             });
-            panel.ResumeLayout();
+            _panel.ResumeLayout();
         }
         
-        private void AddControls(Control panel)
+        private void AddControls()
         {
-            if (panel == null)
+            if (_panel.IsHandleCreated)
             {
-                return;
-            }
-
-            if (panel.IsHandleCreated)
-            {
-                panel.Invoke((MethodInvoker)delegate
+                _panel.Invoke((MethodInvoker)delegate
                 {
-                    LayoutPanel(panel);
+                    LayoutPanel();
                 });
 
                 return;
             }
-            
-            LayoutPanel(panel);
         }
 
         #endregion
@@ -512,7 +513,7 @@ namespace MusicBeePlugin
 
 
             //this.panel.Dispose();
-            this.panel = null;
+            _panel = null;
 
             log.Info(reason.ToString("G"));
             log.Close();
@@ -546,7 +547,7 @@ namespace MusicBeePlugin
         /// <param name="type"></param>
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
         {
-            if (this.panel == null)
+            if (_panel == null)
             {
                 return;
             }
@@ -565,8 +566,8 @@ namespace MusicBeePlugin
                     if (metaDataType == 0) { return; }
                     tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
                     ignoreForBatchSelect = true;
-                    InvokeUpdateTagsTableData(this.panel);
-                    this.panel.Invalidate();
+                    InvokeUpdateTagsTableData();
+                    _panel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
                 case NotificationType.TagsChanging:
@@ -579,8 +580,8 @@ namespace MusicBeePlugin
                     metaDataType = GetVisibleTabPageName();
                     if (metaDataType == 0) { return; }
                     tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
-                    InvokeUpdateTagsTableData(this.panel);
-                    this.panel.Invalidate();
+                    InvokeUpdateTagsTableData();
+                    _panel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
                 // TODO: For me to remember
@@ -601,9 +602,13 @@ namespace MusicBeePlugin
         /// </returns>
         public int OnDockablePanelCreated(Control panel)
         {
-            this.panel = panel;
-            AddControls(panel);
-            InvokeUpdateTagsTableData(panel);
+            if (_panel == null)
+            {
+                _panel = panel;
+            }
+
+            AddControls();
+            InvokeUpdateTagsTableData();
 
             return 0;
         }
@@ -614,7 +619,7 @@ namespace MusicBeePlugin
         /// <param name="filenames">List of selected files.</param>
         public void OnSelectedFilesChanged(string[] filenames)
         {
-            if (this.panel == null)
+            if (_panel == null)
             {
                 return;
             }
