@@ -109,6 +109,7 @@ namespace MusicBeePlugin
             }
             else
             {
+                tagsStorage.Sorted = false;
                 this.lstTags.Sorted = false;
             }
         }
@@ -301,10 +302,13 @@ namespace MusicBeePlugin
             DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult == DialogResult.Yes)
             {
+                tagsStorage.Sorted = true;
                 this.lstTags.Sorted = true;
             }
             else
             {
+                tagsStorage.Sorted = false;
+                this.lstTags.Sorted = false;
                 this.cbEnableAlphabeticalTagSort.Checked = false;
             }
         }

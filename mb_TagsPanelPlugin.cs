@@ -31,6 +31,7 @@ namespace MusicBeePlugin
         private SettingsStorage settingsStorage;
         private TagsManipulation tagsManipulation;
         private string metaDataTypeName;
+        private bool sortAlphabetically = false;
 
         #region Initialise plugin
 
@@ -84,17 +85,18 @@ namespace MusicBeePlugin
         private void LoadSettings()
         {
             this.settingsStorage.LoadSettingsWithFallback();
-
+            
             TagsStorage tagsStorage = this.settingsStorage.GetFirstOne();
             if (tagsStorage != null)
             {
                 this.metaDataTypeName = tagsStorage.MetaDataType;
+                this.sortAlphabetically = tagsStorage.Sorted;
             }
         }
 
         private void OpenSettingsDialog()
         {
-            SettingsStorage copy = settingsStorage.DeepCopy();
+            SettingsStorage copy = this.settingsStorage.DeepCopy();
             TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(copy);
             DialogResult result = tagsPanelSettingsForm.ShowDialog();
 
@@ -103,7 +105,10 @@ namespace MusicBeePlugin
                 return;
             }
 
-            settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+            // TODO check the saving process, something goes wrong when the user clicks on save if he is on another tab but the first one.
+
+            this.settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+            SaveSettings();
             // TODO we probably need a tempSettingsStorage
         }
 
@@ -114,9 +119,16 @@ namespace MusicBeePlugin
         {
             this.settingsStorage.SaveAllSettings();
 
+            /*
+            TagsStorage tagsStorage = this.settingsStorage.GetFirstOne();
+            if (tagsStorage != null)
+            {
+                this.sortAlphabetically = tagsStorage.Sorted;
+            }
+            */
+
             if (_panel != null)
             {
-                // TODO make sure everything will be fine and keep you towel with you (always remember the 42!)
                 //ClearAllTagPages();
                 this.AddTabPages();
                 this.InvokeUpdateTagsTableData();
@@ -205,7 +217,12 @@ namespace MusicBeePlugin
             
             if (_tabPageList.TryGetValue(tagName, out tabPage))
             {
-                this.RemoveTabPage(tagName, tabPage);
+                if (!tabPage.IsHandleCreated)
+                {
+                    tabPage.CreateControl();
+                }
+
+                return tabPage;
             }
 
             tabPage = new TabPage(tagName);
@@ -234,11 +251,16 @@ namespace MusicBeePlugin
 
             if (this.checklistBoxList.TryGetValue(tagName, out checkListBox))
             {
-                checklistBoxList.Remove(tagName);
+                this.checklistBoxList.Remove(tagName);
+                checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                checklistBoxList[tagName] = checkListBox;
+
+                return checkListBox;
             }
 
             checkListBox = new ChecklistBoxPanel(mbApiInterface);
             checklistBoxList.Add(tagName, checkListBox);
+           
             return checkListBox;
         }
 
@@ -287,7 +309,7 @@ namespace MusicBeePlugin
 
         }
 
-        private void UpdateTagsTableData(Control panel)
+        private void UpdateTagsTableData()
         {
             bool add = true;
 
@@ -317,20 +339,14 @@ namespace MusicBeePlugin
 
             string tagName = currentTagsStorage.GetTagName();
             AddTagsToChecklistBoxPanel(tagName, data);
-            panel.Invalidate();
         }
 
         private void InvokeUpdateTagsTableData()
         {
-            if (_panel.IsHandleCreated)
+            _panel.Invoke(new Action(() =>
             {
-                _panel.Invoke((MethodInvoker)delegate
-                {
-                    UpdateTagsTableData(_panel);
-                });
-
-                return;
-            }
+                UpdateTagsTableData();
+            }));
         }
 
         #endregion
@@ -340,7 +356,6 @@ namespace MusicBeePlugin
         public void MenuSettingsClicked(object sender, EventArgs args)
         {
             OpenSettingsDialog();
-            SaveSettings();
 
             return;
         }
@@ -358,10 +373,7 @@ namespace MusicBeePlugin
 
             ignoreEventFromHandler = true;
             SetTagsInPanel(this.selectedFileUrls, state, name);
-            if (_panel != null)
-            {
-                _panel.Invalidate();
-            }
+
             mbApiInterface.MB_RefreshPanels();
             ignoreEventFromHandler = false;
         }
@@ -389,13 +401,10 @@ namespace MusicBeePlugin
 
         private void SetPanelEnabled(bool enabled = true)
         {
-            if (_panel.IsHandleCreated)
+            _panel.Invoke(new Action(() =>
             {
-                _panel.Invoke(new Action(() =>
-                {
-                    _panel.Enabled = enabled;
-                }));
-            }
+                _panel.Enabled = enabled;
+            }));
         }
 
         private void UpdateTagsInPanelOnFileSelection()
@@ -403,7 +412,6 @@ namespace MusicBeePlugin
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
             InvokeUpdateTagsTableData();
-            _panel.Invalidate();
             ignoreEventFromHandler = false;
             ignoreForBatchSelect = false;
         }
@@ -443,12 +451,11 @@ namespace MusicBeePlugin
                     ChecklistBoxPanel checklistBoxPanel = (ChecklistBoxPanel)page.Controls[0];
                     checklistBoxPanel.RemoveItemCheckEventHandler();
                 }
-                /*
-                page.Invoke((MethodInvoker)delegate
+
+                page.Invoke(new Action (() =>
                 {
                     page.Controls.Clear();
-                });
-                */
+                }));
             }
 
             // add checklistBox to visible panel 
@@ -465,31 +472,20 @@ namespace MusicBeePlugin
 
             AddTabPages();
         }
-
-        private void LayoutPanel()
-        {
-            CreateTabPanel();
-
-            _panel.SuspendLayout();
-            _panel.Enabled = false;
-            _panel.Controls.AddRange(new Control[]
-            {
-                  this.tabControl
-            });
-            _panel.ResumeLayout();
-        }
         
         private void AddControls()
         {
-            if (_panel.IsHandleCreated)
+            _panel.BeginInvoke(new Action(() =>
             {
-                _panel.Invoke((MethodInvoker)delegate
+                CreateTabPanel();
+                _panel.SuspendLayout();
+                _panel.Enabled = false;
+                _panel.Controls.AddRange(new Control[]
                 {
-                    LayoutPanel();
+                  this.tabControl
                 });
-
-                return;
-            }
+                _panel.ResumeLayout();
+            }));
         }
 
         #endregion
@@ -513,7 +509,7 @@ namespace MusicBeePlugin
 
 
             //this.panel.Dispose();
-            _panel = null;
+            // _panel = null;
 
             log.Info(reason.ToString("G"));
             log.Close();
@@ -567,7 +563,6 @@ namespace MusicBeePlugin
                     tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
                     ignoreForBatchSelect = true;
                     InvokeUpdateTagsTableData();
-                    _panel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
                 case NotificationType.TagsChanging:
@@ -581,7 +576,6 @@ namespace MusicBeePlugin
                     if (metaDataType == 0) { return; }
                     tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
                     InvokeUpdateTagsTableData();
-                    _panel.Invalidate();
                     ignoreForBatchSelect = false;
                     break;
                 // TODO: For me to remember
@@ -602,14 +596,16 @@ namespace MusicBeePlugin
         /// </returns>
         public int OnDockablePanelCreated(Control panel)
         {
-            if (_panel == null)
+            _panel = panel;
+
+            if (!_panel.IsHandleCreated)
             {
-                _panel = panel;
+                _panel.CreateControl();
             }
 
             AddControls();
             InvokeUpdateTagsTableData();
-
+           
             return 0;
         }
 
