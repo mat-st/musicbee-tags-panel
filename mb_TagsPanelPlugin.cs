@@ -129,7 +129,7 @@ namespace MusicBeePlugin
 
             if (_panel != null)
             {
-                //ClearAllTagPages();
+                ClearAllTagPages();
                 this.AddTabPages();
                 this.InvokeUpdateTagsTableData();
             }

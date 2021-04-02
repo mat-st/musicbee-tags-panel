@@ -91,6 +91,7 @@
     <Compile Include="ChecklistBoxPanel.Designer.cs">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ListBoxExtension.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

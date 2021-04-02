@@ -37,6 +37,8 @@ namespace MusicBeePlugin
             this.btnClearTagSettings = new System.Windows.Forms.Button();
             this.BtnExportCSV = new System.Windows.Forms.Button();
             this.TxtNewTagInput = new System.Windows.Forms.TextBox();
+            this.btnTagUp = new System.Windows.Forms.Button();
+            this.btnTagDown = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnImportCSV
@@ -56,7 +58,7 @@ namespace MusicBeePlugin
             this.lstTags.Location = new System.Drawing.Point(6, 6);
             this.lstTags.Name = "lstTags";
             this.lstTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lstTags.Size = new System.Drawing.Size(250, 95);
+            this.lstTags.Size = new System.Drawing.Size(212, 95);
             this.lstTags.Sorted = true;
             this.lstTags.TabIndex = 7;
             // 
@@ -116,8 +118,28 @@ namespace MusicBeePlugin
             // 
             this.TxtNewTagInput.Location = new System.Drawing.Point(6, 106);
             this.TxtNewTagInput.Name = "TxtNewTagInput";
-            this.TxtNewTagInput.Size = new System.Drawing.Size(250, 22);
+            this.TxtNewTagInput.Size = new System.Drawing.Size(212, 22);
             this.TxtNewTagInput.TabIndex = 0;
+            // 
+            // btnTagUp
+            // 
+            this.btnTagUp.Location = new System.Drawing.Point(224, 39);
+            this.btnTagUp.Name = "btnTagUp";
+            this.btnTagUp.Size = new System.Drawing.Size(30, 28);
+            this.btnTagUp.TabIndex = 2;
+            this.btnTagUp.Text = "▲";
+            this.btnTagUp.UseVisualStyleBackColor = true;
+            this.btnTagUp.Click += new System.EventHandler(this.BtnMoveTagUpSettings_Click);
+            // 
+            // btnTagDown
+            // 
+            this.btnTagDown.Location = new System.Drawing.Point(224, 73);
+            this.btnTagDown.Name = "btnTagDown";
+            this.btnTagDown.Size = new System.Drawing.Size(30, 28);
+            this.btnTagDown.TabIndex = 2;
+            this.btnTagDown.Text = "▼";
+            this.btnTagDown.UseVisualStyleBackColor = true;
+            this.btnTagDown.Click += new System.EventHandler(this.BtnMoveTagDownSettings_Click);
             // 
             // TagsPanelSettingsPanel
             // 
@@ -128,10 +150,12 @@ namespace MusicBeePlugin
             this.Controls.Add(this.BtnExportCSV);
             this.Controls.Add(this.btnClearTagSettings);
             this.Controls.Add(this.BtnImportCSV);
-            this.Controls.Add(this.lstTags);
+            this.Controls.Add(this.btnTagDown);
+            this.Controls.Add(this.btnTagUp);
             this.Controls.Add(this.btnRemTag);
             this.Controls.Add(this.btnAddTag);
             this.Controls.Add(this.cbEnableAlphabeticalTagSort);
+            this.Controls.Add(this.lstTags);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TagsPanelSettingsPanel";
             this.Padding = new System.Windows.Forms.Padding(3);
@@ -151,5 +175,7 @@ namespace MusicBeePlugin
         private System.Windows.Forms.Button btnClearTagSettings;
         private System.Windows.Forms.Button BtnExportCSV;
         private System.Windows.Forms.TextBox TxtNewTagInput;
+        private System.Windows.Forms.Button btnTagUp;
+        private System.Windows.Forms.Button btnTagDown;
     }
 }

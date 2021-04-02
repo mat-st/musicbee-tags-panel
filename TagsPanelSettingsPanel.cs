@@ -10,6 +10,7 @@ namespace MusicBeePlugin
     public partial class TagsPanelSettingsPanel : UserControl
     {
         private TagsStorage tagsStorage;
+
         public TagsPanelSettingsPanel(SettingsStorage settings, string tagName)
         {
             InitializeComponent();
@@ -292,6 +293,56 @@ namespace MusicBeePlugin
             {
                 ShowDialogToClearList();
             }
+        }
+
+        private void BtnMoveTagUpSettings_Click(object sender, EventArgs e)
+        {
+            if (lstTags.Items.Count != 0)
+            {
+                MoveUp();
+            }
+        }
+
+        private void BtnMoveTagDownSettings_Click(object sender, EventArgs e)
+        {
+            if (lstTags.Items.Count != 0)
+            {
+                MoveDown();
+            }
+        }
+
+
+        public void MoveUp()
+        {
+            MoveItem(-1);
+        }
+
+        public void MoveDown()
+        {
+            MoveItem(1);
+        }
+
+        public void MoveItem(int direction)
+        {
+            // Checking selected item
+            if (lstTags.SelectedItem == null || lstTags.SelectedIndex < 0)
+                return; // No selected item - nothing to do
+
+            // Calculate new index using move direction
+            int newIndex = lstTags.SelectedIndex + direction;
+
+            // Checking bounds of the range
+            if (newIndex < 0 || newIndex >= lstTags.Items.Count)
+                return; // Index out of range - nothing to do
+
+            object selected = lstTags.SelectedItem;
+
+            // Removing removable element
+            lstTags.Items.Remove(selected);
+            // Insert it in new position
+            lstTags.Items.Insert(newIndex, selected);
+            // Restore selection
+            lstTags.SetSelected(newIndex, true);
         }
 
         /***************************
