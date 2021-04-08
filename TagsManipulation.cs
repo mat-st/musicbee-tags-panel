@@ -61,6 +61,7 @@ namespace MusicBeePlugin
             SortedSet<string> tagsWithoutDuplicates = new SortedSet<string>(tags.Split(SEPARATOR));
             return String.Join(SEPARATOR.ToString(), tagsWithoutDuplicates.ToArray<string>());
         }
+
         public string RemoveTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
         {
             string tags = GetTags(fileUrl, metaDataType);
@@ -86,6 +87,7 @@ namespace MusicBeePlugin
             }
 
         }
+
         public bool IsTagAvailable(string tagName, string fileUrl, MetaDataType metaDataType)
         {
             string tags = GetTags(fileUrl, metaDataType);

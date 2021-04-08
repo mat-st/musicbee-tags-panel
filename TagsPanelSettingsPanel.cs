@@ -139,7 +139,7 @@ namespace MusicBeePlugin
             this.lstTags.BeginUpdate();
             if (!this.lstTags.Items.Contains(newTag))
             {
-                this.tagsStorage.TagList[newTag] = CheckState.Unchecked;
+                this.tagsStorage.TagList[newTag] = this.tagsStorage.TagList.Count();
                 this.lstTags.Items.Add(newTag);
             }
             else
@@ -222,7 +222,7 @@ namespace MusicBeePlugin
                 }
                 if (!this.lstTags.Items.Contains(importtag))
                 {
-                    this.tagsStorage.TagList[importtag] = CheckState.Unchecked;
+                    this.tagsStorage.TagList[importtag] = this.tagsStorage.TagList.Count();
                     this.lstTags.Items.Add(importtag);
                 }
             }
@@ -343,6 +343,19 @@ namespace MusicBeePlugin
             lstTags.Items.Insert(newIndex, selected);
             // Restore selection
             lstTags.SetSelected(newIndex, true);
+            // Put the selected item to a new position
+            tagsStorage.SwapElement(selected.ToString(), newIndex);
+        }
+
+        public void SortAlphabetically()
+        {
+            tagsStorage.Sort();
+            lstTags.Items.Clear();
+
+            foreach (var listItem in tagsStorage.GetTags())
+            {
+                lstTags.Items.Add(listItem.Key);
+            }
         }
 
         /***************************
@@ -353,6 +366,7 @@ namespace MusicBeePlugin
             DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult == DialogResult.Yes)
             {
+                SortAlphabetically();
                 tagsStorage.Sorted = true;
                 this.lstTags.Sorted = true;
             }
