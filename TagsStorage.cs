@@ -60,6 +60,13 @@ namespace MusicBeePlugin
             sorted = true;
         }
 
+        public void SortByIndex()
+        {
+            Dictionary<String, int> tmpTagList = (Dictionary<String, int>)tagList.OrderBy(item => item.Value);
+            tagList.Clear();
+            tagList = tmpTagList;
+        }
+
         /// <summary>
         /// Swaps the element at the old position with the new one.
         /// </summary>

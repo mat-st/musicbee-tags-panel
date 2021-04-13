@@ -11,12 +11,12 @@ namespace MusicBeePlugin
     {
         private TagsStorage tagsStorage;
 
-        public TagsPanelSettingsPanel(SettingsStorage settings, string tagName)
+        public TagsPanelSettingsPanel(string tagName)
         {
             InitializeComponent();
             
             //TxtNewTagInput.Focus();
-            tagsStorage = settings.GetTagsStorage(tagName);
+            tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
             SetWatermarkText();

@@ -31,7 +31,7 @@ namespace MusicBeePlugin
             this.Btn_Save.DialogResult = DialogResult.OK;
             this.Btn_Cancel.DialogResult = DialogResult.Cancel;
 
-            foreach (TagsStorage storage in settingsStorage.TagsStorages.Values)
+            foreach (TagsStorage storage in SettingsStorage.TagsStorages.Values)
             {
                 AddPanel(storage);
             }
@@ -52,7 +52,7 @@ namespace MusicBeePlugin
                 return false;
             }
 
-            tagsPanelSettingsPanel = new TagsPanelSettingsPanel(this.settingsStorage, tagName);
+            tagsPanelSettingsPanel = new TagsPanelSettingsPanel(tagName);
             tagPanels.Add(tagName, tagsPanelSettingsPanel);
             TabPage tabPage = new System.Windows.Forms.TabPage(tagName);
             tabPage.Controls.Add(tagsPanelSettingsPanel);

@@ -61,7 +61,7 @@ namespace MusicBeePlugin
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
-            tagsManipulation = new TagsManipulation(this.mbApiInterface);
+            tagsManipulation = new TagsManipulation(this.mbApiInterface, this.settingsStorage);
 
             LoadSettings();
 
@@ -154,7 +154,7 @@ namespace MusicBeePlugin
             this.tabControl.TabPages.Clear();
 
             TagsStorage firstOne = null;
-            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
+            foreach (TagsStorage tagsStorage in SettingsStorage.TagsStorages.Values)
             {
                 AddVisibleTagPanel(tagsStorage.MetaDataType);
 
@@ -234,7 +234,7 @@ namespace MusicBeePlugin
         private ChecklistBoxPanel CreateChecklistBoxForTag(string tagName)
         {
             ChecklistBoxPanel checkListBox = GetCheckListBoxPanel(tagName);
-            checkListBox.AddDataSource(this.settingsStorage.GetTagsStorage(tagName).GetTags());
+            checkListBox.AddDataSource(SettingsStorage.GetTagsStorage(tagName).GetTags());
 
             checkListBox.Dock = DockStyle.Fill;
             // TODO only do this once 
@@ -289,7 +289,7 @@ namespace MusicBeePlugin
         {
             MetaDataType metaDataType = GetVisibleTabPageName();
             if (metaDataType == 0) { return null; }
-            return settingsStorage.GetTagsStorage(metaDataType.ToString());
+            return SettingsStorage.GetTagsStorage(metaDataType.ToString());
         }
 
         private void ClearAllTagPages()
@@ -441,7 +441,7 @@ namespace MusicBeePlugin
         private void SwitchVisibleTagPanel(string visibleTag)
         {
             // remove checklistBox from all panels
-            foreach (TagsStorage tagsStorage in settingsStorage.TagsStorages.Values)
+            foreach (TagsStorage tagsStorage in SettingsStorage.TagsStorages.Values)
             {
                 string tagName = tagsStorage.GetTagName();
                 TabPage page = GetTagPage(tagName);

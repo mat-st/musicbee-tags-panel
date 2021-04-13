@@ -12,10 +12,12 @@ namespace MusicBeePlugin
 
         public const char SEPARATOR = ';';
         private readonly MusicBeeApiInterface mbApiInterface;
+        private readonly SettingsStorage settingsStorage;
 
-        public TagsManipulation(MusicBeeApiInterface mbApiInterface)
+        public TagsManipulation(MusicBeeApiInterface mbApiInterface, SettingsStorage settingsStorage)
         {
             this.mbApiInterface = mbApiInterface;
+            this.settingsStorage = settingsStorage;
         }
 
         public Dictionary<String, CheckState> CombineTagLists(string[] fileNames, TagsStorage tagsStorage)
@@ -119,7 +121,12 @@ namespace MusicBeePlugin
                     tagsFromFile = RemoveTag(selectedTag, fileUrl, metaDataType);
                 }
 
-                string sortedTags = SortTagsAlphabetical(tagsFromFile);
+                string sortedTags = tagsFromFile;
+                if (SettingsStorage.GetTagsStorage(metaDataType.ToString()).Sorted)
+                {
+                    sortedTags = SortTagsAlphabetical(tagsFromFile);
+                }
+                
                 bool result = mbApiInterface.Library_SetFileTag(fileUrl, metaDataType, sortedTags);
                 mbApiInterface.Library_CommitTagsToFile(fileUrl);
 

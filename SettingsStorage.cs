@@ -17,7 +17,7 @@ namespace MusicBeePlugin
     {
         public const char SettingsSeparator = ';';
 
-        private Dictionary<String, TagsStorage> storages;
+        private static Dictionary<String, TagsStorage> storages;
 
         private const string SettingsFileName = "mb_tags-panel.Settings.json";
 
@@ -25,26 +25,31 @@ namespace MusicBeePlugin
 
         private readonly Logger log;
 
-        public Dictionary<string, TagsStorage> TagsStorages { get => storages; set => storages = value; }
+        public static Dictionary<string, TagsStorage> TagsStorages { get => storages; set => storages = value; }
 
         public SettingsStorage(MusicBeeApiInterface mbApiInterface, Logger log)
         {
             this.mbApiInterface = mbApiInterface;
             this.log = log;
-            this.TagsStorages = new Dictionary<String, TagsStorage>();
+            SettingsStorage.TagsStorages = new Dictionary<String, TagsStorage>();
         }
 
         public void LoadSettingsWithFallback()
         {
             LoadSettings();
 
-            if (null == this.TagsStorages)
+            if (null == SettingsStorage.TagsStorages)
             {
-                this.TagsStorages = new Dictionary<String, TagsStorage>();
+                SettingsStorage.TagsStorages = new Dictionary<String, TagsStorage>();
                 TagsStorage tagsStorage = new TagsStorage();
                 tagsStorage.MetaDataType = MetaDataType.Mood.ToString("g");
-                this.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
+                SettingsStorage.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
             }
+
+            //foreach (var storage in SettingsStorage.TagsStorages)
+            //{
+            //    storage.Value.SortByIndex();
+            //}
         }
 
         private void LoadSettings()
@@ -94,7 +99,7 @@ namespace MusicBeePlugin
             return e.Current.Value;
         }
 
-        public TagsStorage GetTagsStorage(string tagName)
+        public static TagsStorage GetTagsStorage(string tagName)
         {
             TagsStorage tagStorage;
             if (false == TagsStorages.TryGetValue(tagName, out tagStorage))
@@ -128,7 +133,7 @@ namespace MusicBeePlugin
         public SettingsStorage DeepCopy()
         {
             SettingsStorage other = (SettingsStorage)this.MemberwiseClone();
-            other.storages = JsonConvert.DeserializeObject<Dictionary<String, TagsStorage>>(JsonConvert.SerializeObject(TagsStorages));
+            storages = JsonConvert.DeserializeObject<Dictionary<String, TagsStorage>>(JsonConvert.SerializeObject(TagsStorages));
             return other;
         }
     }
