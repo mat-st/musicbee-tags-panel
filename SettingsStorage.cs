@@ -46,10 +46,14 @@ namespace MusicBeePlugin
                 SettingsStorage.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
             }
 
-            //foreach (var storage in SettingsStorage.TagsStorages)
-            //{
-            //    storage.Value.SortByIndex();
-            //}
+            Dictionary<String, TagsStorage> storageList = new Dictionary<String, TagsStorage>();
+            foreach (KeyValuePair<String, TagsStorage> storage in SettingsStorage.TagsStorages)
+            {
+                storage.Value.SortByIndex();
+                storageList.Add(storage.Value.GetTagName(), storage.Value);
+            }
+
+            SettingsStorage.TagsStorages = storageList;
         }
 
         private void LoadSettings()

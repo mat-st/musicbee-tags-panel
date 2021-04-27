@@ -8,9 +8,9 @@ EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "MusicBee", "..\..\MusicBeePortable\MusicBee.exe", "{932D4F3E-1BF0-4520-AEB1-419DD5D0B07C}"
 	ProjectSection(DebuggerProjectSystem) = preProject
 		PortSupplier = 00000000-0000-0000-0000-000000000000
-		Executable = C:\Users\devsnox\Desktop\MusicBeePortable\MusicBee.exe
+		Executable = c:\Users\devsnox\Desktop\MusicBeePortable3.4\MusicBee.exe
 		RemoteMachine = WINDEV2006EVAL
-		StartingDirectory = C:\Users\devsnox\Desktop\MusicBeePortable\
+		StartingDirectory = c:\Users\devsnox\Desktop\MusicBeePortable3.4\
 		Environment = Default
 		LaunchingEngine = 00000000-0000-0000-0000-000000000000
 		UseLegacyDebugEngines = No

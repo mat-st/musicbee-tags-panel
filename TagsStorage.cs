@@ -22,7 +22,6 @@ namespace MusicBeePlugin
             tagList.Clear();
         }
 
-
         internal Dictionary<String, CheckState> GetTags()
         {
             Dictionary<String, CheckState> result = new Dictionary<String, CheckState>();
@@ -34,7 +33,6 @@ namespace MusicBeePlugin
 
             return result;
         }
-
      
         public string GetTagName()
         {
@@ -62,9 +60,17 @@ namespace MusicBeePlugin
 
         public void SortByIndex()
         {
-            Dictionary<String, int> tmpTagList = (Dictionary<String, int>)tagList.OrderBy(item => item.Value);
+            IOrderedEnumerable<KeyValuePair<String, int>> tmpTagList = tagList.OrderBy(item => item.Value);
+
+            Dictionary<String, int> newTagList = new Dictionary<string, int>();
+            
+            foreach (var pair in tmpTagList)
+            {
+                newTagList.Add(pair.Key, pair.Value);
+            }
+
             tagList.Clear();
-            tagList = tmpTagList;
+            tagList = newTagList;
         }
 
         /// <summary>
