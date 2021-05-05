@@ -55,13 +55,13 @@ namespace MusicBeePlugin
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents);
             about.ConfigurationPanelHeight = 20;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
 
-            this.checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
-            this.tagsFromFiles = new Dictionary<String, CheckState>();
+            checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
+            tagsFromFiles = new Dictionary<String, CheckState>();
             _tabPageList = new Dictionary<string, TabPage>();
             InitLogger();
 
             settingsStorage = new SettingsStorage(mbApiInterface, log);
-            tagsManipulation = new TagsManipulation(this.mbApiInterface, this.settingsStorage);
+            tagsManipulation = new TagsManipulation(mbApiInterface, settingsStorage);
 
             LoadSettings();
 
@@ -96,7 +96,7 @@ namespace MusicBeePlugin
 
         private void OpenSettingsDialog()
         {
-            SettingsStorage copy = this.settingsStorage.DeepCopy();
+            SettingsStorage copy = settingsStorage.DeepCopy();
             TagsPanelSettingsForm tagsPanelSettingsForm = new TagsPanelSettingsForm(copy);
             DialogResult result = tagsPanelSettingsForm.ShowDialog();
 
@@ -107,7 +107,7 @@ namespace MusicBeePlugin
 
             // TODO check the saving process, something goes wrong when the user clicks on save if he is on another tab but the first one.
 
-            this.settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+            settingsStorage = tagsPanelSettingsForm.SettingsStorage;
             SaveSettings();
             // TODO we probably need a tempSettingsStorage
         }
@@ -130,8 +130,8 @@ namespace MusicBeePlugin
             if (_panel != null)
             {
                 ClearAllTagPages();
-                this.AddTabPages();
-                this.InvokeUpdateTagsTableData();
+                AddTabPages();
+                InvokeUpdateTagsTableData();
             }
         }
 
@@ -316,6 +316,7 @@ namespace MusicBeePlugin
             TagsStorage currentTagsStorage = GetCurrentTagsStorage();
             if (currentTagsStorage == null) { return; }
 
+            currentTagsStorage.SortByIndex();
             string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
 
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();

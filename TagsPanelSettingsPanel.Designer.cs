@@ -59,7 +59,6 @@ namespace MusicBeePlugin
             this.lstTags.Name = "lstTags";
             this.lstTags.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lstTags.Size = new System.Drawing.Size(212, 95);
-            this.lstTags.Sorted = true;
             this.lstTags.TabIndex = 7;
             // 
             // btnRemTag

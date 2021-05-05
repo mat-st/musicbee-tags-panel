@@ -47,6 +47,7 @@ namespace MusicBeePlugin
             }
 
             Dictionary<String, TagsStorage> storageList = new Dictionary<String, TagsStorage>();
+
             foreach (KeyValuePair<String, TagsStorage> storage in SettingsStorage.TagsStorages)
             {
                 storage.Value.SortByIndex();
@@ -66,7 +67,7 @@ namespace MusicBeePlugin
             using (System.IO.StreamReader file = new System.IO.StreamReader(stream, unicode))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                TagsStorages = (Dictionary<string, TagsStorage>) serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
+                SettingsStorage.TagsStorages = (Dictionary<string, TagsStorage>) serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
                 file.Close();
             }
         }
@@ -86,7 +87,7 @@ namespace MusicBeePlugin
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(stream, unicode))
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, TagsStorages);
+                serializer.Serialize(file, SettingsStorage.TagsStorages);
                 file.Close();
             }
         }

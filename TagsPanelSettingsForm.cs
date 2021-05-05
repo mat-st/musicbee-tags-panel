@@ -160,7 +160,5 @@ namespace MusicBeePlugin
             MessageBox.Show("This Metadata Type was already added", "Tag exists already",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-
-
     }
 }

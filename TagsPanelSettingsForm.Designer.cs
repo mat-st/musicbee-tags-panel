@@ -43,11 +43,12 @@ namespace MusicBeePlugin
             // 
             // tabControlSettings
             // 
-            this.tabControlSettings.Location = new System.Drawing.Point(12, 12);
+            this.tabControlSettings.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tabControlSettings.Location = new System.Drawing.Point(0, 0);
             this.tabControlSettings.Name = "tabControlSettings";
             this.tabControlSettings.Padding = new System.Drawing.Point(3, 3);
             this.tabControlSettings.SelectedIndex = 0;
-            this.tabControlSettings.Size = new System.Drawing.Size(280, 320);
+            this.tabControlSettings.Size = new System.Drawing.Size(304, 320);
             this.tabControlSettings.TabIndex = 0;
             // 
             // btnAddTabPage
@@ -130,6 +131,7 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(304, 421);
             this.Controls.Add(this.linkBuyCoffee);
             this.Controls.Add(this.Btn_Cancel);
