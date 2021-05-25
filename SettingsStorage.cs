@@ -42,7 +42,10 @@ namespace MusicBeePlugin
             {
                 SettingsStorage.TagsStorages = new Dictionary<String, TagsStorage>();
                 TagsStorage tagsStorage = new TagsStorage();
+                // TODO: Fix Mood Tab always being created
                 tagsStorage.MetaDataType = MetaDataType.Mood.ToString("g");
+                
+                // TODO: Fix exception when no mb_tags_panel_settings.json is found
                 SettingsStorage.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
             }
 
@@ -126,8 +129,8 @@ namespace MusicBeePlugin
 
         public TagsStorage GetFirstOne()
         {
-            // TODO fix excepetion that occurs when starting MusicBee when no tag page is set
-            return TagsStorages.Values.First();
+            // TODO fix exception that occurs when starting MusicBee when no tag page is set
+            return TagsStorages.Values.FirstOrDefault();
         }
 
         public void RemoveTagStorage(string tagName)

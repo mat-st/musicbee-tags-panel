@@ -405,7 +405,7 @@ namespace MusicBeePlugin
         ***************************/
         private void ShowConfirmationDialogToSort()
         {
-            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your previous order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your current order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult == DialogResult.Yes)
             {
                 SortAlphabetically();

@@ -33,13 +33,15 @@ namespace MusicBeePlugin
         private string metaDataTypeName;
         private bool sortAlphabetically = false;
 
+
+        private PluginInfo about = new PluginInfo();
+
         #region Initialise plugin
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             mbApiInterface = new MusicBeeApiInterface();
             mbApiInterface.Initialise(apiInterfacePtr);
-            PluginInfo about = new PluginInfo();
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "Tags-Panel";
             about.Description = "Creates a dockable Panel with user defined tabed pages which let the user choose tags from user defined " +
@@ -71,6 +73,17 @@ namespace MusicBeePlugin
             log.Info("Tags-Panel plugin started");
 
             return about;
+        }
+
+
+        public bool Configure(IntPtr panelHandle)
+        {
+            // save any persistent settings in a sub-folder of this path
+            // panelHandle will only be set if you set about.ConfigurationPanelHeight to a non-zero value
+            // keep in mind the panel width is scaled according to the font the user has selected
+            // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
+            
+            return false;
         }
 
         private void InitLogger()
@@ -521,6 +534,8 @@ namespace MusicBeePlugin
         /// </summary>
         public void Uninstall()
         {
+            //string pluginfilename = "mb_TagsPanel.dll";
+
             // Delete settings file
             string settingsFileName = settingsStorage.GetSettingsPath();
             if (System.IO.File.Exists(settingsFileName))
@@ -534,6 +549,7 @@ namespace MusicBeePlugin
             {
                 System.IO.File.Delete(logFileName);
             }
+            //mbApiInterface.MB_UninstallPlugin(pluginfilename, "test");
         }
 
         /// <summary>
