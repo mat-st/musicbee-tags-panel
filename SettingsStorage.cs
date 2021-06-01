@@ -40,13 +40,7 @@ namespace MusicBeePlugin
 
             if (null == SettingsStorage.TagsStorages)
             {
-                SettingsStorage.TagsStorages = new Dictionary<String, TagsStorage>();
-                TagsStorage tagsStorage = new TagsStorage();
-                // TODO: Fix Mood Tab always being created
-                tagsStorage.MetaDataType = MetaDataType.Mood.ToString("g");
-                
-                // TODO: Fix exception when no mb_tags_panel_settings.json is found
-                SettingsStorage.TagsStorages.Add(tagsStorage.GetTagName(), tagsStorage);
+                return;
             }
 
             Dictionary<String, TagsStorage> storageList = new Dictionary<String, TagsStorage>();
