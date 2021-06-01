@@ -33,6 +33,7 @@ namespace MusicBeePlugin
         private string metaDataTypeName;
         private bool sortAlphabetically = false;
 
+        private Label emptyPanelText = new Label();
 
         private PluginInfo about = new PluginInfo();
 
@@ -122,6 +123,16 @@ namespace MusicBeePlugin
 
             settingsStorage = tagsPanelSettingsForm.SettingsStorage;
             SaveSettings();
+
+            _panel.SuspendLayout();
+            if (this.tabControl.Controls.Count > 0)
+            {
+                this.tabControl.Visible = true;
+            } else
+            {
+                this.tabControl.Visible = false;
+            }
+            _panel.ResumeLayout();
             // TODO we probably need a tempSettingsStorage
         }
 
@@ -486,6 +497,29 @@ namespace MusicBeePlugin
 
             AddTabPages();
         }
+
+        private void AddSettingsLabel()
+        {
+            _panel.BeginInvoke(new Action(() =>
+            {
+                _panel.SuspendLayout();
+                emptyPanelText.AutoSize = true;
+                emptyPanelText.Location = new System.Drawing.Point(14, 30);
+                emptyPanelText.Size = new System.Drawing.Size(38, 13);
+                emptyPanelText.TabIndex = 2;
+                emptyPanelText.Text = "Please add a tag in the settings dialog first.";
+                _panel.Controls.Add(emptyPanelText);
+                _panel.Controls.SetChildIndex(emptyPanelText, 1);
+                _panel.Controls.SetChildIndex(this.tabControl, 0);
+
+                if (this.tabControl.TabPages.Count == 0)
+                {
+                    this.tabControl.Visible = false;
+                }
+                
+                _panel.ResumeLayout();
+            }));
+        }
         
         private void AddControls()
         {
@@ -494,10 +528,7 @@ namespace MusicBeePlugin
                 CreateTabPanel();
                 _panel.SuspendLayout();
                 _panel.Enabled = false;
-                _panel.Controls.AddRange(new Control[]
-                {
-                  this.tabControl
-                });
+                _panel.Controls.Add(this.tabControl);
                 _panel.ResumeLayout();
             }));
         }
@@ -621,6 +652,7 @@ namespace MusicBeePlugin
             }
 
             AddControls();
+            AddSettingsLabel();
             InvokeUpdateTagsTableData();
            
             return 0;
