@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using static MusicBeePlugin.Plugin;
-using static System.Windows.Forms.TabControl;
 
 namespace MusicBeePlugin
 {
@@ -16,10 +11,13 @@ namespace MusicBeePlugin
         private readonly MusicBeeApiInterface mbApiInterface;
         private ItemCheckEventHandler eventHandler;
 
+        private Style style;
+
         public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data = null)
         {
             this.mbApiInterface = mbApiInterface;
-            
+            this.style = new Style(mbApiInterface);
+
             InitializeComponent();
 
 
@@ -48,16 +46,10 @@ namespace MusicBeePlugin
         private void StylePanel()
         {
             // apply current skin colors to tag panel
-            BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
-            checkedListBox1.BackColor = GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
-            checkedListBox1.ForeColor = GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentForeground);
+            this.style.StyleControl(checkedListBox1);
+            this.style.StyleControl(this);
         }
-        public Color GetElementColor(SkinElement skinElement, ElementState elementState, ElementComponent elementComponent)
-        {
-            //get current skin colors
-            int colorValue = this.mbApiInterface.Setting_GetSkinElementColour(skinElement, elementState, elementComponent);
-            return Color.FromArgb(colorValue);
-        }
+       
 
         public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
