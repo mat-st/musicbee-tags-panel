@@ -144,7 +144,6 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.Controls.Add(this.TxtNewTagInput);
             this.Controls.Add(this.BtnExportCSV);
             this.Controls.Add(this.btnClearTagSettings);

@@ -47,7 +47,7 @@ namespace MusicBeePlugin
             about.Name = "Tags-Panel";
             about.Description = "Creates a dockable Panel with user defined tabed pages which let the user choose tags from user defined " +
                 "lists";
-            about.Author = "mat-st & The Anonymous Programmer";
+            about.Author = "mat-st & The Anonymous Programmers";
             about.TargetApplication = "Tags-Panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
             about.Type = PluginType.General;
             about.VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major;  // your plugin version
