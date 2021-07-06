@@ -33,8 +33,6 @@ namespace MusicBeePlugin
         private string metaDataTypeName;
         private bool sortAlphabetically = false;
 
-        private Label emptyPanelText = new Label();
-
         private PluginInfo about = new PluginInfo();
 
         #region Initialise plugin
@@ -503,14 +501,19 @@ namespace MusicBeePlugin
             _panel.BeginInvoke(new Action(() =>
             {
                 _panel.SuspendLayout();
+                Label emptyPanelText = new Label();
                 emptyPanelText.AutoSize = true;
                 emptyPanelText.Location = new System.Drawing.Point(14, 30);
                 emptyPanelText.Size = new System.Drawing.Size(38, 13);
                 emptyPanelText.TabIndex = 2;
                 emptyPanelText.Text = "Please add a tag in the settings dialog first.";
-                _panel.Controls.Add(emptyPanelText);
-                _panel.Controls.SetChildIndex(emptyPanelText, 1);
-                _panel.Controls.SetChildIndex(this.tabControl, 0);
+
+                if (!_panel.Controls.Contains(emptyPanelText))
+                {
+                    _panel.Controls.Add(emptyPanelText);
+                    _panel.Controls.SetChildIndex(emptyPanelText, 1);
+                    _panel.Controls.SetChildIndex(this.tabControl, 0);
+                }
 
                 if (this.tabControl.TabPages.Count == 0)
                 {
