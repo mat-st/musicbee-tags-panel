@@ -507,13 +507,9 @@ namespace MusicBeePlugin
                 emptyPanelText.Size = new System.Drawing.Size(38, 13);
                 emptyPanelText.TabIndex = 2;
                 emptyPanelText.Text = "Please add a tag in the settings dialog first.";
-
-                if (!_panel.Controls.Contains(emptyPanelText))
-                {
-                    _panel.Controls.Add(emptyPanelText);
-                    _panel.Controls.SetChildIndex(emptyPanelText, 1);
-                    _panel.Controls.SetChildIndex(this.tabControl, 0);
-                }
+                _panel.Controls.Add(emptyPanelText);
+                _panel.Controls.SetChildIndex(emptyPanelText, 1);
+                _panel.Controls.SetChildIndex(this.tabControl, 0);
 
                 if (this.tabControl.TabPages.Count == 0)
                 {
