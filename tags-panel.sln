@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tags-panelMB", "tags-panelMB.csproj", "{F5D46BA1-6F21-40EF-9695-46105CCACD08}"
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "MusicBee", "C:\ProgrammePortable\PortableApps\MusicBeePortable - Coden\MusicBee.exe", "{39B8F4AA-F219-4CEA-BF4D-A5D4E3FEBF4E}"
 	ProjectSection(DebuggerProjectSystem) = preProject
 		PortSupplier = 00000000-0000-0000-0000-000000000000
-		Executable = C:\ProgrammePortable\PortableApps\MusicBeePortable - Coden\MusicBee.exe
+		Executable = C:\ProgrammePortable\PortableApps\MusicBeePortable dev tagpanel\MusicBee.exe
 		RemoteMachine = DESCHKTOP
-		StartingDirectory = C:\ProgrammePortable\PortableApps\MusicBeePortable - Coden
+		StartingDirectory = C:\ProgrammePortable\PortableApps\MusicBeePortable dev tagpanel
 		Environment = Standard
 		LaunchingEngine = 00000000-0000-0000-0000-000000000000
 		UseLegacyDebugEngines = No
