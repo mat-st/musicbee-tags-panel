@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -8,56 +8,65 @@ namespace MusicBeePlugin
     public partial class Plugin
     {
         private MusicBeeApiInterface mbApiInterface;
-
-        //private Dictionary<String, CheckState> tempTags;
-        //private bool tempSortEnabled;
-
-        private string[] selectedFileUrls = new string[] { };
         private Logger log;
-
-        private bool ignoreEventFromHandler = true;
-        private bool ignoreForBatchSelect = true;
-
         private Control _panel;
         private TabControl tabControl;
-
         private List<MetaDataType> tags = new List<MetaDataType>();
-
         private Dictionary<string, ChecklistBoxPanel> checklistBoxList;
         private Dictionary<string, TabPage> _tabPageList;
-
-        private Dictionary<String, CheckState> tagsFromFiles;
-
+        private Dictionary<string, CheckState> tagsFromFiles;
         private SettingsStorage settingsStorage;
         private TagsManipulation tagsManipulation;
         private string metaDataTypeName;
         private bool sortAlphabetically = false;
-
         private PluginInfo about = new PluginInfo();
+        private string[] selectedFileUrls = Array.Empty<string>();
+        private bool ignoreEventFromHandler = true;
+        private bool ignoreForBatchSelect = true;
 
         #region Initialise plugin
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
+            InitializeApi(apiInterfacePtr);
+
+            about = CreatePluginInfo();
+            InitializePluginComponents();
+
+            return about;
+        }
+
+        private void InitializeApi(IntPtr apiInterfacePtr)
+        {
             mbApiInterface = new MusicBeeApiInterface();
             mbApiInterface.Initialise(apiInterfacePtr);
-            about.PluginInfoVersion = PluginInfoVersion;
-            about.Name = "Tags-Panel";
-            about.Description = "Creates a dockable Panel with user defined tabed pages which let the user choose tags from user defined " +
-                "lists";
-            about.Author = "mat-st & The Anonymous Programmer";
-            about.TargetApplication = "Tags-Panel";   //  the name of a Plugin Storage device or panel header for a dockable panel
-            about.Type = PluginType.General;
-            about.VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major;  // your plugin version
-            about.VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor;
-            about.Revision = 1;
-            about.MinInterfaceVersion = MinInterfaceVersion;
-            about.MinApiRevision = MinApiRevision;
-            about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents);
-            about.ConfigurationPanelHeight = 20;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
+        }
 
+        private PluginInfo CreatePluginInfo()
+        {
+            var pluginInfo = new PluginInfo
+            {
+                PluginInfoVersion = PluginInfoVersion,
+                Name = "Tags-Panel",
+                Description = "Creates a dockable Panel with user-defined tabbed pages which let the user choose tags from user-defined lists",
+                Author = "mat-st & The Anonymous Programmer",
+                TargetApplication = "Tags-Panel",
+                Type = PluginType.General,
+                VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major,
+                VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor,
+                Revision = 1,
+                MinInterfaceVersion = MinInterfaceVersion,
+                MinApiRevision = MinApiRevision,
+                ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents),
+                ConfigurationPanelHeight = 20
+            };
+            return pluginInfo;
+        }
+
+        private void InitializePluginComponents()
+        {
             checklistBoxList = new Dictionary<string, ChecklistBoxPanel>();
-            tagsFromFiles = new Dictionary<String, CheckState>();
+            tagsFromFiles = new Dictionary<string, CheckState>();
             _tabPageList = new Dictionary<string, TabPage>();
             InitLogger();
 
@@ -66,12 +75,9 @@ namespace MusicBeePlugin
 
             LoadSettings();
 
-            // add Tags-Panel Settings to Tools Menu
             mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
 
             log.Info("Tags-Panel plugin started");
-
-            return about;
         }
 
 
