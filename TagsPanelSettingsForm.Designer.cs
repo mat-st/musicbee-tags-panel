@@ -48,12 +48,13 @@ namespace MusicBeePlugin
             this.tabControlSettings.Name = "tabControlSettings";
             this.tabControlSettings.Padding = new System.Drawing.Point(3, 3);
             this.tabControlSettings.SelectedIndex = 0;
-            this.tabControlSettings.Size = new System.Drawing.Size(304, 320);
+            this.tabControlSettings.Size = new System.Drawing.Size(850, 928);
             this.tabControlSettings.TabIndex = 0;
+            this.tabControlSettings.SelectedIndexChanged += new System.EventHandler(this.tabControlSettings_SelectedIndexChanged);
             // 
             // btnAddTabPage
             // 
-            this.btnAddTabPage.Location = new System.Drawing.Point(12, 338);
+            this.btnAddTabPage.Location = new System.Drawing.Point(13, 955);
             this.btnAddTabPage.Name = "btnAddTabPage";
             this.btnAddTabPage.Size = new System.Drawing.Size(110, 23);
             this.btnAddTabPage.TabIndex = 1;
@@ -63,7 +64,7 @@ namespace MusicBeePlugin
             // 
             // btnRemoveTabPage
             // 
-            this.btnRemoveTabPage.Location = new System.Drawing.Point(182, 338);
+            this.btnRemoveTabPage.Location = new System.Drawing.Point(183, 955);
             this.btnRemoveTabPage.Name = "btnRemoveTabPage";
             this.btnRemoveTabPage.Size = new System.Drawing.Size(110, 23);
             this.btnRemoveTabPage.TabIndex = 2;
@@ -74,9 +75,9 @@ namespace MusicBeePlugin
             // linkAbout
             // 
             this.linkAbout.AutoSize = true;
-            this.linkAbout.Location = new System.Drawing.Point(253, 396);
+            this.linkAbout.Location = new System.Drawing.Point(254, 1013);
             this.linkAbout.Name = "linkAbout";
-            this.linkAbout.Size = new System.Drawing.Size(39, 13);
+            this.linkAbout.Size = new System.Drawing.Size(47, 19);
             this.linkAbout.TabIndex = 6;
             this.linkAbout.TabStop = true;
             this.linkAbout.Text = "About";
@@ -85,9 +86,9 @@ namespace MusicBeePlugin
             // linkGitHub
             // 
             this.linkGitHub.AutoSize = true;
-            this.linkGitHub.Location = new System.Drawing.Point(12, 396);
+            this.linkGitHub.Location = new System.Drawing.Point(13, 1013);
             this.linkGitHub.Name = "linkGitHub";
-            this.linkGitHub.Size = new System.Drawing.Size(101, 13);
+            this.linkGitHub.Size = new System.Drawing.Size(121, 19);
             this.linkGitHub.TabIndex = 5;
             this.linkGitHub.TabStop = true;
             this.linkGitHub.Text = "Visit us on GitHub";
@@ -95,7 +96,7 @@ namespace MusicBeePlugin
             // 
             // Btn_Save
             // 
-            this.Btn_Save.Location = new System.Drawing.Point(12, 367);
+            this.Btn_Save.Location = new System.Drawing.Point(13, 984);
             this.Btn_Save.Name = "Btn_Save";
             this.Btn_Save.Size = new System.Drawing.Size(110, 23);
             this.Btn_Save.TabIndex = 3;
@@ -105,7 +106,7 @@ namespace MusicBeePlugin
             // Btn_Cancel
             // 
             this.Btn_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Btn_Cancel.Location = new System.Drawing.Point(182, 367);
+            this.Btn_Cancel.Location = new System.Drawing.Point(183, 984);
             this.Btn_Cancel.Name = "Btn_Cancel";
             this.Btn_Cancel.Size = new System.Drawing.Size(110, 23);
             this.Btn_Cancel.TabIndex = 4;
@@ -119,9 +120,9 @@ namespace MusicBeePlugin
             // linkBuyCoffee
             // 
             this.linkBuyCoffee.AutoSize = true;
-            this.linkBuyCoffee.Location = new System.Drawing.Point(141, 396);
+            this.linkBuyCoffee.Location = new System.Drawing.Point(142, 1013);
             this.linkBuyCoffee.Name = "linkBuyCoffee";
-            this.linkBuyCoffee.Size = new System.Drawing.Size(84, 13);
+            this.linkBuyCoffee.Size = new System.Drawing.Size(101, 19);
             this.linkBuyCoffee.TabIndex = 7;
             this.linkBuyCoffee.TabStop = true;
             this.linkBuyCoffee.Text = "Buy us a coffee";
@@ -129,10 +130,11 @@ namespace MusicBeePlugin
             // 
             // TagsPanelSettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(304, 421);
+            this.CancelButton = this.Btn_Cancel;
+            this.ClientSize = new System.Drawing.Size(850, 1041);
             this.Controls.Add(this.linkBuyCoffee);
             this.Controls.Add(this.Btn_Cancel);
             this.Controls.Add(this.Btn_Save);
