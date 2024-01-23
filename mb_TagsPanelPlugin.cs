@@ -75,7 +75,7 @@ namespace MusicBeePlugin
 
             LoadSettings();
 
-            mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
+            InitializeMenu();
 
             log.Info("Tags-Panel plugin started");
         }
@@ -94,6 +94,10 @@ namespace MusicBeePlugin
         private void InitLogger()
         {
             log = new Logger(mbApiInterface);
+        }
+        private void InitializeMenu()
+        {
+            mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
         }
 
         #endregion
@@ -141,7 +145,6 @@ namespace MusicBeePlugin
         {
             UpdateSettingsFromDialog(tagsPanelSettingsForm);
             SaveSettings();
-
             UpdatePanelVisibility();
         }
 
@@ -163,9 +166,7 @@ namespace MusicBeePlugin
         public void SaveSettings()
         {
             SaveAllSettings();
-
             UpdateSortAlphabetically();
-
             UpdatePanelData();
         }
 
