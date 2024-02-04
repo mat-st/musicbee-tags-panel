@@ -44,19 +44,18 @@ namespace MusicBeePlugin
 
         private bool AddPanel(TagsStorage storage)
         {
-            TagsPanelSettingsPanel tagsPanelSettingsPanel;
             string tagName = storage.GetTagName();
-            if (tagPanels.TryGetValue(tagName, out tagsPanelSettingsPanel))
+            if (tagPanels.ContainsKey(tagName))
             {
                 ShowWarningMetaDataTypeExists();
                 return false;
             }
 
-            tagsPanelSettingsPanel = new TagsPanelSettingsPanel(tagName);
+            TagsPanelSettingsPanel tagsPanelSettingsPanel = new TagsPanelSettingsPanel(tagName);
             tagPanels.Add(tagName, tagsPanelSettingsPanel);
-            TabPage tabPage = new System.Windows.Forms.TabPage(tagName);
+            TabPage tabPage = new TabPage(tagName);
             tabPage.Controls.Add(tagsPanelSettingsPanel);
-            this.tabControlSettings.TabPages.Add(tabPage);
+            tabControlSettings.TabPages.Add(tabPage);
             tagsPanelSettingsPanel.SetUpPanelForFirstUse();
 
             return true;
@@ -65,34 +64,35 @@ namespace MusicBeePlugin
 
         private void AddTagPage()
         {
-            TabPageSelectorForm form = new TabPageSelectorForm();
-            DialogResult result = form.ShowDialog(this);
-            if (result == DialogResult.OK)
+            using (TabPageSelectorForm form = new TabPageSelectorForm())
             {
-                TagsStorage storage = new TagsStorage();
-                storage.MetaDataType = form.GetMetaDataType();
-                if (storage.MetaDataType != null && AddPanel(storage))
+                DialogResult result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    TagsStorage storage = new TagsStorage();
+                    storage.MetaDataType = form.GetMetaDataType();
+                    if (storage.MetaDataType != null && AddPanel(storage))
+                    {
+                        form.Close();
+                    }
+                }
+                else if (result == DialogResult.Cancel)
                 {
                     form.Close();
                 }
-            }
-            else if (result == DialogResult.Cancel)
-            {
-                form.Close();
             }
         }
 
         private void RemoveTagPage()
         {
-            TabPage tabToRemove = this.tabControlSettings.SelectedTab;
-            if (tabToRemove == null)
+            TabPage tabToRemove = tabControlSettings.SelectedTab;
+            if (tabToRemove != null)
             {
-                return;
+                string tagName = tabToRemove.Text;
+                tabControlSettings.TabPages.Remove(tabToRemove);
+                settingsStorage.RemoveTagStorage(tagName);
+                tagPanels.Remove(tagName);
             }
-            string tagName = tabToRemove.Text;
-            this.tabControlSettings.TabPages.Remove(tabToRemove);
-            settingsStorage.RemoveTagStorage(tagName);
-            tagPanels.Remove(tagName);
         }
 
         /***************************

@@ -100,10 +100,6 @@ namespace MusicBeePlugin
             mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
         }
 
-        #endregion
-
-        #region Settings dialog
-
         private void LoadSettings()
         {
             LoadFallbackSettings();
@@ -155,9 +151,7 @@ namespace MusicBeePlugin
 
         private void UpdatePanelVisibility()
         {
-            _panel.SuspendLayout();
             tabControl.Visible = tabControl.Controls.Count > 0;
-            _panel.ResumeLayout();
         }
 
         /// <summary>
@@ -186,11 +180,8 @@ namespace MusicBeePlugin
 
         private void UpdatePanelData()
         {
-            if (_panel != null)
-            {
-                ClearAndAddTabPages();
-                InvokeUpdateTagsTableData();
-            }
+            ClearAndAddTabPages();
+            InvokeUpdateTagsTableData();
         }
 
         private void ClearAndAddTabPages()
