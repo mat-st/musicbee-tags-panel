@@ -577,42 +577,37 @@ namespace MusicBeePlugin
         {
             if (_panel == null) return;
 
-            MetaDataType metaDataType = 0;
-            // perform some action depending on the notification type
+            MetaDataType metaDataType = GetVisibleTabPageName();
+            if (metaDataType == 0) return;
+
             switch (type)
             {
                 case NotificationType.PluginStartup:
                 case NotificationType.TrackChanged:
-                    metaDataType = GetVisibleTabPageName();
                     break;
                 case NotificationType.TagsChanging:
-                    if (ignoreEventFromHandler) break;
+                    if (ignoreEventFromHandler) return;
 
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
-                    metaDataType = GetVisibleTabPageName();
                     break;
-                // TODO: For me to remember
                 case NotificationType.ApplicationWindowChanged:
                     log.Debug("Application Window changes notification");
-                    break;
+                    return;
             }
 
-            if (metaDataType != 0)
-            {
-                tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
+            tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
 
-                if (type == NotificationType.TrackChanged)
-                {
-                    ignoreForBatchSelect = true;
-                    InvokeUpdateTagsTableData();
-                    ignoreForBatchSelect = false;
-                }
-                else if (type == NotificationType.TagsChanging)
-                {
-                    InvokeUpdateTagsTableData();
-                    ignoreForBatchSelect = false;
-                }
+            if (type == NotificationType.TrackChanged)
+            {
+                ignoreForBatchSelect = true;
+                InvokeUpdateTagsTableData();
+                ignoreForBatchSelect = false;
+            }
+            else if (type == NotificationType.TagsChanging)
+            {
+                InvokeUpdateTagsTableData();
+                ignoreForBatchSelect = false;
             }
         }
 

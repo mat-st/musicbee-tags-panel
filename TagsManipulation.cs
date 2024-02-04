@@ -52,8 +52,28 @@ namespace MusicBeePlugin
         public string RemoveTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
         {
             string tags = GetTags(fileUrl, metaDataType);
-            tags = tags.Replace(selectedTag + SEPARATOR, "").Replace(selectedTag, "").Trim(SEPARATOR);
-            return tags;
+            string[] tagArray = tags.Split(SEPARATOR);
+
+            // Erstellen einer neuen Liste für die bereinigten Tags
+            List<string> cleanedTags = new List<string>();
+
+            foreach (string tag in tagArray)
+            {
+                // Überprüfen, ob der aktuelle Tag genau mit dem ausgewählten Tag übereinstimmt
+                if (tag.Trim() == selectedTag)
+                {
+                    // Überspringen des aktuellen Tags, um es nicht zur bereinigten Liste hinzuzufügen
+                    continue;
+                }
+
+                // Hinzufügen des aktuellen Tags zur bereinigten Liste
+                cleanedTags.Add(tag);
+            }
+
+            // Zusammenführen der bereinigten Tags zu einem String mit dem Trennzeichen
+            string cleanedTagsString = string.Join(SEPARATOR.ToString(), cleanedTags);
+
+            return cleanedTagsString;
         }
 
         public string AddTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
