@@ -304,10 +304,7 @@ namespace MusicBeePlugin
 
         private void DeleteFile(string filePath)
         {
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
+            System.IO.File.Delete(filePath);
         }
 
         public MetaDataType GetVisibleTabPageName()
@@ -343,7 +340,7 @@ namespace MusicBeePlugin
             currentTagsStorage.SortByIndex();
             string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
 
-            Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
+            Dictionary<String, CheckState> data = new Dictionary<String, CheckState>(allTagsFromSettings.Length);
             foreach (string tagFromSettings in allTagsFromSettings)
             {
                 if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
@@ -362,10 +359,7 @@ namespace MusicBeePlugin
 
         private void InvokeUpdateTagsTableData()
         {
-            _panel.Invoke(new Action(() =>
-            {
-                UpdateTagsTableData();
-            }));
+            _panel.Invoke((Action)UpdateTagsTableData);
         }
 
         #endregion
@@ -427,7 +421,7 @@ namespace MusicBeePlugin
         {
             ignoreEventFromHandler = true;
             ignoreForBatchSelect = true;
-            InvokeUpdateTagsTableData();
+            _panel.Invoke((Action)InvokeUpdateTagsTableData);
             ignoreEventFromHandler = false;
             ignoreForBatchSelect = false;
         }
@@ -452,8 +446,8 @@ namespace MusicBeePlugin
             SetPanelEnabled(true);
         }
 
-        // TODO think of another location
-        private void SwitchVisibleTagPanel(string visibleTag)
+
+        void SwitchVisibleTagPanel(string visibleTag)
         {
             // remove checklistBox from all panels
             foreach (var tagsStorage in SettingsStorage.TagsStorages.Values)
@@ -461,18 +455,12 @@ namespace MusicBeePlugin
                 string tagName = tagsStorage.GetTagName();
                 TabPage page = GetOrCreateTagPage(tagName);
 
-                if (page.Controls.Count > 0)
+                if (page.Controls.Count > 0 && page.Controls[0] is ChecklistBoxPanel checklistBoxPanel)
                 {
-                    if (page.Controls[0] is ChecklistBoxPanel checklistBoxPanel)
-                    {
-                        checklistBoxPanel.RemoveItemCheckEventHandler();
-                    }
+                    checklistBoxPanel.RemoveItemCheckEventHandler();
                 }
 
-                page.Invoke(new Action(() =>
-                {
-                    page.Controls.Clear();
-                }));
+                page.Controls.Clear();
             }
 
             // add checklistBox to visible panel 
