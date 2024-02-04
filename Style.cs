@@ -23,11 +23,14 @@ namespace MusicBeePlugin
         public void StyleControl(Control formControl)
         {
             // apply current skin colors to tag panel
-            formControl.Font = this.mbApiInterface.Setting_GetDefaultFont();
-            formControl.BackColor = this.GetElementColor(Plugin.SkinElement.SkinTrackAndArtistPanel, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentBackground);
-            formControl.ForeColor = this.GetElementColor(Plugin.SkinElement.SkinInputControl, Plugin.ElementState.ElementStateDefault, Plugin.ElementComponent.ComponentForeground);
+            var defaultFont = this.mbApiInterface.Setting_GetDefaultFont();
+            var trackAndArtistPanelColor = this.GetElementColor(SkinElement.SkinTrackAndArtistPanel, ElementState.ElementStateDefault, ElementComponent.ComponentBackground);
+            var inputControlColor = this.GetElementColor(SkinElement.SkinInputControl, ElementState.ElementStateDefault, ElementComponent.ComponentForeground);
 
+            formControl.Font = defaultFont;
+            formControl.BackColor = trackAndArtistPanelColor;
+            formControl.ForeColor = inputControlColor;
         }
-        
+
     }
 }

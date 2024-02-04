@@ -40,25 +40,18 @@ namespace MusicBeePlugin
             if (TagsStorages == null)
                 return;
 
-            var storageList = TagsStorages
-                .Select(storage => new KeyValuePair<string, TagsStorage>(storage.Value.GetTagName(), storage.Value))
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-            TagsStorages = storageList;
+            TagsStorages = TagsStorages.ToDictionary(storage => storage.Value.GetTagName(), storage => storage.Value);
         }
 
         private void LoadSettings()
         {
             string filename = GetSettingsPath();
 
-            Encoding unicode = Encoding.UTF8;
             using (var stream = File.Open(filename, FileMode.OpenOrCreate, FileAccess.Read, FileShare.None))
+            using (var file = new StreamReader(stream, Encoding.UTF8))
             {
-                using (var file = new StreamReader(stream, unicode))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    TagsStorages = (Dictionary<string, TagsStorage>)serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
-                }
+                JsonSerializer serializer = new JsonSerializer();
+                TagsStorages = (Dictionary<string, TagsStorage>)serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
             }
         }
 
@@ -70,15 +63,12 @@ namespace MusicBeePlugin
         public void SaveAllSettings()
         {
             string settingsPath = GetSettingsPath();
-            Encoding unicode = Encoding.UTF8;
 
             using (var stream = File.Open(settingsPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var file = new StreamWriter(stream, Encoding.UTF8))
             {
-                using (var file = new StreamWriter(stream, unicode))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, TagsStorages);
-                }
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, TagsStorages);
             }
         }
 
