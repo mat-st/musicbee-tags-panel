@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Tags-Panel Plugin")]
 [assembly: AssemblyDescription("Plugin for the music organizer MusicBee")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CodingDuo")]
+[assembly: AssemblyCompany("mat-st")]
 [assembly: AssemblyProduct("MusicBee")]
-[assembly: AssemblyCopyright("Copyright ©  2020-2021")]
+[assembly: AssemblyCopyright("Copyright © 2020-2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,6 +33,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.9.1.0")]
-[assembly: AssemblyFileVersion("0.9.1.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en")]

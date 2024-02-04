@@ -271,16 +271,17 @@ namespace MusicBeePlugin
         {
             if (checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
-                if (checkListBox.IsDisposed)
+                if (!checkListBox.IsDisposed)
+                {
+                    if (!checkListBox.IsHandleCreated)
+                    {
+                        checkListBox.CreateControl();
+                    }
+                }
+                else
                 {
                     checklistBoxList.Remove(tagName);
                     checkListBox.Dispose();
-                    checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                    checklistBoxList.Add(tagName, checkListBox);
-                }
-                else if (!checkListBox.IsHandleCreated)
-                {
-                    checkListBox.CreateControl();
                 }
             }
             else
@@ -325,7 +326,7 @@ namespace MusicBeePlugin
 
         private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
         {
-            if (checklistBoxList.TryGetValue(tagName, out var checklistBoxPanel))
+            if (checklistBoxList.TryGetValue(tagName, out var checklistBoxPanel) && !checklistBoxPanel.IsDisposed && checklistBoxPanel.IsHandleCreated)
             {
                 checklistBoxPanel.AddDataSource(tags);
             }
@@ -390,9 +391,9 @@ namespace MusicBeePlugin
 
         private void TabControl1_Selected(Object sender, TabControlEventArgs e)
         {
-            metaDataTypeName = e.TabPage?.Text;
-            if (!string.IsNullOrEmpty(metaDataTypeName))
+            if (e.TabPage != null && !e.TabPage.IsDisposed)
             {
+                metaDataTypeName = e.TabPage.Text;
                 SwitchVisibleTagPanel(metaDataTypeName);
             }
         }
