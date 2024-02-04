@@ -245,12 +245,13 @@ namespace MusicBeePlugin
         private void RemoveTabPage(string tagName, TabPage tabPage)
         {
             _tabPageList.Remove(tagName);
+            tabPage.Controls.Clear();
             tabControl.TabPages.Remove(tabPage);
         }
 
         private void AddTabPage(string tagName, TabPage tabPage)
         {
-            _tabPageList.Add(tagName, tabPage);
+            _tabPageList[tagName] = tabPage;
             tabControl.TabPages.Add(tabPage);
         }
 
