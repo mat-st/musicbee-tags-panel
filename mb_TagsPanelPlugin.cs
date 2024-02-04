@@ -217,17 +217,14 @@ namespace MusicBeePlugin
 
         private TabPage GetOrCreateTagPage(string tagName)
         {
-            if (_tabPageList.TryGetValue(tagName, out var tabPage))
-            {
-                if (!tabPage.IsHandleCreated)
-                {
-                    tabPage.CreateControl();
-                }
-            }
-            else
+            if (!_tabPageList.TryGetValue(tagName, out var tabPage))
             {
                 tabPage = new TabPage(tagName);
                 AddTabPage(tagName, tabPage);
+            }
+            else if (!tabPage.IsHandleCreated)
+            {
+                tabPage.CreateControl();
             }
 
             return tabPage;
