@@ -279,7 +279,14 @@ namespace MusicBeePlugin
         {
             if (checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
-                if (!checkListBox.IsHandleCreated)
+                if (checkListBox.IsDisposed)
+                {
+                    checklistBoxList.Remove(tagName);
+                    checkListBox.Dispose();
+                    checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                    checklistBoxList.Add(tagName, checkListBox);
+                }
+                else if (!checkListBox.IsHandleCreated)
                 {
                     checkListBox.CreateControl();
                 }
@@ -588,15 +595,12 @@ namespace MusicBeePlugin
         {
             _panel = panel;
 
-            if (!_panel.IsHandleCreated)
-            {
-                _panel.CreateControl();
-            }
+            _panel.CreateControl();
 
             AddControls();
             AddSettingsLabel();
             InvokeUpdateTagsTableData();
-           
+
             return 0;
         }
 
