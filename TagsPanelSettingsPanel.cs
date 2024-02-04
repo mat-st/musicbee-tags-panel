@@ -72,7 +72,7 @@ namespace MusicBeePlugin
         public void SetUpPanelForFirstUse()
         {
 
-            // TODO select first item in listbox after opening settings form
+            
             if (this.lstTags.Items.Count != 0)
             {
                 lstTags.SelectedIndex = 0;
@@ -82,16 +82,7 @@ namespace MusicBeePlugin
             {
                 SetUpDownButtonsStateDisabled();
             }
-            SetUpDownButtonsStateEnabled();
-
-            // TODO check how to get focus to textbox when opening settings panel          
-
-            //this.ActiveControl = TxtNewTagInput;
-            /*if (TxtNewTagInput.CanFocus)
-            {
-                //TxtNewTagInput.Focus();
-                //TxtNewTagInput.Select();
-            }*/
+            SetUpDownButtonsStateEnabled();           
         }
 
 
@@ -214,8 +205,8 @@ namespace MusicBeePlugin
 
         public void ClearTagsListInSettings()
         {
-            this.lstTags.Items.Clear();
-            this.tagsStorage.Clear();
+            lstTags.Items.Clear();
+            tagsStorage.Clear();
         }
 
         public void ImportCsv()
@@ -372,7 +363,7 @@ namespace MusicBeePlugin
             object selected = lstTags.SelectedItem;
 
             // Removing removable element
-            lstTags.Items.Remove(selected);
+            lstTags.Items.RemoveAt(lstTags.SelectedIndex);
             // Insert it in new position
             lstTags.Items.Insert(newIndex, selected);
             // Restore selection
@@ -385,13 +376,17 @@ namespace MusicBeePlugin
         {
             SetUpDownButtonsStateDisabled();
             tagsStorage.Sort();
+            lstTags.BeginUpdate(); // Suspend drawing of the ListBox
             lstTags.Items.Clear();
 
             foreach (var listItem in tagsStorage.GetTags())
             {
                 lstTags.Items.Add(listItem.Key);
             }
+
+            lstTags.EndUpdate(); // Resume drawing of the ListBox
         }
+
 
         /***************************
         DIALOGS

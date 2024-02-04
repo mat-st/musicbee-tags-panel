@@ -43,7 +43,7 @@ namespace MusicBeePlugin
             this.comboBoxTagSelect.Location = new System.Drawing.Point(12, 12);
             this.comboBoxTagSelect.MaxDropDownItems = 12;
             this.comboBoxTagSelect.Name = "comboBoxTagSelect";
-            this.comboBoxTagSelect.Size = new System.Drawing.Size(179, 21);
+            this.comboBoxTagSelect.Size = new System.Drawing.Size(179, 27);
             this.comboBoxTagSelect.TabIndex = 0;
             this.comboBoxTagSelect.Text = "Click here";
             // 
@@ -67,7 +67,7 @@ namespace MusicBeePlugin
             // 
             // TabPageSelectorForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(204, 81);
             this.Controls.Add(this.Btn_ComboBoxCancel);
@@ -80,7 +80,7 @@ namespace MusicBeePlugin
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Choose A Tag";
+            this.Text = "Select a tag";
             this.ResumeLayout(false);
 
         }
