@@ -30,7 +30,14 @@ namespace MusicBeePlugin
                 string[] tagsFromFile = ReadTagsFromFile(filename, tagsStorage.GetMetaDataType());
                 foreach (var tag in tagsFromFile)
                 {
-                    stateOfSelection[tag] = stateOfSelection.ContainsKey(tag) ? stateOfSelection[tag] + 1 : 1;
+                    if (stateOfSelection.ContainsKey(tag))
+                    {
+                        stateOfSelection[tag]++;
+                    }
+                    else
+                    {
+                        stateOfSelection[tag] = 1;
+                    }
                 }
             }
 
@@ -54,23 +61,16 @@ namespace MusicBeePlugin
             string tags = GetTags(fileUrl, metaDataType);
             string[] tagArray = tags.Split(SEPARATOR);
 
-            // Erstellen einer neuen Liste für die bereinigten Tags
-            List<string> cleanedTags = new List<string>();
+            var cleanedTags = new List<string>();
 
             foreach (string tag in tagArray)
             {
-                // Überprüfen, ob der aktuelle Tag genau mit dem ausgewählten Tag übereinstimmt
-                if (tag.Trim() == selectedTag)
+                if (tag.Trim() != selectedTag)
                 {
-                    // Überspringen des aktuellen Tags, um es nicht zur bereinigten Liste hinzuzufügen
-                    continue;
+                    cleanedTags.Add(tag);
                 }
-
-                // Hinzufügen des aktuellen Tags zur bereinigten Liste
-                cleanedTags.Add(tag);
             }
 
-            // Zusammenführen der bereinigten Tags zu einem String mit dem Trennzeichen
             string cleanedTagsString = string.Join(SEPARATOR.ToString(), cleanedTags);
 
             return cleanedTagsString;
