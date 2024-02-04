@@ -242,31 +242,9 @@ namespace MusicBeePlugin
             {
                 AddVisibleTagPanel(tagsStorage.MetaDataType);
             }
-            // TODO removing tabPages is not working properly
-            /*
-            RemoveUnusedTabPages();
-            */
         }
 
-        /*
-        private void RemoveUnusedTabPages()
-        {
-            List<string> tabPagesToRemove = new List<string>();
-            foreach (TabPage tabPage in _tabPageList.Values)
-            {
-                string tagName = tabPage.Text;
-                if (!settingsStorage.TagsStorages.ContainsKey(tagName))
-                {
-                    RemoveTabPage(tagName, tabPage);
-                    tabPagesToRemove.Add(tagName);
-                }
-            }
-            foreach (string tagPageName in tabPagesToRemove)
-            {
-                _tabPageList.Remove(tagPageName);
-            }
-        }
-        */
+
 
         /// <summary>
         /// Removes a tab from the panel.
@@ -321,10 +299,6 @@ namespace MusicBeePlugin
             tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, metaDataType);
         }
 
-        #endregion
-
-        #region Helper methods
-
         private void DeleteFile(string filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -369,17 +343,11 @@ namespace MusicBeePlugin
             Dictionary<String, CheckState> data = new Dictionary<String, CheckState>();
             foreach (string tagFromSettings in allTagsFromSettings)
             {
-                bool add = true;
-                foreach (String tagEntry in tagsFromFiles.Keys)
+                if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
                 {
-                    if (tagFromSettings.Trim() == tagEntry.Trim())
-                    {
-                        data.Add(tagEntry, tagsFromFiles[tagEntry]);
-                        add = false;
-                        break;
-                    }
+                    data.Add(tagFromSettings, checkState);
                 }
-                if (add)
+                else
                 {
                     data.Add(tagFromSettings, CheckState.Unchecked);
                 }
