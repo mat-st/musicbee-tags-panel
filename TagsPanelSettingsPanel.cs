@@ -14,24 +14,26 @@ namespace MusicBeePlugin
         public TagsPanelSettingsPanel(string tagName)
         {
             InitializeComponent();
-            
-            //TxtNewTagInput.Focus();
+
+            TxtNewTagInput.Focus(); // Set focus to the NewTagInput textbox
             tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
             SetWatermarkText();
-            
 
-
-
-            // this must be at the very end to supress the events
+            // this must be at the very end to suppress the events
             MakeOwnModifications();
+
+            // Set the text box ready for input
+            TxtNewTagInput.Select();
+            TxtNewTagInput.SelectAll(); // Select all text in the textbox
+            TxtNewTagInput.Focus(); // Set focus to the textbox
         }
 
         private void SetUpDownButtonsStateDisabled()
         {
             this.btnTagUp.Enabled = false;
-                this.btnTagDown.Enabled = false;          
+            this.btnTagDown.Enabled = false;
         }
 
         private void SetUpDownButtonsStateEnabled()
@@ -69,7 +71,7 @@ namespace MusicBeePlugin
 
         public void SetUpPanelForFirstUse()
         {
-            
+
             // TODO select first item in listbox after opening settings form
             if (this.lstTags.Items.Count != 0)
             {
@@ -90,7 +92,8 @@ namespace MusicBeePlugin
                 //TxtNewTagInput.Focus();
                 //TxtNewTagInput.Select();
             }*/
-        } 
+        }
+
 
         private void UpdateSortOption()
         {
@@ -128,7 +131,7 @@ namespace MusicBeePlugin
             }
         }
 
-       
+
         private void CbEnableTagSort_CheckedChanged(object sender, EventArgs e)
         {
             if (((CheckBox)sender).Checked)
@@ -154,18 +157,18 @@ namespace MusicBeePlugin
         {
             Dictionary<String, CheckState> tagsDict = tagsStorage.GetTags();
             string[] tags = tagsDict.Keys.ToArray<String>();
+            Array.Sort(tags); // Sort the tags alphabetically
             this.lstTags.Items.AddRange(tags == null ? new string[] { } : tags);
         }
 
         public void AddNewTagToList()
         {
             string newTag = this.TxtNewTagInput.Text.Trim();
-            if (newTag.Length <= 0 || newTag == "Please Enter A Tag")
+            if (string.IsNullOrEmpty(newTag) || newTag == "Please Enter A Tag")
             {
                 return;
             }
 
-            this.lstTags.BeginUpdate();
             if (!this.lstTags.Items.Contains(newTag))
             {
                 this.tagsStorage.TagList[newTag] = this.tagsStorage.TagList.Count();
@@ -175,10 +178,8 @@ namespace MusicBeePlugin
             {
                 ShowDialogForDuplicate();
             }
-            this.lstTags.EndUpdate();
 
-            // remove text from input field
-            this.TxtNewTagInput.Text = null;
+            this.TxtNewTagInput.Text = string.Empty;
         }
 
         public void RemoveSelectedTagFromList()
@@ -188,6 +189,8 @@ namespace MusicBeePlugin
 
             if (lstTags.SelectedIndex != -1 && lstTags.Items.Count != 0)
             {
+                int selectedIndex = lstTags.SelectedIndex; // Store the index of the selected item
+
                 for (int i = selectedItems.Count - 1; i >= 0; i--)
                 {
                     object selectedItem = selectedItems[i];
@@ -195,13 +198,19 @@ namespace MusicBeePlugin
                     tagsStorage.TagList.Remove((string)selectedItem);
                 }
 
-                // TODO sort tagsStorage again
-
-                // TODO set selection on next listbox item after removing item
-                //this.lstTags.SelectedIndex = 0;
-                lstTags.SelectedIndex = Convert.ToInt16(lstTags.Items.Count - 1);
+                // Select the item above the removed item
+                if (selectedIndex > 0)
+                {
+                    lstTags.SelectedIndex = selectedIndex - 1;
+                }
+                else if (lstTags.Items.Count > 0)
+                {
+                    lstTags.SelectedIndex = 0;
+                }
             }
         }
+
+
 
         public void ClearTagsListInSettings()
         {
@@ -223,85 +232,69 @@ namespace MusicBeePlugin
 
             openFileDialog1.RestoreDirectory = true;
 
-            openFileDialog1.ShowDialog();
-
-            string importCsvFilename = openFileDialog1.FileName;
-            if (importCsvFilename.Length <= 0)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                return;
-            }
-
-            StreamReader reader = new StreamReader(File.OpenRead(importCsvFilename));
-            List<string> listA = new List<String>();
-
-            while (!reader.EndOfStream)
-            {
-                string line = reader.ReadLine();
-                if (!String.IsNullOrWhiteSpace(line))
+                string importCsvFilename = openFileDialog1.FileName;
+                if (importCsvFilename.Length <= 0)
                 {
-                    string[] values = line.Split(';');
-                    listA.AddRange(values);
+                    return;
                 }
-            }
-            string[] firstlistA = listA.ToArray();
 
-            foreach (string importtag in firstlistA)
-            {
-                if (importtag.Trim().Length <= 0)
+                DialogResult dialogResult = MessageBox.Show("Do you want to continue with the CSV import?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    continue;
+                    string[] lines = File.ReadAllLines(importCsvFilename);
+                    List<string> importedTags = new List<string>();
+
+                    foreach (string line in lines)
+                    {
+                        string[] values = line.Split(';');
+                        foreach (string value in values)
+                        {
+                            string importtag = value.Trim();
+                            if (!string.IsNullOrEmpty(importtag) && !importedTags.Contains(importtag))
+                            {
+                                importedTags.Add(importtag);
+                                this.tagsStorage.TagList[importtag] = this.tagsStorage.TagList.Count();
+                                this.lstTags.Items.Add(importtag);
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("CSV import successful");
                 }
-                if (!this.lstTags.Items.Contains(importtag))
+                else
                 {
-                    this.tagsStorage.TagList[importtag] = this.tagsStorage.TagList.Count();
-                    this.lstTags.Items.Add(importtag);
+                    MessageBox.Show("CSV import canceled");
                 }
             }
         }
+
 
         public void ExportCsv()
         {
-            // TODO complete export CSV functionality and move import and export to seperate methods
-
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            
-
-            saveFileDialog1.CheckFileExists = true;
-            saveFileDialog1.CheckPathExists = true;
-
+            saveFileDialog1.CheckFileExists = false;
             saveFileDialog1.Title = "Choose a file name";
             saveFileDialog1.Filter = "csv files (*.csv)|*.csv";
             saveFileDialog1.DefaultExt = "csv";
-
             saveFileDialog1.RestoreDirectory = true;
 
-            saveFileDialog1.ShowDialog();
-           /* DialogResult result = dialog.ShowDialog();
-            string selectedPath = "";
-            if (result == DialogResult.OK)
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                selectedPath = dialog.FileName;
-            }*/
+                string exportCSVFilename = saveFileDialog1.FileName;
 
-            string exportCSVFilename = "";
-            if (saveFileDialog1.FileName != "" && saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                exportCSVFilename = saveFileDialog1.FileName;
-
-                StreamWriter csvWriter = new StreamWriter(File.OpenWrite(exportCSVFilename));
-
-                foreach (var item in lstTags.Items)
+                using (StreamWriter csvWriter = new StreamWriter(exportCSVFilename))
                 {
-                    csvWriter.Write(item.ToString() + ";");
+                    string csvContent = string.Join(";", lstTags.Items.Cast<string>());
+                    csvWriter.Write(csvContent);
                 }
 
-                csvWriter.Close();
                 MessageBox.Show("Tags exported in CSV");
             }
-            else
-                return;
         }
+
 
 
         /***************************
@@ -341,7 +334,7 @@ namespace MusicBeePlugin
             {
                 MoveUp();
             }
-            
+
         }
 
         private void BtnMoveTagDownSettings_Click(object sender, EventArgs e)
