@@ -126,14 +126,14 @@ namespace MusicBeePlugin
             SettingsStorage settingsCopy = settingsStorage.DeepCopy();
             using (var tagsPanelSettingsForm = new TagsPanelSettingsForm(settingsCopy))
             {
-                DialogResult result = tagsPanelSettingsForm.ShowDialog();
-
-                if (result != DialogResult.OK)
+                if (tagsPanelSettingsForm.ShowDialog() != DialogResult.OK)
                 {
                     return;
                 }
 
-                HandleSettingsDialogResult(tagsPanelSettingsForm);
+                UpdateSettingsFromDialog(tagsPanelSettingsForm);
+                SaveSettings();
+                UpdatePanelVisibility();
             }
         }
 
@@ -190,20 +190,29 @@ namespace MusicBeePlugin
             AddTabPages();
         }
 
-        #endregion
-
-
-
-
-        #region Tag panels
-
         private void AddVisibleTagPanel(string tagName)
         {
-            TabPage page = GetOrCreateTagPage(tagName);
-            ChecklistBoxPanel checkListBox = CreateChecklistBoxForTag(tagName);
-            ignoreEventFromHandler = false;
+            if (_tabPageList.TryGetValue(tagName, out var tabPage))
+            {
+                if (!tabPage.IsHandleCreated)
+                {
+                    tabPage.CreateControl();
+                }
+            }
+            else
+            {
+                tabPage = new TabPage(tagName);
+                _tabPageList.Add(tagName, tabPage);
+                tabControl.TabPages.Add(tabPage);
+            }
 
-            page.Controls.Add(checkListBox);
+            ChecklistBoxPanel checkListBox = GetOrCreateCheckListBoxPanel(tagName);
+            checkListBox.AddDataSource(SettingsStorage.GetTagsStorage(tagName).GetTags());
+
+            checkListBox.Dock = DockStyle.Fill;
+            checkListBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(CheckedListBox1_ItemCheck));
+
+            tabPage.Controls.Add(checkListBox);
         }
 
         private TabPage GetOrCreateTagPage(string tagName)
@@ -270,15 +279,16 @@ namespace MusicBeePlugin
         {
             if (checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
-                checklistBoxList.Remove(tagName);
-                checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                checklistBoxList[tagName] = checkListBox;
-
-                return checkListBox;
+                if (!checkListBox.IsHandleCreated)
+                {
+                    checkListBox.CreateControl();
+                }
             }
-
-            checkListBox = new ChecklistBoxPanel(mbApiInterface);
-            checklistBoxList.Add(tagName, checkListBox);
+            else
+            {
+                checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                checklistBoxList.Add(tagName, checkListBox);
+            }
 
             return checkListBox;
         }
@@ -286,8 +296,10 @@ namespace MusicBeePlugin
         private void SetTagsInPanel(string[] fileUrls, CheckState selected, string selectedTag)
         {
             MetaDataType metaDataType = GetVisibleTabPageName();
-            if (metaDataType == 0) { return; }
-            tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, metaDataType);
+            if (metaDataType != 0)
+            {
+                tagsManipulation.SetTagsInFile(fileUrls, selected, selectedTag, metaDataType);
+            }
         }
 
         private void DeleteFile(string filePath)
