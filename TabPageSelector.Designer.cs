@@ -43,24 +43,24 @@ namespace MusicBeePlugin
             this.comboBoxTagSelect.Location = new System.Drawing.Point(12, 12);
             this.comboBoxTagSelect.MaxDropDownItems = 12;
             this.comboBoxTagSelect.Name = "comboBoxTagSelect";
-            this.comboBoxTagSelect.Size = new System.Drawing.Size(179, 27);
+            this.comboBoxTagSelect.Size = new System.Drawing.Size(198, 27);
             this.comboBoxTagSelect.TabIndex = 0;
             this.comboBoxTagSelect.Text = "Click here";
             // 
             // Btn_ComboBoxAddTag
             // 
-            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 46);
+            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 48);
             this.Btn_ComboBoxAddTag.Name = "Btn_ComboBoxAddTag";
-            this.Btn_ComboBoxAddTag.Size = new System.Drawing.Size(75, 23);
+            this.Btn_ComboBoxAddTag.Size = new System.Drawing.Size(75, 33);
             this.Btn_ComboBoxAddTag.TabIndex = 1;
             this.Btn_ComboBoxAddTag.Text = "Add";
             this.Btn_ComboBoxAddTag.UseVisualStyleBackColor = true;
             // 
             // Btn_ComboBoxCancel
             // 
-            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(116, 46);
+            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(135, 48);
             this.Btn_ComboBoxCancel.Name = "Btn_ComboBoxCancel";
-            this.Btn_ComboBoxCancel.Size = new System.Drawing.Size(75, 23);
+            this.Btn_ComboBoxCancel.Size = new System.Drawing.Size(75, 33);
             this.Btn_ComboBoxCancel.TabIndex = 2;
             this.Btn_ComboBoxCancel.Text = "Cancel";
             this.Btn_ComboBoxCancel.UseVisualStyleBackColor = true;
@@ -69,7 +69,7 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(204, 81);
+            this.ClientSize = new System.Drawing.Size(222, 93);
             this.Controls.Add(this.Btn_ComboBoxCancel);
             this.Controls.Add(this.Btn_ComboBoxAddTag);
             this.Controls.Add(this.comboBoxTagSelect);

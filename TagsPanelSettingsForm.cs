@@ -12,7 +12,7 @@ namespace MusicBeePlugin
     public partial class TagsPanelSettingsForm : Form
     {
         // TODO set link to donation page
-        const string BUYUSACOFFEE = "https://duckduckgo.com";
+        const string BUYUSACOFFEE = "https://github.com/mat-st/musicbee-tags-panel";
         const string GITHUBLINK = "https://github.com/mat-st/musicbee-tags-panel";
 
         const string TOOLTIPADDTAGPAGE = "Add & select a new tag and a new tabpage";
