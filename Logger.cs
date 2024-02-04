@@ -46,7 +46,7 @@ namespace MusicBeePlugin
             return fileInfo;
         }
 
-        private void Write(string type, string message, object[] args)
+        private void Write(string type, string message, params object[] args)
         {
             if (writer == null)
             {
@@ -54,8 +54,8 @@ namespace MusicBeePlugin
                 writer.AutoFlush = false;
             }
 
-            DateTime localTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, TimeZoneInfo.Local);
-            writer.WriteLine(localTime.ToString("dd/MM/yyyy HH:mm:ss") + " [" + type.ToUpper() + "] " + string.Format(message, args));
+            DateTime localTime = DateTime.Now;
+            writer.WriteLine($"{localTime:dd/MM/yyyy HH:mm:ss} [{type.ToUpper()}] {string.Format(message, args)}");
             writer.Flush();
         }
 
@@ -63,12 +63,7 @@ namespace MusicBeePlugin
         {
             if (writer != null)
             {
-                try
-                {
-                    writer.Close();
-                }
-                catch (ObjectDisposedException)
-                { }
+                writer.Close();
             }
         }
 
@@ -94,7 +89,7 @@ namespace MusicBeePlugin
 
         public string GetLogFilePath()
         {
-            return System.IO.Path.Combine(musicBeeApiInterface.Setting_GetPersistentStoragePath(), LOG_FILE_NAME);
+            return Path.Combine(musicBeeApiInterface.Setting_GetPersistentStoragePath(), LOG_FILE_NAME);
         }
     }
 }

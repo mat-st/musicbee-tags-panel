@@ -19,13 +19,13 @@ namespace MusicBeePlugin
             if (!HasSelectedItem(listBox))
                 return;
 
-            int newIndex = CalculateNewIndex(listBox, direction);
+            int newIndex = listBox.SelectedIndex + direction;
 
             if (!IsIndexWithinBounds(newIndex, listBox.Items.Count))
                 return;
 
             object selected = listBox.SelectedItem;
-            SaveCheckedState(listBox, out var checkState);
+            CheckState checkState = SaveCheckedState(listBox);
 
             listBox.Items.Remove(selected);
             listBox.Items.Insert(newIndex, selected);
@@ -39,22 +39,19 @@ namespace MusicBeePlugin
             return listBox.SelectedItem != null && listBox.SelectedIndex >= 0;
         }
 
-        private static int CalculateNewIndex(ListBox listBox, int direction)
-        {
-            return listBox.SelectedIndex + direction;
-        }
-
         private static bool IsIndexWithinBounds(int index, int itemCount)
         {
             return index >= 0 && index < itemCount;
         }
 
-        private static void SaveCheckedState(ListBox listBox, out CheckState checkState)
+        private static CheckState SaveCheckedState(ListBox listBox)
         {
-            checkState = CheckState.Unchecked;
+            CheckState checkState = CheckState.Unchecked;
 
             if (listBox is CheckedListBox checkedListBox)
                 checkState = checkedListBox.GetItemCheckState(checkedListBox.SelectedIndex);
+
+            return checkState;
         }
 
         private static void RestoreCheckedState(ListBox listBox, CheckState checkState, int newIndex)

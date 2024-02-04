@@ -610,7 +610,7 @@ namespace MusicBeePlugin
         /// <param name="filenames">List of selected files.</param>
         public void OnSelectedFilesChanged(string[] filenames)
         {
-            if (_panel == null) return;
+            if (_panel == null || filenames == null || filenames.Length == 0) return;
 
             selectedFileUrls = filenames;
             SetTagsFromFilesInPanel(filenames);
@@ -622,13 +622,11 @@ namespace MusicBeePlugin
         /// <returns>Returns the list of ToolStripMenuItems that will be displayed.</returns>
         public List<ToolStripItem> GetMenuItems()
         {
-            var menuItems = new List<ToolStripItem>
-    {
-        new ToolStripMenuItem("Tag-Panel Settings", null, MenuSettingsClicked),
-        new ToolStripMenuItem("About", null, ToolstripAbout_Clicked)
-    };
-
-            return menuItems;
+            return new List<ToolStripItem>
+            {
+                new ToolStripMenuItem("Tag-Panel Settings", null, MenuSettingsClicked),
+                new ToolStripMenuItem("About", null, ToolstripAbout_Clicked)
+            };
         }
 
         #endregion
