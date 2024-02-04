@@ -347,16 +347,16 @@ namespace MusicBeePlugin
             currentTagsStorage.SortByIndex();
             string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
 
-            Dictionary<String, CheckState> data = new Dictionary<String, CheckState>(allTagsFromSettings.Length);
+            Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Length);
             foreach (string tagFromSettings in allTagsFromSettings)
             {
                 if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
                 {
-                    data.Add(tagFromSettings, checkState);
+                    data[tagFromSettings] = checkState;
                 }
                 else
                 {
-                    data.Add(tagFromSettings, CheckState.Unchecked);
+                    data[tagFromSettings] = CheckState.Unchecked;
                 }
             }
 
@@ -398,13 +398,11 @@ namespace MusicBeePlugin
 
         private void TabControl1_Selected(Object sender, TabControlEventArgs e)
         {
-            if (e.TabPage == null)
+            metaDataTypeName = e.TabPage?.Text;
+            if (!string.IsNullOrEmpty(metaDataTypeName))
             {
-                return;
+                SwitchVisibleTagPanel(metaDataTypeName);
             }
-
-            metaDataTypeName = e.TabPage.Text;
-            SwitchVisibleTagPanel(metaDataTypeName);
         }
 
         private void ToolstripAbout_Clicked(object sender, EventArgs e)
