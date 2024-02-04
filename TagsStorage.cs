@@ -12,14 +12,25 @@ namespace MusicBeePlugin
         private Dictionary<string, int> tagList = new Dictionary<string, int>();
         private bool sorted = true;
 
-        public void Clear() => tagList.Clear();
+        public void Clear()
+        {
+            tagList.Clear();
+        }
 
         public Dictionary<string, CheckState> GetTags()
         {
-            return tagList.ToDictionary(item => item.Key, _ => CheckState.Unchecked);
+            Dictionary<string, CheckState> result = new Dictionary<string, CheckState>(tagList.Count);
+            foreach (var item in tagList)
+            {
+                result.Add(item.Key, CheckState.Unchecked);
+            }
+            return result;
         }
 
-        public string GetTagName() => metaDataType;
+        public string GetTagName()
+        {
+            return metaDataType;
+        }
 
         public MetaDataType GetMetaDataType()
         {
@@ -31,15 +42,26 @@ namespace MusicBeePlugin
         public void Sort()
         {
             var sortedKeys = new SortedSet<string>(tagList.Keys);
-            tagList = sortedKeys.Select((key, index) => new { Key = key, Index = index })
-                               .ToDictionary(pair => pair.Key, pair => pair.Index);
+            Dictionary<string, int> sortedTagList = new Dictionary<string, int>(tagList.Count);
+            int index = 0;
+            foreach (var key in sortedKeys)
+            {
+                sortedTagList.Add(key, index);
+                index++;
+            }
+            tagList = sortedTagList;
             sorted = true;
         }
 
         public void SortByIndex()
         {
-            var tmpTagList = tagList.OrderBy(item => item.Value);
-            tagList = tmpTagList.ToDictionary(pair => pair.Key, pair => pair.Value);
+            List<KeyValuePair<string, int>> sortedTagList = tagList.OrderBy(item => item.Value).ToList();
+            Dictionary<string, int> newTagList = new Dictionary<string, int>(tagList.Count);
+            for (int i = 0; i < sortedTagList.Count; i++)
+            {
+                newTagList.Add(sortedTagList[i].Key, i);
+            }
+            tagList = newTagList;
         }
 
         public void SwapElement(string key, int position)
@@ -47,12 +69,32 @@ namespace MusicBeePlugin
             int oldPosition = tagList[key];
             tagList[key] = position;
 
-            string oldKey = tagList.FirstOrDefault(item => item.Value == position).Key;
-            tagList[oldKey] = oldPosition;
+            foreach (var item in tagList)
+            {
+                if (item.Value == position && item.Key != key)
+                {
+                    tagList[item.Key] = oldPosition;
+                    break;
+                }
+            }
         }
 
-        public bool Sorted { get => sorted; set => sorted = value; }
-        public string MetaDataType { get => metaDataType; set => metaDataType = value; }
-        public Dictionary<string, int> TagList { get => tagList; set => tagList = value; }
+        public bool Sorted
+        {
+            get { return sorted; }
+            set { sorted = value; }
+        }
+
+        public string MetaDataType
+        {
+            get { return metaDataType; }
+            set { metaDataType = value; }
+        }
+
+        public Dictionary<string, int> TagList
+        {
+            get { return tagList; }
+            set { tagList = value; }
+        }
     }
 }

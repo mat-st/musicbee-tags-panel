@@ -20,11 +20,7 @@ namespace MusicBeePlugin
         private readonly MusicBeeApiInterface mbApiInterface;
         private readonly Logger log;
 
-        public static Dictionary<string, TagsStorage> TagsStorages
-        {
-            get => storages;
-            set => storages = value;
-        }
+        public static Dictionary<string, TagsStorage> TagsStorages { get; set; }
 
         public SettingsStorage(MusicBeeApiInterface mbApiInterface, Logger log)
         {
@@ -64,8 +60,7 @@ namespace MusicBeePlugin
         {
             string settingsPath = GetSettingsPath();
 
-            using (var stream = File.Open(settingsPath, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var file = new StreamWriter(stream, Encoding.UTF8))
+            using (var file = new StreamWriter(settingsPath, false, Encoding.UTF8))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, TagsStorages);
@@ -74,7 +69,7 @@ namespace MusicBeePlugin
 
         public TagsStorage GetFirstTagsStorage()
         {
-            return TagsStorages.Count > 0 ? TagsStorages.Values.First() : null;
+            return TagsStorages.FirstOrDefault().Value;
         }
 
         public static TagsStorage GetTagsStorage(string tagName)
