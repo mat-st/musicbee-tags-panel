@@ -171,11 +171,7 @@ namespace MusicBeePlugin
 
         private void UpdateSortAlphabetically()
         {
-            TagsStorage tagsStorage = settingsStorage.GetFirstOne();
-            if (tagsStorage != null)
-            {
-                sortAlphabetically = tagsStorage.Sorted;
-            }
+            sortAlphabetically = settingsStorage.GetFirstOne()?.Sorted ?? false;
         }
 
         private void UpdatePanelData()
@@ -192,25 +188,23 @@ namespace MusicBeePlugin
 
         private void AddVisibleTagPanel(string tagName)
         {
-            if (_tabPageList.TryGetValue(tagName, out var tabPage))
-            {
-                if (!tabPage.IsHandleCreated)
-                {
-                    tabPage.CreateControl();
-                }
-            }
-            else
+            if (!_tabPageList.TryGetValue(tagName, out var tabPage))
             {
                 tabPage = new TabPage(tagName);
                 _tabPageList.Add(tagName, tabPage);
                 tabControl.TabPages.Add(tabPage);
             }
 
+            if (!tabPage.IsHandleCreated)
+            {
+                tabPage.CreateControl();
+            }
+
             ChecklistBoxPanel checkListBox = GetOrCreateCheckListBoxPanel(tagName);
             checkListBox.AddDataSource(SettingsStorage.GetTagsStorage(tagName).GetTags());
 
             checkListBox.Dock = DockStyle.Fill;
-            checkListBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(CheckedListBox1_ItemCheck));
+            checkListBox.AddItemCheckEventHandler(CheckedListBox1_ItemCheck);
 
             tabPage.Controls.Add(checkListBox);
         }
