@@ -507,20 +507,12 @@ namespace MusicBeePlugin
 
         private void AddControls()
         {
-            _panel.BeginInvoke(new Action(() =>
-            {
-                CreateTabPanel();
-                _panel.SuspendLayout();
-                _panel.Enabled = false;
-                _panel.Controls.Add(tabControl);
-                _panel.ResumeLayout();
-            }));
+            _panel.SuspendLayout();
+            CreateTabPanel();
+            _panel.Controls.Add(tabControl);
+            _panel.Enabled = false;
+            _panel.ResumeLayout();
         }
-
-        #endregion
-
-
-        #region MusicBee
 
         /// <summary>
         /// MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -528,21 +520,10 @@ namespace MusicBeePlugin
         /// <param name="reason">The reason why MusicBee has closed the plugin.</param>
         public void Close(PluginCloseReason reason)
         {
-            /*    
-             *    TODO: Check if it is possible to get                      the userdisbled reason
-             *    public enum PluginCloseReason
-            {
-                MusicBeeClosing = 1,
-                UserDisabled = 2,
-                StopNoUnload = 3
-            }*/ 
-
-
-            //this.panel.Dispose();
-            // _panel = null;
-
             log.Info(reason.ToString("G"));
             log.Close();
+            _panel?.Dispose();
+            _panel = null;
         }
 
         /// <summary>
