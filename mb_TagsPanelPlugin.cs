@@ -547,7 +547,7 @@ namespace MusicBeePlugin
         /// <param name="type"></param>
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
         {
-            if (_panel == null) return;
+            if (_panel == null || type == NotificationType.ApplicationWindowChanged) return;
 
             MetaDataType metaDataType = GetVisibleTabPageName();
             if (metaDataType == 0) return;
@@ -563,21 +563,13 @@ namespace MusicBeePlugin
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
                     break;
-                case NotificationType.ApplicationWindowChanged:
-                    log.Debug("Application Window changes notification");
-                    return;
             }
 
             tagsFromFiles = tagsManipulation.UpdateTagsFromFile(sourceFileUrl, metaDataType);
 
-            if (type == NotificationType.TrackChanged)
+            if (type == NotificationType.TrackChanged || type == NotificationType.TagsChanging)
             {
                 ignoreForBatchSelect = true;
-                InvokeUpdateTagsTableData();
-                ignoreForBatchSelect = false;
-            }
-            else if (type == NotificationType.TagsChanging)
-            {
                 InvokeUpdateTagsTableData();
                 ignoreForBatchSelect = false;
             }
