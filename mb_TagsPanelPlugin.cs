@@ -200,8 +200,15 @@ namespace MusicBeePlugin
                 tabPage.CreateControl();
             }
 
+            var tagsStorage = SettingsStorage.GetTagsStorage(tagName);
+            if (tagsStorage == null)
+            {
+                log.Error("tagsStorage is null"); // Log the error
+                return;
+            }
+
             ChecklistBoxPanel checkListBox = GetOrCreateCheckListBoxPanel(tagName);
-            checkListBox.AddDataSource(SettingsStorage.GetTagsStorage(tagName).GetTags());
+            checkListBox.AddDataSource(tagsStorage.GetTags());
 
             checkListBox.Dock = DockStyle.Fill;
             checkListBox.AddItemCheckEventHandler(CheckedListBox1_ItemCheck);
@@ -261,11 +268,17 @@ namespace MusicBeePlugin
 
         private ChecklistBoxPanel CreateChecklistBoxForTag(string tagName)
         {
+            var tagsStorage = SettingsStorage.GetTagsStorage(tagName);
+            if (tagsStorage == null)
+            {
+                log.Error("tagsStorage is null"); // Log the error
+                return null;
+            }
+
             ChecklistBoxPanel checkListBox = GetOrCreateCheckListBoxPanel(tagName);
-            checkListBox.AddDataSource(SettingsStorage.GetTagsStorage(tagName).GetTags());
+            checkListBox.AddDataSource(tagsStorage.GetTags());
 
             checkListBox.Dock = DockStyle.Fill;
-            // TODO only do this once 
             checkListBox.AddItemCheckEventHandler(new System.Windows.Forms.ItemCheckEventHandler(CheckedListBox1_ItemCheck));
 
             return checkListBox;
@@ -342,7 +355,11 @@ namespace MusicBeePlugin
         private void UpdateTagsTableData()
         {
             TagsStorage currentTagsStorage = GetCurrentTagsStorage();
-            if (currentTagsStorage == null) { return; }
+            if (currentTagsStorage == null)
+            {
+                log.Error("currentTagsStorage is null"); // Log the error
+                return;
+            }
 
             currentTagsStorage.SortByIndex();
             string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
@@ -370,7 +387,7 @@ namespace MusicBeePlugin
             {
                 try
                 {
-                    _panel.Invoke((Action)UpdateTagsTableData);
+                    _panel.BeginInvoke((Action)UpdateTagsTableData);
                 }
                 catch (Exception ex)
                 {
@@ -564,10 +581,15 @@ namespace MusicBeePlugin
         /// <param name="type"></param>
         public void ReceiveNotification(string sourceFileUrl, NotificationType type)
         {
+            // If the panel is null or the application window has changed, return early
             if (_panel == null || type == NotificationType.ApplicationWindowChanged) return;
 
             MetaDataType metaDataType = GetVisibleTabPageName();
+            // If the metaDataType is 0, return early
             if (metaDataType == 0) return;
+
+            // If ignoreEventFromHandler is true, return early
+            if (ignoreEventFromHandler) return;
 
             switch (type)
             {
@@ -575,8 +597,6 @@ namespace MusicBeePlugin
                 case NotificationType.TrackChanged:
                     break;
                 case NotificationType.TagsChanging:
-                    if (ignoreEventFromHandler) return;
-
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
                     break;
