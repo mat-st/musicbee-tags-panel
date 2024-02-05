@@ -207,7 +207,9 @@ namespace MusicBeePlugin
             checkListBox.AddItemCheckEventHandler(CheckedListBox1_ItemCheck);
 
             tabPage.Controls.Add(checkListBox);
+            checkListBox.Visible = true; // Show the ChecklistBoxPanel
         }
+
 
         private TabPage GetOrCreateTagPage(string tagName)
         {
@@ -227,11 +229,13 @@ namespace MusicBeePlugin
         private void AddTabPages()
         {
             _tabPageList.Clear();
-            tabControl.TabPages.Clear();
-
-            foreach (var tagsStorage in SettingsStorage.TagsStorages.Values)
+            if (tabControl != null && tabControl.TabPages != null)
             {
-                AddVisibleTagPanel(tagsStorage.MetaDataType);
+                tabControl.TabPages.Clear();
+                foreach (var tagsStorage in SettingsStorage.TagsStorages.Values)
+                {
+                    AddVisibleTagPanel(tagsStorage.MetaDataType);
+                }
             }
         }
 
@@ -321,7 +325,10 @@ namespace MusicBeePlugin
         private void ClearAllTagPages()
         {
             _tabPageList.Clear();
-            tabControl.TabPages.Clear();
+            if (tabControl != null && tabControl.TabPages != null)
+            {
+                tabControl.TabPages.Clear();
+            }
         }
 
         private void AddTagsToChecklistBoxPanel(string tagName, Dictionary<String, CheckState> tags)
@@ -359,7 +366,21 @@ namespace MusicBeePlugin
 
         private void InvokeUpdateTagsTableData()
         {
-            _panel.Invoke((Action)UpdateTagsTableData);
+            if (_panel != null && !_panel.IsDisposed)
+            {
+                try
+                {
+                    _panel.Invoke((Action)UpdateTagsTableData);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Error occurred while invoking UpdateTagsTableData: " + ex.Message);
+                }
+            }
+            else
+            {
+                log.Error("_panel is null or disposed");
+            }
         }
 
         #endregion
@@ -447,7 +468,7 @@ namespace MusicBeePlugin
 
         void SwitchVisibleTagPanel(string visibleTag)
         {
-            // remove checklistBox from all panels
+            // Hide checklistBox on all panels
             foreach (var tagsStorage in SettingsStorage.TagsStorages.Values)
             {
                 string tagName = tagsStorage.GetTagName();
@@ -455,13 +476,11 @@ namespace MusicBeePlugin
 
                 if (page.Controls.Count > 0 && page.Controls[0] is ChecklistBoxPanel checklistBoxPanel)
                 {
-                    checklistBoxPanel.RemoveItemCheckEventHandler();
+                    checklistBoxPanel.Visible = false;
                 }
-
-                page.Controls.Clear();
             }
 
-            // add checklistBox to visible panel 
+            // Show checklistBox on visible panel 
             AddVisibleTagPanel(visibleTag);
             SetTagsFromFilesInPanel(selectedFileUrls);
         }
