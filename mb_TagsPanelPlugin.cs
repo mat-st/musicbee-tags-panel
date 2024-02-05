@@ -288,17 +288,14 @@ namespace MusicBeePlugin
         {
             if (checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
-                if (!checkListBox.IsDisposed)
+                if (checkListBox.IsDisposed)
                 {
-                    if (!checkListBox.IsHandleCreated)
-                    {
-                        checkListBox.CreateControl();
-                    }
+                    checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                    checklistBoxList[tagName] = checkListBox;
                 }
-                else
+                else if (!checkListBox.IsHandleCreated)
                 {
-                    checklistBoxList.Remove(tagName);
-                    checkListBox.Dispose();
+                    checkListBox.CreateControl();
                 }
             }
             else
@@ -498,8 +495,11 @@ namespace MusicBeePlugin
             }
 
             // Show checklistBox on visible panel 
-            AddVisibleTagPanel(visibleTag);
-            SetTagsFromFilesInPanel(selectedFileUrls);
+            if (!string.Equals(visibleTag, null))
+            {
+                AddVisibleTagPanel(visibleTag);
+                SetTagsFromFilesInPanel(selectedFileUrls);
+            }
         }
 
         private void CreateTabPanel()
