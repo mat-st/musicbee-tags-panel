@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using static MusicBeePlugin.Plugin;
@@ -60,7 +61,7 @@ namespace MusicBeePlugin
         public string AddTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
         {
             string tags = GetTags(fileUrl, metaDataType).Trim(SEPARATOR);
-            var tagList = new HashSet<string>(tags.Split(SEPARATOR));
+            var tagList = new HashSet<string>(tags.Split(new[] { SEPARATOR }, StringSplitOptions.RemoveEmptyEntries));
             tagList.Add(selectedTag);
             return string.Join(SEPARATOR.ToString(), tagList);
         }
