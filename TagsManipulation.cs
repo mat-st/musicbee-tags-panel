@@ -79,7 +79,9 @@ namespace MusicBeePlugin
         public string AddTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
         {
             string tags = GetTags(fileUrl, metaDataType).Trim(SEPARATOR);
-            return string.IsNullOrEmpty(tags) ? selectedTag : tags + SEPARATOR + selectedTag;
+            var tagList = new HashSet<string>(tags.Split(SEPARATOR));
+            tagList.Add(selectedTag);
+            return string.Join(SEPARATOR.ToString(), tagList);
         }
 
         public bool IsTagAvailable(string tagName, string fileUrl, MetaDataType metaDataType)

@@ -91,6 +91,7 @@
     <Compile Include="ChecklistBoxPanel.Designer.cs">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="TagsManipulation.cs" />
     <Compile Include="ListBoxExtension.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
@@ -109,7 +110,6 @@
     <Compile Include="TabPageSelector.Designer.cs">
       <DependentUpon>TabPageSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="TagsManipulation.cs" />
     <Compile Include="TagsPanelSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
