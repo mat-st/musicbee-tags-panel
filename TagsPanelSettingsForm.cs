@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -27,7 +22,7 @@ namespace MusicBeePlugin
         {
             this.settingsStorage = settingsStorage;
             InitializeComponent();
-     
+
             this.Btn_Save.DialogResult = DialogResult.OK;
             this.Btn_Cancel.DialogResult = DialogResult.Cancel;
 
@@ -127,7 +122,7 @@ namespace MusicBeePlugin
 
         private void Btn_AddTagPage_Click(object sender, EventArgs e)
         {
-            AddTagPage();            
+            AddTagPage();
         }
 
         private void BtnRemoveTagPage_Click(object sender, EventArgs e)
@@ -135,9 +130,9 @@ namespace MusicBeePlugin
             ShowDialogToRemoveTagPage();
         }
 
-        
 
-        
+
+
 
         /***************************
         DIALOGS

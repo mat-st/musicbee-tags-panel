@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using static MusicBeePlugin.Plugin;
 
@@ -30,14 +28,8 @@ namespace MusicBeePlugin
                 string[] tagsFromFile = ReadTagsFromFile(filename, tagsStorage.GetMetaDataType());
                 foreach (var tag in tagsFromFile)
                 {
-                    if (stateOfSelection.ContainsKey(tag))
-                    {
-                        stateOfSelection[tag]++;
-                    }
-                    else
-                    {
-                        stateOfSelection[tag] = 1;
-                    }
+                    stateOfSelection.TryGetValue(tag, out int count);
+                    stateOfSelection[tag] = count + 1;
                 }
             }
 
@@ -52,8 +44,7 @@ namespace MusicBeePlugin
         public string SortTagsAlphabetical(string tags)
         {
             var tagsWithoutDuplicates = new SortedSet<string>(tags.Split(SEPARATOR));
-            var sortedTags = tagsWithoutDuplicates.Select(tag => tag.Trim());
-            return string.Join(SEPARATOR.ToString(), sortedTags);
+            return string.Join(SEPARATOR.ToString(), tagsWithoutDuplicates);
         }
 
         public string RemoveTag(string selectedTag, string fileUrl, MetaDataType metaDataType)
@@ -61,19 +52,9 @@ namespace MusicBeePlugin
             string tags = GetTags(fileUrl, metaDataType);
             string[] tagArray = tags.Split(SEPARATOR);
 
-            var cleanedTags = new List<string>();
+            var cleanedTags = tagArray.Where(tag => tag.Trim() != selectedTag);
 
-            foreach (string tag in tagArray)
-            {
-                if (tag.Trim() != selectedTag)
-                {
-                    cleanedTags.Add(tag);
-                }
-            }
-
-            string cleanedTagsString = string.Join(SEPARATOR.ToString(), cleanedTags);
-
-            return cleanedTagsString;
+            return string.Join(SEPARATOR.ToString(), cleanedTags);
         }
 
         public string AddTag(string selectedTag, string fileUrl, MetaDataType metaDataType)

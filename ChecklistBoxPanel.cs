@@ -49,7 +49,7 @@ namespace MusicBeePlugin
             this.style.StyleControl(checkedListBox1);
             this.style.StyleControl(this);
         }
-       
+
 
         public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
@@ -61,8 +61,8 @@ namespace MusicBeePlugin
         {
             //RemoveClickEvent(this.checkedListBox1);
             this.checkedListBox1.ItemCheck -= this.eventHandler;
-        }       
-      
+        }
+
         private void CheckedListBox1_KeyUp(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed

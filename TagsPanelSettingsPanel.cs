@@ -72,7 +72,7 @@ namespace MusicBeePlugin
         public void SetUpPanelForFirstUse()
         {
 
-            
+
             if (this.lstTags.Items.Count != 0)
             {
                 lstTags.SelectedIndex = 0;
@@ -82,7 +82,7 @@ namespace MusicBeePlugin
             {
                 SetUpDownButtonsStateDisabled();
             }
-            SetUpDownButtonsStateEnabled();           
+            SetUpDownButtonsStateEnabled();
         }
 
 
