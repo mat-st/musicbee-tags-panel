@@ -29,28 +29,28 @@ namespace MusicBeePlugin
 
         public void AddDataSource(Dictionary<String, CheckState> data)
         {
-            checkedListBox1.BeginUpdate();
-            checkedListBox1.Items.Clear();
+            checkedListBoxWithTags.BeginUpdate();
+            checkedListBoxWithTags.Items.Clear();
 
             foreach (KeyValuePair<String, CheckState> entry in data)
             {
-                checkedListBox1.Items.Add(entry.Key, entry.Value);
+                checkedListBoxWithTags.Items.Add(entry.Key, entry.Value);
             }
 
-            checkedListBox1.ColumnWidth = GetLongestStringWidth(data.Keys) + 20;
-            checkedListBox1.EndUpdate();
+            checkedListBoxWithTags.ColumnWidth = GetLongestStringWidth(data.Keys) + 20;
+            checkedListBoxWithTags.EndUpdate();
         }
 
         private int GetLongestStringWidth(IEnumerable<string> strings)
         {
             var longestString = strings.Aggregate("", (max, cur) => cur.Length > max.Length ? cur : max);
-            return TextRenderer.MeasureText(longestString, checkedListBox1.Font).Width;
+            return TextRenderer.MeasureText(longestString, checkedListBoxWithTags.Font).Width;
         }
 
         private void StylePanel()
         {
             // apply current skin colors to tag panel
-            style.StyleControl(checkedListBox1);
+            style.StyleControl(checkedListBoxWithTags);
             style.StyleControl(this);
         }
 
@@ -58,25 +58,25 @@ namespace MusicBeePlugin
         public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
             this.eventHandler = eventHandler;
-            checkedListBox1.ItemCheck += eventHandler;
+            checkedListBoxWithTags.ItemCheck += eventHandler;
         }
 
         public void RemoveItemCheckEventHandler()
         {
             //RemoveClickEvent(this.checkedListBox1);
-            checkedListBox1.ItemCheck -= this.eventHandler;
+            checkedListBoxWithTags.ItemCheck -= this.eventHandler;
         }
 
         private void CheckedListBox1_KeyUp(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed
-            checkedListBox1.CheckOnClick = true;
+            checkedListBoxWithTags.CheckOnClick = true;
         }
 
         private void CheckedListBox1_KeyDown(object sender, KeyEventArgs e)
         {
             // this will prevent the item to be checked if a key was pressed
-            checkedListBox1.CheckOnClick = false;
+            checkedListBoxWithTags.CheckOnClick = false;
         }
     }
 }
