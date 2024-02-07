@@ -102,7 +102,7 @@ namespace MusicBeePlugin
             this.lstTags.KeyDown += KeyEventHandler;
             this.TxtNewTagInput.KeyDown += KeyEventHandler;
 
-            this.cbEnableAlphabeticalTagSort.CheckedChanged += new System.EventHandler(this.CbEnableTagSort_CheckedChanged);
+            this.cbEnableAlphabeticalTagSort.CheckedChanged += CbEnableTagSort_CheckedChanged;
         }
 
 
@@ -126,7 +126,8 @@ namespace MusicBeePlugin
 
         private void CbEnableTagSort_CheckedChanged(object sender, EventArgs e)
         {
-            if (((CheckBox)sender).Checked)
+            CheckBox checkBox = sender as CheckBox;
+            if (checkBox != null && checkBox.Checked)
             {
                 ShowConfirmationDialogToSort();
                 SetUpDownButtonsStateDisabled();
