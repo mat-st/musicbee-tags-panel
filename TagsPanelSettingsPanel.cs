@@ -71,8 +71,6 @@ namespace MusicBeePlugin
 
         public void SetUpPanelForFirstUse()
         {
-
-
             if (this.lstTags.Items.Count != 0)
             {
                 lstTags.SelectedIndex = 0;
@@ -82,7 +80,10 @@ namespace MusicBeePlugin
             {
                 SetUpDownButtonsStateDisabled();
             }
-            SetUpDownButtonsStateEnabled();
+            else
+            {
+                SetUpDownButtonsStateEnabled();
+            }
         }
 
 
@@ -94,7 +95,10 @@ namespace MusicBeePlugin
             {
                 SetUpDownButtonsStateDisabled();
             }
-            SetUpDownButtonsStateEnabled();
+            else
+            {
+                SetUpDownButtonsStateEnabled();
+            }
         }
 
         private void MakeOwnModifications()
@@ -149,9 +153,9 @@ namespace MusicBeePlugin
         public void UpdateTags()
         {
             Dictionary<String, CheckState> tagsDict = tagsStorage.GetTags();
-            string[] tags = tagsDict.Keys.ToArray<String>();
+            string[] tags = tagsDict.Keys.ToArray();
             Array.Sort(tags); // Sort the tags alphabetically
-            this.lstTags.Items.AddRange(tags == null ? new string[] { } : tags);
+            this.lstTags.Items.AddRange(tags);
         }
 
         public void AddNewTagToList()
