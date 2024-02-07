@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -11,22 +12,28 @@ namespace MusicBeePlugin
     {
         private TagsStorage tagsStorage;
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+
+        private const int EM_SETCUEBANNER = 0x1501;
+
         public TagsPanelSettingsPanel(string tagName)
         {
             InitializeComponent();
 
-            TxtNewTagInput.Focus(); // Set focus to the NewTagInput textbox
+            SendMessage(TxtNewTagInput.Handle, EM_SETCUEBANNER, 0, "Please enter a tag");
+            // SetWatermarkText();
             tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
-            SetWatermarkText();
+            
 
             // this must be at the very end to suppress the events
             MakeOwnModifications();
 
             // Set the text box ready for input
-            TxtNewTagInput.Select();
-            TxtNewTagInput.SelectAll(); // Select all text in the textbox
+            // TxtNewTagInput.Select();
+            // TxtNewTagInput.SelectAll(); // Select all text in the textbox
             TxtNewTagInput.Focus(); // Set focus to the textbox
         }
 
@@ -42,26 +49,26 @@ namespace MusicBeePlugin
             this.btnTagDown.Enabled = true;
         }
 
-        public void SetWatermarkText()
-        {
-            TxtNewTagInput.ForeColor = SystemColors.GrayText;
-            TxtNewTagInput.Text = "Please Enter A Tag";
-            this.TxtNewTagInput.Leave += new System.EventHandler(this.TxtNewTagInput_Leave);
-            this.TxtNewTagInput.Enter += new System.EventHandler(this.TxtNewTagInput_Enter);
-        }
+        //public void SetWatermarkText()
+        //{
+        //    TxtNewTagInput.ForeColor = SystemColors.GrayText;
+        //    TxtNewTagInput.Text = "Please enter a tag";
+        //    this.TxtNewTagInput.Leave += new System.EventHandler(this.TxtNewTagInput_Leave);
+        //    this.TxtNewTagInput.Enter += new System.EventHandler(this.TxtNewTagInput_Enter);
+        //}
 
         private void TxtNewTagInput_Leave(object sender, EventArgs e)
         {
             if (TxtNewTagInput.Text.Length == 0)
             {
-                TxtNewTagInput.Text = "Please Enter A Tag";
+                TxtNewTagInput.Text = "Please enter a tag";
                 TxtNewTagInput.ForeColor = SystemColors.GrayText;
             }
         }
 
         private void TxtNewTagInput_Enter(object sender, EventArgs e)
         {
-            if (TxtNewTagInput.Text == "Please Enter A Tag")
+            if (TxtNewTagInput.Text == "Please enter a tag")
             {
                 TxtNewTagInput.Text = "";
                 TxtNewTagInput.ForeColor = SystemColors.WindowText;
