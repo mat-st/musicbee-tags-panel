@@ -30,18 +30,19 @@ namespace MusicBeePlugin
 
         public void AddDataSource(Dictionary<String, CheckState> data)
         {
+            this.checkedListBox1.BeginUpdate(); // Suspend the drawing of the control
             this.checkedListBox1.Items.Clear();
-            string longestString = "";
-            foreach (String key in data.Keys.ToArray())
-            {
-                longestString = (key.Length > longestString.Length) ? key : longestString;
-                CheckState value = data[key];
-                this.checkedListBox1.Items.Add(key, value);
-            }
-            this.checkedListBox1.ColumnWidth = TextRenderer.MeasureText(longestString, checkedListBox1.Font).Width + 20;
 
-            //this.checkedListBox1.Items.AddRange(data);
+            string longestString = data.Keys.Aggregate("", (max, cur) => cur.Length > max.Length ? cur : max);
+            foreach (KeyValuePair<String, CheckState> entry in data)
+            {
+                this.checkedListBox1.Items.Add(entry.Key, entry.Value);
+            }
+
+            this.checkedListBox1.ColumnWidth = TextRenderer.MeasureText(longestString, checkedListBox1.Font).Width + 20;
+            this.checkedListBox1.EndUpdate(); // Resume the drawing of the control
         }
+
 
         private void StylePanel()
         {

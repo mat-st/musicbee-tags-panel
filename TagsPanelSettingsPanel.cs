@@ -22,7 +22,7 @@ namespace MusicBeePlugin
             InitializeComponent();
 
             SendMessage(TxtNewTagInput.Handle, EM_SETCUEBANNER, 0, "Please enter a tag");
-            // SetWatermarkText();
+            
             tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
@@ -49,13 +49,6 @@ namespace MusicBeePlugin
             this.btnTagDown.Enabled = true;
         }
 
-        //public void SetWatermarkText()
-        //{
-        //    TxtNewTagInput.ForeColor = SystemColors.GrayText;
-        //    TxtNewTagInput.Text = "Please enter a tag";
-        //    this.TxtNewTagInput.Leave += new System.EventHandler(this.TxtNewTagInput_Leave);
-        //    this.TxtNewTagInput.Enter += new System.EventHandler(this.TxtNewTagInput_Enter);
-        //}
 
         private void TxtNewTagInput_Leave(object sender, EventArgs e)
         {
