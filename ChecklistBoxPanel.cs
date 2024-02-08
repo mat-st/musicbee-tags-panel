@@ -15,7 +15,7 @@ namespace MusicBeePlugin
         public ChecklistBoxPanel(MusicBeeApiInterface mbApiInterface, Dictionary<String, CheckState> data = null)
         {
             this.mbApiInterface = mbApiInterface;
-            this.style = new Style(mbApiInterface);
+            style = new Style(mbApiInterface);
 
             InitializeComponent();
 

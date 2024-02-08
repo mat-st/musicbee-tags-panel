@@ -1,4 +1,10 @@
-﻿using System;
+﻿// A MusicBee plugin that displays a panel with tabpages containing checklistboxes. The user can select tags from the checklistboxes and the plugin will update the tags in the selected files.
+// The plugin also has a settings dialog that allows the user to define the tags and the order in which they are displayed.
+// The plugin also has a logger that logs errors and information messages. The plugin also has a settings storage class that saves the settings to a file.
+// The plugin also has a tags manipulation class that manipulates the tags in the selected files. The plugin also has a plugin info class that contains information about the plugin.
+// The plugin also has a tags storage class that contains the tags and the order in which they are displayed. The plugin also has a checklistbox panel class that contains a checklistbox and a style class that styles
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
