@@ -357,31 +357,38 @@ namespace MusicBeePlugin
 
         private void UpdateTagsTableData()
         {
-            TagsStorage currentTagsStorage = GetCurrentTagsStorage();
-            if (currentTagsStorage == null)
+            try
             {
-                log.Error("currentTagsStorage is null"); // Log the error
-                return;
+                TagsStorage currentTagsStorage = GetCurrentTagsStorage();
+                if (currentTagsStorage == null)
+                {
+                    throw new Exception("currentTagsStorage is null");
+                }
+
+                currentTagsStorage.SortByIndex();
+                string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
+
+                Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Length);
+                foreach (string tagFromSettings in allTagsFromSettings)
+                {
+                    if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
+                    {
+                        data[tagFromSettings] = checkState;
+                    }
+                    else
+                    {
+                        data[tagFromSettings] = CheckState.Unchecked;
+                    }
+                }
+
+                string tagName = currentTagsStorage.GetTagName();
+                AddTagsToChecklistBoxPanel(tagName, data);
             }
-
-            currentTagsStorage.SortByIndex();
-            string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
-
-            Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Length);
-            foreach (string tagFromSettings in allTagsFromSettings)
+            catch (Exception ex)
             {
-                if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
-                {
-                    data[tagFromSettings] = checkState;
-                }
-                else
-                {
-                    data[tagFromSettings] = CheckState.Unchecked;
-                }
+                log.Error("An error occurred: " + ex.Message);
+                throw;
             }
-
-            string tagName = currentTagsStorage.GetTagName();
-            AddTagsToChecklistBoxPanel(tagName, data);
         }
 
         private void InvokeUpdateTagsTableData()
@@ -436,6 +443,22 @@ namespace MusicBeePlugin
             {
                 metaDataTypeName = e.TabPage.Text;
                 SwitchVisibleTagPanel(metaDataTypeName);
+                SetTagsFromFilesInPanel(selectedFileUrls); // Aktualisieren Sie das ChecklistBoxPanel, wenn die TabPage geändert wird
+            }
+        }
+
+        private void TabControl1_SelectedIndexChanged(Object sender, EventArgs e)
+        {
+            // Zugriff auf die aktuell ausgewählte TabPage
+            TabPage selectedTab = tabControl.SelectedTab;
+
+            // Überprüfen, ob die ausgewählte TabPage eine CheckListBoxPanel enthält
+            ChecklistBoxPanel checkListBoxPanel = selectedTab.Controls.OfType<ChecklistBoxPanel>().FirstOrDefault();
+
+            if (checkListBoxPanel != null)
+            {
+                // Aktualisieren Sie das CheckListBoxPanel hier
+                SetTagsFromFilesInPanel(selectedFileUrls);
             }
         }
 

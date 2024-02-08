@@ -65,6 +65,7 @@ namespace MusicBeePlugin
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, TagsStorages);
             }
+            mbApiInterface.MB_SetBackgroundTaskMessage("Settings saved");
         }
 
         public TagsStorage GetFirstTagsStorage()
