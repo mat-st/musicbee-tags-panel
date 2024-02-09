@@ -349,22 +349,23 @@ namespace MusicBeePlugin
                 TagsStorage currentTagsStorage = GetCurrentTagsStorage();
                 if (currentTagsStorage == null)
                 {
-                    throw new Exception("currentTagsStorage is null");
+                    log.Error("currentTagsStorage is null");
+                    return;
                 }
 
                 currentTagsStorage.SortByIndex();
-                string[] allTagsFromSettings = currentTagsStorage.GetTags().Keys.ToArray<string>();
+                var allTagsFromSettings = currentTagsStorage.GetTags();
 
-                Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Length);
-                foreach (string tagFromSettings in allTagsFromSettings)
+                Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Count);
+                foreach (var tagFromSettings in allTagsFromSettings)
                 {
-                    if (tagsFromFiles.TryGetValue(tagFromSettings.Trim(), out var checkState))
+                    if (tagsFromFiles.TryGetValue(tagFromSettings.Key.Trim(), out var checkState))
                     {
-                        data[tagFromSettings] = checkState;
+                        data[tagFromSettings.Key] = checkState;
                     }
                     else
                     {
-                        data[tagFromSettings] = CheckState.Unchecked;
+                        data[tagFromSettings.Key] = CheckState.Unchecked;
                     }
                 }
 
@@ -383,7 +384,6 @@ namespace MusicBeePlugin
             catch (Exception ex)
             {
                 log.Error("An error occurred: " + ex.Message);
-                throw;
             }
         }
 
