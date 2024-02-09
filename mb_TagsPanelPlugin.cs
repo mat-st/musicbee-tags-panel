@@ -194,17 +194,7 @@ namespace MusicBeePlugin
 
         private void AddVisibleTagPanel(string tagName)
         {
-            if (!_tabPageList.TryGetValue(tagName, out var tabPage))
-            {
-                tabPage = new TabPage(tagName);
-                _tabPageList.Add(tagName, tabPage);
-                tabControl.TabPages.Add(tabPage);
-            }
-
-            if (!tabPage.IsHandleCreated)
-            {
-                tabPage.CreateControl();
-            }
+            var tabPage = GetOrCreateTagPage(tagName);
 
             var tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             if (tagsStorage == null)
@@ -219,6 +209,7 @@ namespace MusicBeePlugin
             checkListBox.Dock = DockStyle.Fill;
             checkListBox.AddItemCheckEventHandler(CheckedListBox1_ItemCheck);
 
+            tabPage.Controls.Clear();
             tabPage.Controls.Add(checkListBox);
             checkListBox.Visible = true; // Show the ChecklistBoxPanel
         }
@@ -292,22 +283,15 @@ namespace MusicBeePlugin
 
         private ChecklistBoxPanel GetOrCreateCheckListBoxPanel(string tagName)
         {
-            if (checklistBoxList.TryGetValue(tagName, out var checkListBox))
-            {
-                if (checkListBox.IsDisposed)
-                {
-                    checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                    checklistBoxList[tagName] = checkListBox;
-                }
-                else if (!checkListBox.IsHandleCreated)
-                {
-                    checkListBox.CreateControl();
-                }
-            }
-            else
+            if (!checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
                 checkListBox = new ChecklistBoxPanel(mbApiInterface);
                 checklistBoxList.Add(tagName, checkListBox);
+            }
+            else if (checkListBox.IsDisposed || !checkListBox.IsHandleCreated)
+            {
+                checkListBox = new ChecklistBoxPanel(mbApiInterface);
+                checklistBoxList[tagName] = checkListBox;
             }
 
             return checkListBox;
@@ -462,10 +446,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void ToolstripAbout_Clicked(object sender, EventArgs e)
-        {
-            MessageBox.Show("TODO: Link to About dialog box");  // Write your code here
-        }
+    
 
         #endregion
 
@@ -684,10 +665,11 @@ namespace MusicBeePlugin
             return new List<ToolStripItem>
             {
                 new ToolStripMenuItem("Tag-Panel Settings", null, MenuSettingsClicked),
-                new ToolStripMenuItem("About", null, ToolstripAbout_Clicked)
+
             };
         }
 
         #endregion
     }
+    
 }
