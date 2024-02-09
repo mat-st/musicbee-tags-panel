@@ -78,5 +78,10 @@ namespace MusicBeePlugin
             // this will prevent the item to be checked if a key was pressed
             checkedListBoxWithTags.CheckOnClick = false;
         }
+
+        private void checkedListBoxWithTags_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

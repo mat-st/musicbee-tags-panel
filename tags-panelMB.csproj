@@ -85,6 +85,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckboxListPanelOnlyFromFilescs.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CheckboxListPanelOnlyFromFilescs.Designer.cs">
+      <DependentUpon>CheckboxListPanelOnlyFromFilescs.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChecklistBoxPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -152,6 +158,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CheckboxListPanelOnlyFromFilescs.resx">
+      <DependentUpon>CheckboxListPanelOnlyFromFilescs.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ChecklistBoxPanel.resx">
       <DependentUpon>ChecklistBoxPanel.cs</DependentUpon>
     </EmbeddedResource>
