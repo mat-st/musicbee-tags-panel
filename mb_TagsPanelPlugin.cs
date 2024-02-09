@@ -359,7 +359,8 @@ namespace MusicBeePlugin
                 Dictionary<string, CheckState> data = new Dictionary<string, CheckState>(allTagsFromSettings.Count);
                 foreach (var tagFromSettings in allTagsFromSettings)
                 {
-                    if (tagsFromFiles.TryGetValue(tagFromSettings.Key.Trim(), out var checkState))
+                    CheckState checkState;
+                    if (tagsFromFiles.TryGetValue(tagFromSettings.Key.Trim(), out checkState))
                     {
                         data[tagFromSettings.Key] = checkState;
                     }
