@@ -108,8 +108,13 @@ namespace MusicBeePlugin
 
         private void LoadSettings()
         {
-            LoadFallbackSettings();
-            LoadTagsStorageSettings();
+            settingsStorage.LoadSettingsWithFallback();
+            var tagsStorage = settingsStorage.GetFirstOne();
+            if (tagsStorage != null)
+            {
+                metaDataTypeName = tagsStorage.MetaDataType;
+                sortAlphabetically = tagsStorage.Sorted;
+            }
         }
 
         private void LoadFallbackSettings()
@@ -132,14 +137,12 @@ namespace MusicBeePlugin
             SettingsStorage settingsCopy = settingsStorage.DeepCopy();
             using (var tagsPanelSettingsForm = new TagsPanelSettingsForm(settingsCopy))
             {
-                if (tagsPanelSettingsForm.ShowDialog() != DialogResult.OK)
+                if (tagsPanelSettingsForm.ShowDialog() == DialogResult.OK)
                 {
-                    return;
+                    settingsStorage = tagsPanelSettingsForm.SettingsStorage;
+                    SaveSettings();
+                    UpdatePanelVisibility();
                 }
-
-                UpdateSettingsFromDialog(tagsPanelSettingsForm);
-                SaveSettings();
-                UpdatePanelVisibility();
             }
         }
 
@@ -165,9 +168,10 @@ namespace MusicBeePlugin
         /// </summary>
         public void SaveSettings()
         {
-            SaveAllSettings();
-            UpdateSortAlphabetically();
-            UpdatePanelData();
+            settingsStorage.SaveAllSettings();
+            sortAlphabetically = settingsStorage.GetFirstOne()?.Sorted ?? false;
+            ClearAndAddTabPages();
+            InvokeUpdateTagsTableData();
         }
 
         private void SaveAllSettings()
@@ -220,7 +224,8 @@ namespace MusicBeePlugin
             if (!_tabPageList.TryGetValue(tagName, out var tabPage))
             {
                 tabPage = new TabPage(tagName);
-                AddTabPage(tagName, tabPage);
+                _tabPageList[tagName] = tabPage;
+                tabControl.TabPages.Add(tabPage);
             }
             else if (!tabPage.IsHandleCreated)
             {
@@ -250,11 +255,14 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="tabName"></param>
         /// <param name="tabPage"></param>
-        private void RemoveTabPage(string tagName, TabPage tabPage)
+        private void RemoveTabPage(string tagName)
         {
-            _tabPageList.Remove(tagName);
-            tabPage.Controls.Clear();
-            tabControl.TabPages.Remove(tabPage);
+            if (_tabPageList.TryGetValue(tagName, out var tabPage))
+            {
+                tabPage.Controls.Clear();
+                tabControl.TabPages.Remove(tabPage);
+                _tabPageList.Remove(tagName);
+            }
         }
 
         private void AddTabPage(string tagName, TabPage tabPage)
@@ -286,7 +294,7 @@ namespace MusicBeePlugin
             if (!checklistBoxList.TryGetValue(tagName, out var checkListBox))
             {
                 checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                checklistBoxList.Add(tagName, checkListBox);
+                checklistBoxList[tagName] = checkListBox;
             }
             else if (checkListBox.IsDisposed || !checkListBox.IsHandleCreated)
             {
