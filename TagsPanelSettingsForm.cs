@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -25,6 +26,10 @@ namespace MusicBeePlugin
 
             this.Btn_Save.DialogResult = DialogResult.OK;
             this.Btn_Cancel.DialogResult = DialogResult.Cancel;
+
+            Version pluginVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            VersionLbl.Text = $"Version: {pluginVersion.ToString()}";
+            VersionLbl.ForeColor = Color.Black;
 
             foreach (TagsStorage storage in SettingsStorage.TagsStorages.Values)
             {
@@ -103,11 +108,6 @@ namespace MusicBeePlugin
             MessageBox.Show("Tags-Panel Plugin " + Environment.NewLine + "Version " + version + Environment.NewLine +
                 "Visit us on GitHub", "About Tags-Panel Plugin",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void LinkBuyCoffee_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(BUYUSACOFFEE);
         }
 
 

@@ -21,19 +21,30 @@ namespace MusicBeePlugin
         {
             InitializeComponent();
 
+            // Create a new ToolTip instance
+            ToolTip toolTip = new ToolTip();
+
+            // Set up the delays for the ToolTip.
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 1000;
+            toolTip.ReshowDelay = 500;
+
+            // Force the ToolTip text to be displayed whether or not the form is active.
+            toolTip.ShowAlways = true;
+
+            // Set up the ToolTip text for the CheckBox.
+            toolTip.SetToolTip(this.cbEnableAlphabeticalTagSort, "If enabled the Tags are always sorted alphabetically in the tag. If not enabled you can use the up and down buttons to reorder your tag lists.");
+
             SendMessage(TxtNewTagInput.Handle, EM_SETCUEBANNER, 0, "Please enter a tag");
-            
+
             tagsStorage = SettingsStorage.GetTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
-            
+
 
             // this must be at the very end to suppress the events
             MakeOwnModifications();
 
-            // Set the text box ready for input
-            // TxtNewTagInput.Select();
-            // TxtNewTagInput.SelectAll(); // Select all text in the textbox
             TxtNewTagInput.Focus(); // Set focus to the textbox
         }
 

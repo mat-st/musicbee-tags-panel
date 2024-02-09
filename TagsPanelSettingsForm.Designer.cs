@@ -33,12 +33,11 @@ namespace MusicBeePlugin
             this.tabControlSettings = new System.Windows.Forms.TabControl();
             this.btnAddTabPage = new System.Windows.Forms.Button();
             this.btnRemoveTabPage = new System.Windows.Forms.Button();
-            this.linkAbout = new System.Windows.Forms.LinkLabel();
             this.linkGitHub = new System.Windows.Forms.LinkLabel();
             this.Btn_Save = new System.Windows.Forms.Button();
             this.Btn_Cancel = new System.Windows.Forms.Button();
             this.toolTipAddTagPage = new System.Windows.Forms.ToolTip(this.components);
-            this.linkBuyCoffee = new System.Windows.Forms.LinkLabel();
+            this.VersionLbl = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // tabControlSettings
@@ -72,21 +71,10 @@ namespace MusicBeePlugin
             this.btnRemoveTabPage.UseVisualStyleBackColor = true;
             this.btnRemoveTabPage.Click += new System.EventHandler(this.BtnRemoveTagPage_Click);
             // 
-            // linkAbout
-            // 
-            this.linkAbout.AutoSize = true;
-            this.linkAbout.Location = new System.Drawing.Point(515, 839);
-            this.linkAbout.Name = "linkAbout";
-            this.linkAbout.Size = new System.Drawing.Size(47, 19);
-            this.linkAbout.TabIndex = 6;
-            this.linkAbout.TabStop = true;
-            this.linkAbout.Text = "About";
-            this.linkAbout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkAbout_LinkClicked);
-            // 
             // linkGitHub
             // 
             this.linkGitHub.AutoSize = true;
-            this.linkGitHub.Location = new System.Drawing.Point(436, 784);
+            this.linkGitHub.Location = new System.Drawing.Point(12, 889);
             this.linkGitHub.Name = "linkGitHub";
             this.linkGitHub.Size = new System.Drawing.Size(126, 19);
             this.linkGitHub.TabIndex = 5;
@@ -117,16 +105,13 @@ namespace MusicBeePlugin
             // 
             this.toolTipAddTagPage.AutomaticDelay = 1000;
             // 
-            // linkBuyCoffee
+            // VersionLbl
             // 
-            this.linkBuyCoffee.AutoSize = true;
-            this.linkBuyCoffee.Location = new System.Drawing.Point(456, 813);
-            this.linkBuyCoffee.Name = "linkBuyCoffee";
-            this.linkBuyCoffee.Size = new System.Drawing.Size(106, 19);
-            this.linkBuyCoffee.TabIndex = 7;
-            this.linkBuyCoffee.TabStop = true;
-            this.linkBuyCoffee.Text = "Buy me a coffee";
-            this.linkBuyCoffee.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkBuyCoffee_LinkClicked);
+            this.VersionLbl.AutoSize = true;
+            this.VersionLbl.Location = new System.Drawing.Point(512, 889);
+            this.VersionLbl.Name = "VersionLbl";
+            this.VersionLbl.Size = new System.Drawing.Size(0, 19);
+            this.VersionLbl.TabIndex = 7;
             // 
             // TagsPanelSettingsForm
             // 
@@ -134,12 +119,11 @@ namespace MusicBeePlugin
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.Btn_Cancel;
-            this.ClientSize = new System.Drawing.Size(621, 876);
-            this.Controls.Add(this.linkBuyCoffee);
+            this.ClientSize = new System.Drawing.Size(621, 917);
+            this.Controls.Add(this.VersionLbl);
             this.Controls.Add(this.Btn_Cancel);
             this.Controls.Add(this.Btn_Save);
             this.Controls.Add(this.linkGitHub);
-            this.Controls.Add(this.linkAbout);
             this.Controls.Add(this.btnRemoveTabPage);
             this.Controls.Add(this.btnAddTabPage);
             this.Controls.Add(this.tabControlSettings);
@@ -161,11 +145,10 @@ namespace MusicBeePlugin
         private System.Windows.Forms.TabControl tabControlSettings;
         private System.Windows.Forms.Button btnAddTabPage;
         private System.Windows.Forms.Button btnRemoveTabPage;
-        private System.Windows.Forms.LinkLabel linkAbout;
         private System.Windows.Forms.LinkLabel linkGitHub;
         private System.Windows.Forms.Button Btn_Save;
         private System.Windows.Forms.Button Btn_Cancel;
         private System.Windows.Forms.ToolTip toolTipAddTagPage;
-        private System.Windows.Forms.LinkLabel linkBuyCoffee;
+        private System.Windows.Forms.Label VersionLbl;
     }
 }
