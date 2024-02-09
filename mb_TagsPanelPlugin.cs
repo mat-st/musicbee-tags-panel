@@ -316,7 +316,7 @@ namespace MusicBeePlugin
 
         public MetaDataType GetVisibleTabPageName()
         {
-            return metaDataTypeName != null ? (MetaDataType)Enum.Parse(typeof(MetaDataType), metaDataTypeName, true) : 0;
+            return !string.IsNullOrEmpty(metaDataTypeName) ? (MetaDataType)Enum.Parse(typeof(MetaDataType), metaDataTypeName, true) : 0;
         }
 
         private TagsStorage GetCurrentTagsStorage()
@@ -518,7 +518,7 @@ namespace MusicBeePlugin
             }
 
             // Show checklistBox on visible panel 
-            if (!string.Equals(visibleTag, null))
+            if (!string.IsNullOrEmpty(visibleTag))
             {
                 AddVisibleTagPanel(visibleTag);
                 SetTagsFromFilesInPanel(selectedFileUrls);

@@ -52,7 +52,7 @@ namespace MusicBeePlugin
             }
 
             TagsPanelSettingsPanel tagsPanelSettingsPanel = new TagsPanelSettingsPanel(tagName);
-            tagPanels.Add(tagName, tagsPanelSettingsPanel);
+            tagPanels[tagName] = tagsPanelSettingsPanel;
             TabPage tabPage = new TabPage(tagName);
             tabPage.Controls.Add(tagsPanelSettingsPanel);
             tabControlSettings.TabPages.Add(tabPage);
