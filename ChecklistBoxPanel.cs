@@ -37,14 +37,14 @@ namespace MusicBeePlugin
                 checkedListBoxWithTags.Items.Add(entry.Key, entry.Value);
             }
 
-            checkedListBoxWithTags.ColumnWidth = GetLongestStringWidth(data.Keys) + 20;
+            checkedListBoxWithTags.ColumnWidth = GetLongestStringWidth(data.Keys) + 5;
             checkedListBoxWithTags.EndUpdate();
         }
 
         private int GetLongestStringWidth(IEnumerable<string> strings)
         {
-            var longestString = strings.Aggregate("", (max, cur) => cur.Length > max.Length ? cur : max);
-            return TextRenderer.MeasureText(longestString, checkedListBoxWithTags.Font).Width;
+            var longestStringLength = strings.Max(str => str.Length);
+            return TextRenderer.MeasureText(new string('M', longestStringLength), checkedListBoxWithTags.Font).Width;
         }
 
         private void StylePanel()
@@ -54,7 +54,6 @@ namespace MusicBeePlugin
             style.StyleControl(this);
         }
 
-
         public void AddItemCheckEventHandler(ItemCheckEventHandler eventHandler)
         {
             this.eventHandler = eventHandler;
@@ -63,7 +62,6 @@ namespace MusicBeePlugin
 
         public void RemoveItemCheckEventHandler()
         {
-            //RemoveClickEvent(this.checkedListBox1);
             checkedListBoxWithTags.ItemCheck -= this.eventHandler;
         }
 
@@ -77,11 +75,6 @@ namespace MusicBeePlugin
         {
             // this will prevent the item to be checked if a key was pressed
             checkedListBoxWithTags.CheckOnClick = false;
-        }
-
-        private void checkedListBoxWithTags_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }
