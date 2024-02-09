@@ -291,12 +291,7 @@ namespace MusicBeePlugin
 
         private ChecklistBoxPanel GetOrCreateCheckListBoxPanel(string tagName)
         {
-            if (!checklistBoxList.TryGetValue(tagName, out var checkListBox))
-            {
-                checkListBox = new ChecklistBoxPanel(mbApiInterface);
-                checklistBoxList[tagName] = checkListBox;
-            }
-            else if (checkListBox.IsDisposed || !checkListBox.IsHandleCreated)
+            if (!checklistBoxList.TryGetValue(tagName, out var checkListBox) || checkListBox.IsDisposed)
             {
                 checkListBox = new ChecklistBoxPanel(mbApiInterface);
                 checklistBoxList[tagName] = checkListBox;
