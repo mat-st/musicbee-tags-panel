@@ -8,7 +8,6 @@ namespace MusicBeePlugin
 {
     public partial class TabPageSelectorForm : Form
     {
-        // Tags in this list will be ignored in the TagSelector form
         private static readonly HashSet<MetaDataType> blacklist = new HashSet<MetaDataType> {
                 MetaDataType.Artwork,
                 MetaDataType.DiscNo,
@@ -22,25 +21,27 @@ namespace MusicBeePlugin
                 MetaDataType.RatingLove
             };
 
-        public TabPageSelectorForm()
+        private List<string> metaDataTypes;
+
+        public TabPageSelectorForm(List<string> usedTags)
         {
             InitializeComponent();
             Btn_ComboBoxAddTag.DialogResult = DialogResult.OK;
             Btn_ComboBoxCancel.DialogResult = DialogResult.Cancel;
+            metaDataTypes = GetMetaDataTypesAsString(usedTags);
             SetMetaDataTypes();
         }
 
         private void SetMetaDataTypes()
         {
-            List<string> metaDataTypes = GetMetaDataTypesAsString();
             comboBoxTagSelect.DataSource = metaDataTypes;
         }
 
-        private List<string> GetMetaDataTypesAsString()
+        private List<string> GetMetaDataTypesAsString(List<string> usedTags)
         {
             List<string> dataTypesAsString = Enum.GetValues(typeof(MetaDataType))
                 .Cast<MetaDataType>()
-                .Where(dataType => !blacklist.Contains(dataType))
+                .Where(dataType => !blacklist.Contains(dataType) && !usedTags.Contains(dataType.ToString("g")))
                 .Select(dataType => dataType.ToString("g"))
                 .ToList();
 

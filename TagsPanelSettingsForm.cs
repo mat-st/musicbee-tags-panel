@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -64,7 +65,8 @@ namespace MusicBeePlugin
 
         private void AddTagPage()
         {
-            using (TabPageSelectorForm form = new TabPageSelectorForm())
+            List<string> usedTags = tagPanels.Keys.ToList();
+            using (TabPageSelectorForm form = new TabPageSelectorForm(usedTags))
             {
                 DialogResult result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
