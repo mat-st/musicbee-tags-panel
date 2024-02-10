@@ -44,11 +44,42 @@ namespace MusicBeePlugin
         {
             string filename = GetSettingsPath();
 
+            if (!File.Exists(filename) || new FileInfo(filename).Length == 0)
+            {
+                // Create a default settings file
+                CreateDefaultSettingsFile(filename);
+            }
+
             using (var stream = File.Open(filename, FileMode.OpenOrCreate, FileAccess.Read, FileShare.None))
             using (var file = new StreamReader(stream, Encoding.UTF8))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 TagsStorages = (Dictionary<string, TagsStorage>)serializer.Deserialize(file, typeof(Dictionary<string, TagsStorage>));
+            }
+        }
+
+        private void CreateDefaultSettingsFile(string filename)
+        {
+            // Define default settings
+            var defaultSettings = new Dictionary<string, TagsStorage>
+            {
+                {
+                    "Genre", new TagsStorage
+                    {
+                        EnableAlphabeticalTagSort = false,
+                        Sorted = false,
+                        MetaDataType = "Genre",
+                        TagList = new SortedDictionary<string, int> { { "Please add your own tags here", 0 } }
+                    }
+                }
+            };
+
+            // Serialize default settings to JSON
+            var serializer = new JsonSerializer();
+            using (var writer = new StreamWriter(filename))
+            using (var jsonWriter = new JsonTextWriter(writer))
+            {
+                serializer.Serialize(jsonWriter, defaultSettings);
             }
         }
 

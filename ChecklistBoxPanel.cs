@@ -43,6 +43,11 @@ namespace MusicBeePlugin
 
         private int GetLongestStringWidth(IEnumerable<string> strings)
         {
+            if (!strings.Any())
+            {
+                return 0;
+            }
+
             var longestStringLength = strings.Max(str => str.Length);
             return TextRenderer.MeasureText(new string('M', longestStringLength), checkedListBoxWithTags.Font).Width;
         }

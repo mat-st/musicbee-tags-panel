@@ -50,23 +50,32 @@ namespace MusicBeePlugin
 
         private PluginInfo CreatePluginInfo()
         {
-            var pluginInfo = new PluginInfo
+            try
             {
-                PluginInfoVersion = PluginInfoVersion,
-                Name = "Tags-Panel",
-                Description = "Creates a dockable Panel with user-defined tabbed pages which let the user choose tags from user-defined lists",
-                Author = "mat-st & The Anonymous Programmer",
-                TargetApplication = "Tags-Panel",
-                Type = PluginType.General,
-                VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major,
-                VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor,
-                Revision = 1,
-                MinInterfaceVersion = MinInterfaceVersion,
-                MinApiRevision = MinApiRevision,
-                ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents),
-                ConfigurationPanelHeight = 20
-            };
-            return pluginInfo;
+                var pluginInfo = new PluginInfo
+                {
+                    PluginInfoVersion = PluginInfoVersion,
+                    Name = "Tags-Panel",
+                    Description = "Creates a dockable Panel with user-defined tabbed pages which let the user choose tags from user-defined lists",
+                    Author = "mat-st & The Anonymous Programmer",
+                    TargetApplication = "Tags-Panel",
+                    Type = PluginType.General,
+                    VersionMajor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Major,
+                    VersionMinor = (short)System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor,
+                    Revision = 1,
+                    MinInterfaceVersion = MinInterfaceVersion,
+                    MinApiRevision = MinApiRevision,
+                    ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents | ReceiveNotificationFlags.DataStreamEvents),
+                    ConfigurationPanelHeight = 20
+                };
+                return pluginInfo;
+            }
+            catch (Exception ex)
+            {
+                // Use log instance to log the exception
+                log.Error(ex.ToString());
+                throw; // Re-throw the exception to let the application handle it.
+            }
         }
 
         private void InitializePluginComponents()
