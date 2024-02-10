@@ -500,7 +500,7 @@ namespace MusicBeePlugin
                 TagsStorage currentTagsStorage = GetCurrentTagsStorage();
                 if (currentTagsStorage != null)
                 {
-                    tagsFromFiles = tagsManipulation.CombineTagLists(filenames, currentTagsStorage);
+                    tagsFromFiles = tagsManipulation.MergeTagLists(filenames, currentTagsStorage);
                 }
             }
             else
@@ -587,6 +587,7 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="reason">The reason why MusicBee has closed the plugin.</param>
         public void Close(PluginCloseReason reason)
+
         {
             log.Info(reason.ToString("G"));
             log.Close();
@@ -684,7 +685,7 @@ namespace MusicBeePlugin
         /// The presence of this function indicates to MusicBee that the dockable panel created above will show menu items when the panel header is clicked.
         /// </summary>
         /// <returns>Returns the list of ToolStripMenuItems that will be displayed.</returns>
-        public List<ToolStripItem> GetMenuItems()
+        public List<ToolStripItem> RetrieveMenuItems()
         {
             return new List<ToolStripItem>
             {

@@ -18,7 +18,7 @@ namespace MusicBeePlugin
             this.settingsStorage = settingsStorage;
         }
 
-        public Dictionary<string, CheckState> CombineTagLists(string[] fileNames, TagsStorage tagsStorage)
+        public Dictionary<string, CheckState> MergeTagLists(string[] fileNames, TagsStorage tagsStorage)
         {
             var tagList = new Dictionary<string, CheckState>();
             var stateOfSelection = new Dictionary<string, int>();
