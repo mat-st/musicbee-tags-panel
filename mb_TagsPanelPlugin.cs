@@ -320,6 +320,10 @@ namespace MusicBeePlugin
             System.IO.File.Delete(filePath);
         }
 
+        /// <summary>
+        /// Gets the name of the currently visible tab page.
+        /// </summary>
+        /// <returns>The name of the currently visible tab page.</returns>
         public MetaDataType GetVisibleTabPageName()
         {
             return !string.IsNullOrEmpty(metaDataTypeName) ? (MetaDataType)Enum.Parse(typeof(MetaDataType), metaDataTypeName, true) : 0;
@@ -348,6 +352,9 @@ namespace MusicBeePlugin
             }
         }
 
+        /// <summary>
+        /// Updates the data in the tags table based on the current tags storage and the tags from selected files.
+        /// </summary>
         private void UpdateTagsTableData()
         {
             try
@@ -422,6 +429,11 @@ namespace MusicBeePlugin
             OpenSettingsDialog();
         }
 
+        /// <summary>
+        /// Event handler triggered when an item in the CheckedListBox is checked or unchecked.
+        /// </summary>
+        /// <param name="sender">The sender object.</param>
+        /// <param name="e">The ItemCheckEventArgs containing the event data.</param>
         private void CheckedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             if (ignoreForBatchSelect)
@@ -450,6 +462,11 @@ namespace MusicBeePlugin
             }
         }
 
+        /// <summary>
+        /// Event handler triggered by MusicBee when the user selects a different tab in the TabControl.
+        /// </summary>
+        /// <param name="sender">The object that triggered the event.</param>
+        /// <param name="e">The event arguments.</param>
         private void TabControl1_SelectedIndexChanged(Object sender, EventArgs e)
         {
             // Zugriff auf die aktuell ausgewählte TabPage
@@ -465,10 +482,10 @@ namespace MusicBeePlugin
             }
         }
 
-        #endregion Event handlers
-
-        #region Controls
-
+        /// <summary>
+        /// Sets the enabled state of the panel.
+        /// </summary>
+        /// <param name="enabled">The enabled state to set.</param>
         private void SetPanelEnabled(bool enabled = true)
         {
             _panel.Invoke(new Action(() =>
@@ -477,6 +494,9 @@ namespace MusicBeePlugin
             }));
         }
 
+        /// <summary>
+        /// Updates the tags in the panel when the file selection changes.
+        /// </summary>
         private void UpdateTagsInPanelOnFileSelection()
         {
             ignoreEventFromHandler = true;
@@ -486,6 +506,10 @@ namespace MusicBeePlugin
             ignoreForBatchSelect = false;
         }
 
+        /// <summary>
+        /// Sets the tags in the panel based on the selected files.
+        /// </summary>
+        /// <param name="filenames">The array of selected file names.</param>
         private void SetTagsFromFilesInPanel(string[] filenames)
         {
             if (filenames != null && filenames.Length > 0)
@@ -506,6 +530,10 @@ namespace MusicBeePlugin
             SetPanelEnabled(true);
         }
 
+        /// <summary>
+        /// Switches the visibility of the checklist box panel based on the selected tag.
+        /// </summary>
+        /// <param name="visibleTag">The selected tag.</param>
         private void SwitchVisibleTagPanel(string visibleTag)
         {
             // Hide checklistBox on all panels
@@ -528,10 +556,12 @@ namespace MusicBeePlugin
             }
         }
 
+        /// <summary>
+        /// Creates the tab panel for the plugin.
+        /// </summary>
         private void CreateTabPanel()
         {
             tabControl = (TabControl)mbApiInterface.MB_AddPanel(_panel, (PluginPanelDock)6);
-            // TODO
             tabControl.Dock = DockStyle.Fill;
             tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
