@@ -30,8 +30,8 @@ namespace MusicBeePlugin
         private void InitializeComponent()
         {
             this.comboBoxTagSelect = new System.Windows.Forms.ComboBox();
-            this.Btn_ComboBoxAddTag = new System.Windows.Forms.Button();
-            this.Btn_ComboBoxCancel = new System.Windows.Forms.Button();
+            this.buttonComboBoxAddTag = new System.Windows.Forms.Button();
+            this.buttonComboBoxCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // comboBoxTagSelect
@@ -47,31 +47,31 @@ namespace MusicBeePlugin
             this.comboBoxTagSelect.TabIndex = 0;
             this.comboBoxTagSelect.Text = "Click here";
             // 
-            // Btn_ComboBoxAddTag
+            // buttonComboBoxAddTag
             // 
-            this.Btn_ComboBoxAddTag.Location = new System.Drawing.Point(12, 48);
-            this.Btn_ComboBoxAddTag.Name = "Btn_ComboBoxAddTag";
-            this.Btn_ComboBoxAddTag.Size = new System.Drawing.Size(75, 33);
-            this.Btn_ComboBoxAddTag.TabIndex = 1;
-            this.Btn_ComboBoxAddTag.Text = "Add";
-            this.Btn_ComboBoxAddTag.UseVisualStyleBackColor = true;
+            this.buttonComboBoxAddTag.Location = new System.Drawing.Point(12, 48);
+            this.buttonComboBoxAddTag.Name = "buttonComboBoxAddTag";
+            this.buttonComboBoxAddTag.Size = new System.Drawing.Size(75, 33);
+            this.buttonComboBoxAddTag.TabIndex = 1;
+            this.buttonComboBoxAddTag.Text = "Add";
+            this.buttonComboBoxAddTag.UseVisualStyleBackColor = true;
             // 
-            // Btn_ComboBoxCancel
+            // buttonComboBoxCancel
             // 
-            this.Btn_ComboBoxCancel.Location = new System.Drawing.Point(135, 48);
-            this.Btn_ComboBoxCancel.Name = "Btn_ComboBoxCancel";
-            this.Btn_ComboBoxCancel.Size = new System.Drawing.Size(75, 33);
-            this.Btn_ComboBoxCancel.TabIndex = 2;
-            this.Btn_ComboBoxCancel.Text = "Cancel";
-            this.Btn_ComboBoxCancel.UseVisualStyleBackColor = true;
+            this.buttonComboBoxCancel.Location = new System.Drawing.Point(135, 48);
+            this.buttonComboBoxCancel.Name = "buttonComboBoxCancel";
+            this.buttonComboBoxCancel.Size = new System.Drawing.Size(75, 33);
+            this.buttonComboBoxCancel.TabIndex = 2;
+            this.buttonComboBoxCancel.Text = "Cancel";
+            this.buttonComboBoxCancel.UseVisualStyleBackColor = true;
             // 
             // TabPageSelectorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(222, 93);
-            this.Controls.Add(this.Btn_ComboBoxCancel);
-            this.Controls.Add(this.Btn_ComboBoxAddTag);
+            this.Controls.Add(this.buttonComboBoxCancel);
+            this.Controls.Add(this.buttonComboBoxAddTag);
             this.Controls.Add(this.comboBoxTagSelect);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -88,7 +88,7 @@ namespace MusicBeePlugin
         #endregion
 
         private System.Windows.Forms.ComboBox comboBoxTagSelect;
-        private System.Windows.Forms.Button Btn_ComboBoxAddTag;
-        private System.Windows.Forms.Button Btn_ComboBoxCancel;
+        private System.Windows.Forms.Button buttonComboBoxAddTag;
+        private System.Windows.Forms.Button buttonComboBoxCancel;
     }
 }

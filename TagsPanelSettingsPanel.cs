@@ -27,7 +27,7 @@ namespace MusicBeePlugin
             UpdateSortOption();
             
             // this must be at the very end to suppress the events
-            MakeOwnModifications();
+            InitializeEventHandlers();
 
             TxtNewTagInput.Focus(); // Set focus to the textbox
         }
@@ -120,7 +120,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void MakeOwnModifications()
+        private void InitializeEventHandlers()
         {
             this.lstTags.KeyDown += KeyEventHandler;
             this.TxtNewTagInput.KeyDown += KeyEventHandler;

@@ -26,8 +26,8 @@ namespace MusicBeePlugin
         public TabPageSelectorForm(List<string> usedTags)
         {
             InitializeComponent();
-            Btn_ComboBoxAddTag.DialogResult = DialogResult.OK;
-            Btn_ComboBoxCancel.DialogResult = DialogResult.Cancel;
+            buttonComboBoxAddTag.DialogResult = DialogResult.OK;
+            buttonComboBoxCancel.DialogResult = DialogResult.Cancel;
             metaDataTypes = GetMetaDataTypesAsString(usedTags);
             SetMetaDataTypes();
         }
