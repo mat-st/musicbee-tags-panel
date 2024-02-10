@@ -8,8 +8,7 @@ namespace MusicBeePlugin
 {
     public partial class TagsPanelSettingsForm : Form
     {
-        // TODO set link to donation page
-        const string BUYUSACOFFEE = "https://github.com/mat-st/musicbee-tags-panel";
+        
         const string GITHUBLINK = "https://github.com/mat-st/musicbee-tags-panel";
 
         const string TOOLTIPADDTAGPAGE = "Add & select a new tag and a new tabpage";
@@ -41,6 +40,7 @@ namespace MusicBeePlugin
 
             toolTipAddTagPage.SetToolTip(this.btnAddTabPage, TOOLTIPADDTAGPAGE);
         }
+
 
 
         private bool AddPanel(TagsStorage storage)
@@ -157,10 +157,6 @@ namespace MusicBeePlugin
             MessageBox.Show("This Metadata Type was already added", "Tag exists already",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-
-        private void tabControlSettings_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+                
     }
 }

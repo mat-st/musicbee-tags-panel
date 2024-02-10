@@ -49,7 +49,6 @@ namespace MusicBeePlugin
             this.tabControlSettings.SelectedIndex = 0;
             this.tabControlSettings.Size = new System.Drawing.Size(621, 760);
             this.tabControlSettings.TabIndex = 0;
-            this.tabControlSettings.SelectedIndexChanged += new System.EventHandler(this.tabControlSettings_SelectedIndexChanged);
             // 
             // btnAddTabPage
             // 

@@ -379,14 +379,16 @@ namespace MusicBeePlugin
                     }
                 }
 
-                // Add tags from selected files which are not in the current list
-                foreach (var tagFromFile in tagsFromFiles)
-                {
-                    if (!data.ContainsKey(tagFromFile.Key))
+                                
+                    // Add tags from selected files which are not in the current list
+                    foreach (var tagFromFile in tagsFromFiles)
                     {
-                        data[tagFromFile.Key] = tagFromFile.Value;
+                        if (!data.ContainsKey(tagFromFile.Key))
+                        {
+                            data[tagFromFile.Key] = tagFromFile.Value;
+                        }
                     }
-                }
+                
 
                 string tagName = currentTagsStorage.GetTagName();
                 AddTagsToChecklistBoxPanel(tagName, data);

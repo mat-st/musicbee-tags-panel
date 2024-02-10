@@ -140,5 +140,7 @@ namespace MusicBeePlugin
             storages = JsonConvert.DeserializeObject<Dictionary<string, TagsStorage>>(JsonConvert.SerializeObject(TagsStorages));
             return other;
         }
+
+       
     }
 }

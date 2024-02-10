@@ -39,6 +39,7 @@ namespace MusicBeePlugin
             this.btnTagUp = new System.Windows.Forms.Button();
             this.btnTagDown = new System.Windows.Forms.Button();
             this.BtnImportCSV = new System.Windows.Forms.Button();
+            this.cbShowTagsThatAreNotInTheList = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lstTags
@@ -77,7 +78,7 @@ namespace MusicBeePlugin
             this.cbEnableAlphabeticalTagSort.AutoSize = true;
             this.cbEnableAlphabeticalTagSort.Checked = true;
             this.cbEnableAlphabeticalTagSort.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(108, 568);
+            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(62, 543);
             this.cbEnableAlphabeticalTagSort.Name = "cbEnableAlphabeticalTagSort";
             this.cbEnableAlphabeticalTagSort.Size = new System.Drawing.Size(172, 23);
             this.cbEnableAlphabeticalTagSort.TabIndex = 3;
@@ -86,7 +87,7 @@ namespace MusicBeePlugin
             // 
             // btnClearTagSettings
             // 
-            this.btnClearTagSettings.Location = new System.Drawing.Point(62, 674);
+            this.btnClearTagSettings.Location = new System.Drawing.Point(62, 694);
             this.btnClearTagSettings.Name = "btnClearTagSettings";
             this.btnClearTagSettings.Size = new System.Drawing.Size(250, 33);
             this.btnClearTagSettings.TabIndex = 6;
@@ -96,7 +97,7 @@ namespace MusicBeePlugin
             // 
             // BtnExportCSV
             // 
-            this.BtnExportCSV.Location = new System.Drawing.Point(62, 636);
+            this.BtnExportCSV.Location = new System.Drawing.Point(62, 656);
             this.BtnExportCSV.Name = "BtnExportCSV";
             this.BtnExportCSV.Size = new System.Drawing.Size(250, 33);
             this.BtnExportCSV.TabIndex = 5;
@@ -133,7 +134,7 @@ namespace MusicBeePlugin
             // 
             // BtnImportCSV
             // 
-            this.BtnImportCSV.Location = new System.Drawing.Point(62, 597);
+            this.BtnImportCSV.Location = new System.Drawing.Point(62, 617);
             this.BtnImportCSV.Name = "BtnImportCSV";
             this.BtnImportCSV.Size = new System.Drawing.Size(250, 33);
             this.BtnImportCSV.TabIndex = 4;
@@ -141,11 +142,22 @@ namespace MusicBeePlugin
             this.BtnImportCSV.UseVisualStyleBackColor = true;
             this.BtnImportCSV.Click += new System.EventHandler(this.BtnImportCsv_Click);
             // 
+            // cbShowTagsThatAreNotInTheList
+            // 
+            this.cbShowTagsThatAreNotInTheList.AutoSize = true;
+            this.cbShowTagsThatAreNotInTheList.Location = new System.Drawing.Point(62, 573);
+            this.cbShowTagsThatAreNotInTheList.Name = "cbShowTagsThatAreNotInTheList";
+            this.cbShowTagsThatAreNotInTheList.Size = new System.Drawing.Size(231, 23);
+            this.cbShowTagsThatAreNotInTheList.TabIndex = 8;
+            this.cbShowTagsThatAreNotInTheList.Text = "Show tags that are not in the list";
+            this.cbShowTagsThatAreNotInTheList.UseVisualStyleBackColor = true;
+            // 
             // TagsPanelSettingsPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
+            this.Controls.Add(this.cbShowTagsThatAreNotInTheList);
             this.Controls.Add(this.TxtNewTagInput);
             this.Controls.Add(this.BtnExportCSV);
             this.Controls.Add(this.btnClearTagSettings);
@@ -159,7 +171,7 @@ namespace MusicBeePlugin
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TagsPanelSettingsPanel";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Size = new System.Drawing.Size(400, 720);
+            this.Size = new System.Drawing.Size(400, 746);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -176,5 +188,6 @@ namespace MusicBeePlugin
         private System.Windows.Forms.Button btnTagUp;
         private System.Windows.Forms.Button btnTagDown;
         private System.Windows.Forms.Button BtnImportCSV;
+        private System.Windows.Forms.CheckBox cbShowTagsThatAreNotInTheList;
     }
 }
