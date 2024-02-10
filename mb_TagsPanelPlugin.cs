@@ -95,7 +95,6 @@ namespace MusicBeePlugin
             log.Info("Tags-Panel plugin started");
         }
 
-
         public bool Configure(IntPtr panelHandle)
         {
             // save any persistent settings in a sub-folder of this path
@@ -110,6 +109,7 @@ namespace MusicBeePlugin
         {
             log = new Logger(mbApiInterface);
         }
+
         private void InitializeMenu()
         {
             mbApiInterface.MB_AddMenuItem("mnuTools/Tags-Panel Settings", "Tags-Panel: Open Settings", MenuSettingsClicked);
@@ -227,7 +227,6 @@ namespace MusicBeePlugin
             checkListBox.Visible = true; // Show the ChecklistBoxPanel
         }
 
-
         private TabPage GetOrCreateTagPage(string tagName)
         {
             if (!_tabPageList.TryGetValue(tagName, out var tabPage))
@@ -256,8 +255,6 @@ namespace MusicBeePlugin
                 }
             }
         }
-
-
 
         /// <summary>
         /// Removes a tab from the panel.
@@ -379,16 +376,14 @@ namespace MusicBeePlugin
                     }
                 }
 
-                                
-                    // Add tags from selected files which are not in the current list
-                    foreach (var tagFromFile in tagsFromFiles)
+                // Add tags from selected files which are not in the current list
+                foreach (var tagFromFile in tagsFromFiles)
+                {
+                    if (!data.ContainsKey(tagFromFile.Key))
                     {
-                        if (!data.ContainsKey(tagFromFile.Key))
-                        {
-                            data[tagFromFile.Key] = tagFromFile.Value;
-                        }
+                        data[tagFromFile.Key] = tagFromFile.Value;
                     }
-                
+                }
 
                 string tagName = currentTagsStorage.GetTagName();
                 AddTagsToChecklistBoxPanel(tagName, data);
@@ -418,7 +413,7 @@ namespace MusicBeePlugin
             }
         }
 
-        #endregion
+        #endregion Initialise plugin
 
         #region Event handlers
 
@@ -470,9 +465,7 @@ namespace MusicBeePlugin
             }
         }
 
-    
-
-        #endregion
+        #endregion Event handlers
 
         #region Controls
 
@@ -513,8 +506,7 @@ namespace MusicBeePlugin
             SetPanelEnabled(true);
         }
 
-
-        void SwitchVisibleTagPanel(string visibleTag)
+        private void SwitchVisibleTagPanel(string visibleTag)
         {
             // Hide checklistBox on all panels
             foreach (var tagsStorage in SettingsStorage.TagsStorages.Values)
@@ -528,7 +520,7 @@ namespace MusicBeePlugin
                 }
             }
 
-            // Show checklistBox on visible panel 
+            // Show checklistBox on visible panel
             if (!string.IsNullOrEmpty(visibleTag))
             {
                 AddVisibleTagPanel(visibleTag);
@@ -539,7 +531,7 @@ namespace MusicBeePlugin
         private void CreateTabPanel()
         {
             tabControl = (TabControl)mbApiInterface.MB_AddPanel(_panel, (PluginPanelDock)6);
-            // TODO 
+            // TODO
             tabControl.Dock = DockStyle.Fill;
             tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(TabControl1_Selected);
 
@@ -607,7 +599,6 @@ namespace MusicBeePlugin
             DeleteFile(log.GetLogFilePath());
         }
 
-
         /// <summary>
         /// Receive event notifications from MusicBee.
         /// You need to set about.ReceiveNotificationFlags = PlayerEvents to receive all notifications, and not just the startup event.
@@ -631,6 +622,7 @@ namespace MusicBeePlugin
                 case NotificationType.PluginStartup:
                 case NotificationType.TrackChanged:
                     break;
+
                 case NotificationType.TagsChanging:
                     ignoreForBatchSelect = true;
                     mbApiInterface.Library_CommitTagsToFile(sourceFileUrl);
@@ -690,11 +682,9 @@ namespace MusicBeePlugin
             return new List<ToolStripItem>
             {
                 new ToolStripMenuItem("Tag-Panel Settings", null, MenuSettingsClicked),
-
             };
         }
 
-        #endregion
+        #endregion Controls
     }
-    
 }

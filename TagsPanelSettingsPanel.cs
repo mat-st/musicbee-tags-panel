@@ -25,7 +25,7 @@ namespace MusicBeePlugin
             InitializeTagsStorage(tagName);
             UpdateTags();
             UpdateSortOption();
-            
+
             // this must be at the very end to suppress the events
             InitializeEventHandlers();
 
@@ -68,7 +68,6 @@ namespace MusicBeePlugin
             this.buttonMoveTagDown.Enabled = true;
         }
 
-
         private void TxtNewTagInput_Leave(object sender, EventArgs e)
         {
             if (TxtNewTagInput.Text.Length == 0)
@@ -87,7 +86,6 @@ namespace MusicBeePlugin
             }
         }
 
-
         public void SetUpPanelForFirstUse()
         {
             if (this.lstTags.Items.Count != 0)
@@ -104,7 +102,6 @@ namespace MusicBeePlugin
                 SetUpDownButtonsStateEnabled();
             }
         }
-
 
         private void UpdateSortOption()
         {
@@ -128,7 +125,6 @@ namespace MusicBeePlugin
             this.checkboxEnableAlphabeticalTagSorting.CheckedChanged += CbEnableTagSort_CheckedChanged;
         }
 
-
         private void KeyEventHandler(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -138,6 +134,7 @@ namespace MusicBeePlugin
                     AddNewTagToList();
                     e.Handled = true;
                     break;
+
                 case Keys.Delete when sender == this.lstTags:
                     e.SuppressKeyPress = true;
                     RemoveSelectedTagFromList();
@@ -145,7 +142,6 @@ namespace MusicBeePlugin
                     break;
             }
         }
-
 
         private void CbEnableTagSort_CheckedChanged(object sender, EventArgs e)
         {
@@ -162,7 +158,6 @@ namespace MusicBeePlugin
                 this.lstTags.Sorted = false;
             }
         }
-
 
         public bool IsSortEnabled()
         {
@@ -226,8 +221,6 @@ namespace MusicBeePlugin
             }
         }
 
-
-
         public void ClearTagsListInSettings()
         {
             lstTags.Items.Clear();
@@ -286,7 +279,6 @@ namespace MusicBeePlugin
             }
         }
 
-
         public void ExportCsv()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -311,11 +303,10 @@ namespace MusicBeePlugin
             }
         }
 
-
-
         /***************************
         BUTTONS
         ***************************/
+
         private void BtnAddTag_Click(object sender, EventArgs e)
         {
             AddNewTagToList();
@@ -331,11 +322,11 @@ namespace MusicBeePlugin
             ImportCsv();
         }
 
-
         private void BtnExportCsv_Click(object sender, EventArgs e)
         {
             ExportCsv();
         }
+
         private void BtnClearTagSettings_Click(object sender, EventArgs e)
         {
             if (lstTags.Items.Count != 0)
@@ -350,7 +341,6 @@ namespace MusicBeePlugin
             {
                 MoveUp();
             }
-
         }
 
         private void BtnMoveTagDownSettings_Click(object sender, EventArgs e)
@@ -360,7 +350,6 @@ namespace MusicBeePlugin
                 MoveDown();
             }
         }
-
 
         public void MoveUp()
         {
@@ -412,10 +401,10 @@ namespace MusicBeePlugin
             lstTags.EndUpdate(); // Resume drawing of the ListBox
         }
 
-
         /***************************
         DIALOGS
         ***************************/
+
         private void ShowConfirmationDialogToSort()
         {
             DialogResult dialogResult = MessageBox.Show("Do you really want to sort the tags alphabetically? Your current order will be lost.", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -437,7 +426,6 @@ namespace MusicBeePlugin
         {
             MessageBox.Show("Tag is already in the list!", "Duplicate found!", MessageBoxButtons.OK);
         }
-
 
         private void ShowDialogToClearList()
         {

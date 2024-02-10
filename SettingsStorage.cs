@@ -16,6 +16,7 @@ namespace MusicBeePlugin
     {
         //checke
         private const char SettingsSeparator = ';';
+
         private static Dictionary<string, TagsStorage> storages;
         private const string SettingsFileName = "mb_tags-panel.Settings.json";
         private readonly MusicBeeApiInterface mbApiInterface;
@@ -140,7 +141,5 @@ namespace MusicBeePlugin
             storages = JsonConvert.DeserializeObject<Dictionary<string, TagsStorage>>(JsonConvert.SerializeObject(TagsStorages));
             return other;
         }
-
-       
     }
 }

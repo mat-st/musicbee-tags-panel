@@ -4,7 +4,7 @@ using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin
 {
-    class Style
+    internal class Style
     {
         private readonly MusicBeeApiInterface mbApiInterface;
 
@@ -31,6 +31,5 @@ namespace MusicBeePlugin
             formControl.BackColor = trackAndArtistPanelColor;
             formControl.ForeColor = inputControlColor;
         }
-
     }
 }
