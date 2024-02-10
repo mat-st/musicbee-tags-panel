@@ -21,6 +21,19 @@ namespace MusicBeePlugin
         {
             InitializeComponent();
 
+            InitializeToolTip();
+            InitializeTagsStorage(tagName);
+            UpdateTags();
+            UpdateSortOption();
+            
+            // this must be at the very end to suppress the events
+            MakeOwnModifications();
+
+            TxtNewTagInput.Focus(); // Set focus to the textbox
+        }
+
+        private void InitializeToolTip()
+        {
             // Create a new ToolTip instance
             ToolTip toolTip = new ToolTip();
 
@@ -33,31 +46,26 @@ namespace MusicBeePlugin
             toolTip.ShowAlways = true;
 
             // Set up the ToolTip text for the CheckBox.
-            toolTip.SetToolTip(this.cbEnableAlphabeticalTagSort, "If enabled the Tags are always sorted alphabetically in the tag. If not enabled you can use the up and down buttons to reorder your tag lists.");
+            toolTip.SetToolTip(this.checkboxEnableAlphabeticalTagSorting, "If enabled the Tags are always sorted alphabetically in the tag. If not enabled you can use the up and down buttons to reorder your tag lists.");
 
             SendMessage(TxtNewTagInput.Handle, EM_SETCUEBANNER, 0, "Please enter a tag");
+        }
 
+        private void InitializeTagsStorage(string tagName)
+        {
             tagsStorage = SettingsStorage.GetTagsStorage(tagName);
-            UpdateTags();
-            UpdateSortOption();
-
-
-            // this must be at the very end to suppress the events
-            MakeOwnModifications();
-
-            TxtNewTagInput.Focus(); // Set focus to the textbox
         }
 
         private void SetUpDownButtonsStateDisabled()
         {
-            this.btnTagUp.Enabled = false;
-            this.btnTagDown.Enabled = false;
+            this.buttonMoveTagUp.Enabled = false;
+            this.buttonMoveTagDown.Enabled = false;
         }
 
         private void SetUpDownButtonsStateEnabled()
         {
-            this.btnTagUp.Enabled = true;
-            this.btnTagDown.Enabled = true;
+            this.buttonMoveTagUp.Enabled = true;
+            this.buttonMoveTagDown.Enabled = true;
         }
 
 
@@ -100,7 +108,7 @@ namespace MusicBeePlugin
 
         private void UpdateSortOption()
         {
-            this.cbEnableAlphabeticalTagSort.Checked = tagsStorage.Sorted;
+            this.checkboxEnableAlphabeticalTagSorting.Checked = tagsStorage.Sorted;
             this.lstTags.Sorted = tagsStorage.Sorted;
             if (tagsStorage.Sorted == true)
             {
@@ -117,7 +125,7 @@ namespace MusicBeePlugin
             this.lstTags.KeyDown += KeyEventHandler;
             this.TxtNewTagInput.KeyDown += KeyEventHandler;
 
-            this.cbEnableAlphabeticalTagSort.CheckedChanged += CbEnableTagSort_CheckedChanged;
+            this.checkboxEnableAlphabeticalTagSorting.CheckedChanged += CbEnableTagSort_CheckedChanged;
         }
 
 
@@ -158,7 +166,7 @@ namespace MusicBeePlugin
 
         public bool IsSortEnabled()
         {
-            return this.cbEnableAlphabeticalTagSort.Checked;
+            return this.checkboxEnableAlphabeticalTagSorting.Checked;
         }
 
         public void UpdateTags()
@@ -421,7 +429,7 @@ namespace MusicBeePlugin
             {
                 tagsStorage.Sorted = false;
                 this.lstTags.Sorted = false;
-                this.cbEnableAlphabeticalTagSort.Checked = false;
+                this.checkboxEnableAlphabeticalTagSorting.Checked = false;
             }
         }
 

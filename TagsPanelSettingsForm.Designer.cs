@@ -31,11 +31,11 @@ namespace MusicBeePlugin
         {
             this.components = new System.ComponentModel.Container();
             this.tabControlSettings = new System.Windows.Forms.TabControl();
-            this.btnAddTabPage = new System.Windows.Forms.Button();
-            this.btnRemoveTabPage = new System.Windows.Forms.Button();
-            this.linkGitHub = new System.Windows.Forms.LinkLabel();
-            this.Btn_Save = new System.Windows.Forms.Button();
-            this.Btn_Cancel = new System.Windows.Forms.Button();
+            this.buttonAddTabPage = new System.Windows.Forms.Button();
+            this.buttonRemoveTabPage = new System.Windows.Forms.Button();
+            this.linkToGitHub = new System.Windows.Forms.LinkLabel();
+            this.buttonSave = new System.Windows.Forms.Button();
+            this.buttonCancel = new System.Windows.Forms.Button();
             this.toolTipAddTagPage = new System.Windows.Forms.ToolTip(this.components);
             this.VersionLbl = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -50,55 +50,55 @@ namespace MusicBeePlugin
             this.tabControlSettings.Size = new System.Drawing.Size(621, 760);
             this.tabControlSettings.TabIndex = 0;
             // 
-            // btnAddTabPage
+            // buttonAddTabPage
             // 
-            this.btnAddTabPage.Location = new System.Drawing.Point(72, 777);
-            this.btnAddTabPage.Name = "btnAddTabPage";
-            this.btnAddTabPage.Size = new System.Drawing.Size(111, 33);
-            this.btnAddTabPage.TabIndex = 1;
-            this.btnAddTabPage.Text = "Add Tag";
-            this.btnAddTabPage.UseVisualStyleBackColor = true;
-            this.btnAddTabPage.Click += new System.EventHandler(this.Btn_AddTagPage_Click);
+            this.buttonAddTabPage.Location = new System.Drawing.Point(72, 777);
+            this.buttonAddTabPage.Name = "buttonAddTabPage";
+            this.buttonAddTabPage.Size = new System.Drawing.Size(111, 33);
+            this.buttonAddTabPage.TabIndex = 1;
+            this.buttonAddTabPage.Text = "Add Tag";
+            this.buttonAddTabPage.UseVisualStyleBackColor = true;
+            this.buttonAddTabPage.Click += new System.EventHandler(this.Btn_AddTagPage_Click);
             // 
-            // btnRemoveTabPage
+            // buttonRemoveTabPage
             // 
-            this.btnRemoveTabPage.Location = new System.Drawing.Point(243, 777);
-            this.btnRemoveTabPage.Name = "btnRemoveTabPage";
-            this.btnRemoveTabPage.Size = new System.Drawing.Size(111, 33);
-            this.btnRemoveTabPage.TabIndex = 2;
-            this.btnRemoveTabPage.Text = "Remove Tag";
-            this.btnRemoveTabPage.UseVisualStyleBackColor = true;
-            this.btnRemoveTabPage.Click += new System.EventHandler(this.BtnRemoveTagPage_Click);
+            this.buttonRemoveTabPage.Location = new System.Drawing.Point(243, 777);
+            this.buttonRemoveTabPage.Name = "buttonRemoveTabPage";
+            this.buttonRemoveTabPage.Size = new System.Drawing.Size(111, 33);
+            this.buttonRemoveTabPage.TabIndex = 2;
+            this.buttonRemoveTabPage.Text = "Remove Tag";
+            this.buttonRemoveTabPage.UseVisualStyleBackColor = true;
+            this.buttonRemoveTabPage.Click += new System.EventHandler(this.BtnRemoveTagPage_Click);
             // 
-            // linkGitHub
+            // linkToGitHub
             // 
-            this.linkGitHub.AutoSize = true;
-            this.linkGitHub.Location = new System.Drawing.Point(12, 889);
-            this.linkGitHub.Name = "linkGitHub";
-            this.linkGitHub.Size = new System.Drawing.Size(126, 19);
-            this.linkGitHub.TabIndex = 5;
-            this.linkGitHub.TabStop = true;
-            this.linkGitHub.Text = "Visit me on GitHub";
-            this.linkGitHub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkGitHub_LinkClicked);
+            this.linkToGitHub.AutoSize = true;
+            this.linkToGitHub.Location = new System.Drawing.Point(12, 889);
+            this.linkToGitHub.Name = "linkToGitHub";
+            this.linkToGitHub.Size = new System.Drawing.Size(126, 19);
+            this.linkToGitHub.TabIndex = 5;
+            this.linkToGitHub.TabStop = true;
+            this.linkToGitHub.Text = "Visit me on GitHub";
+            this.linkToGitHub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkGitHub_LinkClicked);
             // 
-            // Btn_Save
+            // buttonSave
             // 
-            this.Btn_Save.Location = new System.Drawing.Point(73, 824);
-            this.Btn_Save.Name = "Btn_Save";
-            this.Btn_Save.Size = new System.Drawing.Size(111, 33);
-            this.Btn_Save.TabIndex = 3;
-            this.Btn_Save.Text = "Save";
-            this.Btn_Save.UseVisualStyleBackColor = true;
+            this.buttonSave.Location = new System.Drawing.Point(73, 824);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(111, 33);
+            this.buttonSave.TabIndex = 3;
+            this.buttonSave.Text = "Save";
+            this.buttonSave.UseVisualStyleBackColor = true;
             // 
-            // Btn_Cancel
+            // buttonCancel
             // 
-            this.Btn_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Btn_Cancel.Location = new System.Drawing.Point(243, 824);
-            this.Btn_Cancel.Name = "Btn_Cancel";
-            this.Btn_Cancel.Size = new System.Drawing.Size(111, 33);
-            this.Btn_Cancel.TabIndex = 4;
-            this.Btn_Cancel.Text = "Cancel";
-            this.Btn_Cancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.buttonCancel.Location = new System.Drawing.Point(243, 824);
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Size = new System.Drawing.Size(111, 33);
+            this.buttonCancel.TabIndex = 4;
+            this.buttonCancel.Text = "Cancel";
+            this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // toolTipAddTagPage
             // 
@@ -117,14 +117,14 @@ namespace MusicBeePlugin
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.CancelButton = this.Btn_Cancel;
+            this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(621, 917);
             this.Controls.Add(this.VersionLbl);
-            this.Controls.Add(this.Btn_Cancel);
-            this.Controls.Add(this.Btn_Save);
-            this.Controls.Add(this.linkGitHub);
-            this.Controls.Add(this.btnRemoveTabPage);
-            this.Controls.Add(this.btnAddTabPage);
+            this.Controls.Add(this.buttonCancel);
+            this.Controls.Add(this.buttonSave);
+            this.Controls.Add(this.linkToGitHub);
+            this.Controls.Add(this.buttonRemoveTabPage);
+            this.Controls.Add(this.buttonAddTabPage);
             this.Controls.Add(this.tabControlSettings);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -142,11 +142,11 @@ namespace MusicBeePlugin
         #endregion
 
         private System.Windows.Forms.TabControl tabControlSettings;
-        private System.Windows.Forms.Button btnAddTabPage;
-        private System.Windows.Forms.Button btnRemoveTabPage;
-        private System.Windows.Forms.LinkLabel linkGitHub;
-        private System.Windows.Forms.Button Btn_Save;
-        private System.Windows.Forms.Button Btn_Cancel;
+        private System.Windows.Forms.Button buttonAddTabPage;
+        private System.Windows.Forms.Button buttonRemoveTabPage;
+        private System.Windows.Forms.LinkLabel linkToGitHub;
+        private System.Windows.Forms.Button buttonSave;
+        private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.ToolTip toolTipAddTagPage;
         private System.Windows.Forms.Label VersionLbl;
     }

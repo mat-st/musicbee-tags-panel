@@ -30,15 +30,15 @@ namespace MusicBeePlugin
         private void InitializeComponent()
         {
             this.lstTags = new System.Windows.Forms.ListBox();
-            this.btnRemTag = new System.Windows.Forms.Button();
-            this.btnAddTag = new System.Windows.Forms.Button();
-            this.cbEnableAlphabeticalTagSort = new System.Windows.Forms.CheckBox();
-            this.btnClearTagSettings = new System.Windows.Forms.Button();
-            this.BtnExportCSV = new System.Windows.Forms.Button();
+            this.buttonRemTag = new System.Windows.Forms.Button();
+            this.buttonAddTag = new System.Windows.Forms.Button();
+            this.checkboxEnableAlphabeticalTagSorting = new System.Windows.Forms.CheckBox();
+            this.buttonClearTagList = new System.Windows.Forms.Button();
+            this.buttonExportTagsToCSV = new System.Windows.Forms.Button();
             this.TxtNewTagInput = new System.Windows.Forms.TextBox();
-            this.btnTagUp = new System.Windows.Forms.Button();
-            this.btnTagDown = new System.Windows.Forms.Button();
-            this.BtnImportCSV = new System.Windows.Forms.Button();
+            this.buttonMoveTagUp = new System.Windows.Forms.Button();
+            this.buttonMoveTagDown = new System.Windows.Forms.Button();
+            this.buttonImportTagsFromCSV = new System.Windows.Forms.Button();
             this.cbShowTagsThatAreNotInTheList = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
@@ -53,57 +53,57 @@ namespace MusicBeePlugin
             this.lstTags.Size = new System.Drawing.Size(388, 460);
             this.lstTags.TabIndex = 7;
             // 
-            // btnRemTag
+            // buttonRemTag
             // 
-            this.btnRemTag.Location = new System.Drawing.Point(201, 504);
-            this.btnRemTag.Name = "btnRemTag";
-            this.btnRemTag.Size = new System.Drawing.Size(111, 33);
-            this.btnRemTag.TabIndex = 2;
-            this.btnRemTag.Text = "Remove";
-            this.btnRemTag.UseVisualStyleBackColor = true;
-            this.btnRemTag.Click += new System.EventHandler(this.BtnRemTag_Click);
+            this.buttonRemTag.Location = new System.Drawing.Point(201, 504);
+            this.buttonRemTag.Name = "buttonRemTag";
+            this.buttonRemTag.Size = new System.Drawing.Size(111, 33);
+            this.buttonRemTag.TabIndex = 2;
+            this.buttonRemTag.Text = "Remove";
+            this.buttonRemTag.UseVisualStyleBackColor = true;
+            this.buttonRemTag.Click += new System.EventHandler(this.BtnRemTag_Click);
             // 
-            // btnAddTag
+            // buttonAddTag
             // 
-            this.btnAddTag.Location = new System.Drawing.Point(62, 504);
-            this.btnAddTag.Name = "btnAddTag";
-            this.btnAddTag.Size = new System.Drawing.Size(111, 33);
-            this.btnAddTag.TabIndex = 1;
-            this.btnAddTag.Text = "Add";
-            this.btnAddTag.UseVisualStyleBackColor = true;
-            this.btnAddTag.Click += new System.EventHandler(this.BtnAddTag_Click);
+            this.buttonAddTag.Location = new System.Drawing.Point(62, 504);
+            this.buttonAddTag.Name = "buttonAddTag";
+            this.buttonAddTag.Size = new System.Drawing.Size(111, 33);
+            this.buttonAddTag.TabIndex = 1;
+            this.buttonAddTag.Text = "Add";
+            this.buttonAddTag.UseVisualStyleBackColor = true;
+            this.buttonAddTag.Click += new System.EventHandler(this.BtnAddTag_Click);
             // 
-            // cbEnableAlphabeticalTagSort
+            // checkboxEnableAlphabeticalTagSorting
             // 
-            this.cbEnableAlphabeticalTagSort.AutoSize = true;
-            this.cbEnableAlphabeticalTagSort.Checked = true;
-            this.cbEnableAlphabeticalTagSort.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbEnableAlphabeticalTagSort.Location = new System.Drawing.Point(62, 543);
-            this.cbEnableAlphabeticalTagSort.Name = "cbEnableAlphabeticalTagSort";
-            this.cbEnableAlphabeticalTagSort.Size = new System.Drawing.Size(172, 23);
-            this.cbEnableAlphabeticalTagSort.TabIndex = 3;
-            this.cbEnableAlphabeticalTagSort.Text = "Sort tags alphabetically";
-            this.cbEnableAlphabeticalTagSort.UseVisualStyleBackColor = true;
+            this.checkboxEnableAlphabeticalTagSorting.AutoSize = true;
+            this.checkboxEnableAlphabeticalTagSorting.Checked = true;
+            this.checkboxEnableAlphabeticalTagSorting.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkboxEnableAlphabeticalTagSorting.Location = new System.Drawing.Point(62, 543);
+            this.checkboxEnableAlphabeticalTagSorting.Name = "checkboxEnableAlphabeticalTagSorting";
+            this.checkboxEnableAlphabeticalTagSorting.Size = new System.Drawing.Size(172, 23);
+            this.checkboxEnableAlphabeticalTagSorting.TabIndex = 3;
+            this.checkboxEnableAlphabeticalTagSorting.Text = "Sort tags alphabetically";
+            this.checkboxEnableAlphabeticalTagSorting.UseVisualStyleBackColor = true;
             // 
-            // btnClearTagSettings
+            // buttonClearTagList
             // 
-            this.btnClearTagSettings.Location = new System.Drawing.Point(62, 694);
-            this.btnClearTagSettings.Name = "btnClearTagSettings";
-            this.btnClearTagSettings.Size = new System.Drawing.Size(250, 33);
-            this.btnClearTagSettings.TabIndex = 6;
-            this.btnClearTagSettings.Text = "Clear list";
-            this.btnClearTagSettings.UseVisualStyleBackColor = true;
-            this.btnClearTagSettings.Click += new System.EventHandler(this.BtnClearTagSettings_Click);
+            this.buttonClearTagList.Location = new System.Drawing.Point(62, 694);
+            this.buttonClearTagList.Name = "buttonClearTagList";
+            this.buttonClearTagList.Size = new System.Drawing.Size(250, 33);
+            this.buttonClearTagList.TabIndex = 6;
+            this.buttonClearTagList.Text = "Clear list";
+            this.buttonClearTagList.UseVisualStyleBackColor = true;
+            this.buttonClearTagList.Click += new System.EventHandler(this.BtnClearTagSettings_Click);
             // 
-            // BtnExportCSV
+            // buttonExportTagsToCSV
             // 
-            this.BtnExportCSV.Location = new System.Drawing.Point(62, 656);
-            this.BtnExportCSV.Name = "BtnExportCSV";
-            this.BtnExportCSV.Size = new System.Drawing.Size(250, 33);
-            this.BtnExportCSV.TabIndex = 5;
-            this.BtnExportCSV.Text = "Export tags to CSV";
-            this.BtnExportCSV.UseVisualStyleBackColor = true;
-            this.BtnExportCSV.Click += new System.EventHandler(this.BtnExportCsv_Click);
+            this.buttonExportTagsToCSV.Location = new System.Drawing.Point(62, 656);
+            this.buttonExportTagsToCSV.Name = "buttonExportTagsToCSV";
+            this.buttonExportTagsToCSV.Size = new System.Drawing.Size(250, 33);
+            this.buttonExportTagsToCSV.TabIndex = 5;
+            this.buttonExportTagsToCSV.Text = "Export tags to CSV";
+            this.buttonExportTagsToCSV.UseVisualStyleBackColor = true;
+            this.buttonExportTagsToCSV.Click += new System.EventHandler(this.BtnExportCsv_Click);
             // 
             // TxtNewTagInput
             // 
@@ -112,35 +112,35 @@ namespace MusicBeePlugin
             this.TxtNewTagInput.Size = new System.Drawing.Size(352, 26);
             this.TxtNewTagInput.TabIndex = 0;
             // 
-            // btnTagUp
+            // buttonMoveTagUp
             // 
-            this.btnTagUp.Location = new System.Drawing.Point(364, 470);
-            this.btnTagUp.Name = "btnTagUp";
-            this.btnTagUp.Size = new System.Drawing.Size(30, 28);
-            this.btnTagUp.TabIndex = 2;
-            this.btnTagUp.Text = "▲";
-            this.btnTagUp.UseVisualStyleBackColor = true;
-            this.btnTagUp.Click += new System.EventHandler(this.BtnMoveTagUpSettings_Click);
+            this.buttonMoveTagUp.Location = new System.Drawing.Point(364, 470);
+            this.buttonMoveTagUp.Name = "buttonMoveTagUp";
+            this.buttonMoveTagUp.Size = new System.Drawing.Size(30, 28);
+            this.buttonMoveTagUp.TabIndex = 2;
+            this.buttonMoveTagUp.Text = "▲";
+            this.buttonMoveTagUp.UseVisualStyleBackColor = true;
+            this.buttonMoveTagUp.Click += new System.EventHandler(this.BtnMoveTagUpSettings_Click);
             // 
-            // btnTagDown
+            // buttonMoveTagDown
             // 
-            this.btnTagDown.Location = new System.Drawing.Point(364, 504);
-            this.btnTagDown.Name = "btnTagDown";
-            this.btnTagDown.Size = new System.Drawing.Size(30, 28);
-            this.btnTagDown.TabIndex = 2;
-            this.btnTagDown.Text = "▼";
-            this.btnTagDown.UseVisualStyleBackColor = true;
-            this.btnTagDown.Click += new System.EventHandler(this.BtnMoveTagDownSettings_Click);
+            this.buttonMoveTagDown.Location = new System.Drawing.Point(364, 504);
+            this.buttonMoveTagDown.Name = "buttonMoveTagDown";
+            this.buttonMoveTagDown.Size = new System.Drawing.Size(30, 28);
+            this.buttonMoveTagDown.TabIndex = 2;
+            this.buttonMoveTagDown.Text = "▼";
+            this.buttonMoveTagDown.UseVisualStyleBackColor = true;
+            this.buttonMoveTagDown.Click += new System.EventHandler(this.BtnMoveTagDownSettings_Click);
             // 
-            // BtnImportCSV
+            // buttonImportTagsFromCSV
             // 
-            this.BtnImportCSV.Location = new System.Drawing.Point(62, 617);
-            this.BtnImportCSV.Name = "BtnImportCSV";
-            this.BtnImportCSV.Size = new System.Drawing.Size(250, 33);
-            this.BtnImportCSV.TabIndex = 4;
-            this.BtnImportCSV.Text = "Import tags from CSV";
-            this.BtnImportCSV.UseVisualStyleBackColor = true;
-            this.BtnImportCSV.Click += new System.EventHandler(this.BtnImportCsv_Click);
+            this.buttonImportTagsFromCSV.Location = new System.Drawing.Point(62, 617);
+            this.buttonImportTagsFromCSV.Name = "buttonImportTagsFromCSV";
+            this.buttonImportTagsFromCSV.Size = new System.Drawing.Size(250, 33);
+            this.buttonImportTagsFromCSV.TabIndex = 4;
+            this.buttonImportTagsFromCSV.Text = "Import tags from CSV";
+            this.buttonImportTagsFromCSV.UseVisualStyleBackColor = true;
+            this.buttonImportTagsFromCSV.Click += new System.EventHandler(this.BtnImportCsv_Click);
             // 
             // cbShowTagsThatAreNotInTheList
             // 
@@ -159,14 +159,14 @@ namespace MusicBeePlugin
             this.AutoSize = true;
             this.Controls.Add(this.cbShowTagsThatAreNotInTheList);
             this.Controls.Add(this.TxtNewTagInput);
-            this.Controls.Add(this.BtnExportCSV);
-            this.Controls.Add(this.btnClearTagSettings);
-            this.Controls.Add(this.BtnImportCSV);
-            this.Controls.Add(this.btnTagDown);
-            this.Controls.Add(this.btnTagUp);
-            this.Controls.Add(this.btnRemTag);
-            this.Controls.Add(this.btnAddTag);
-            this.Controls.Add(this.cbEnableAlphabeticalTagSort);
+            this.Controls.Add(this.buttonExportTagsToCSV);
+            this.Controls.Add(this.buttonClearTagList);
+            this.Controls.Add(this.buttonImportTagsFromCSV);
+            this.Controls.Add(this.buttonMoveTagDown);
+            this.Controls.Add(this.buttonMoveTagUp);
+            this.Controls.Add(this.buttonRemTag);
+            this.Controls.Add(this.buttonAddTag);
+            this.Controls.Add(this.checkboxEnableAlphabeticalTagSorting);
             this.Controls.Add(this.lstTags);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TagsPanelSettingsPanel";
@@ -179,15 +179,15 @@ namespace MusicBeePlugin
 
         #endregion
         private System.Windows.Forms.ListBox lstTags;
-        private System.Windows.Forms.Button btnRemTag;
-        private System.Windows.Forms.Button btnAddTag;
-        private System.Windows.Forms.CheckBox cbEnableAlphabeticalTagSort;
-        private System.Windows.Forms.Button btnClearTagSettings;
-        private System.Windows.Forms.Button BtnExportCSV;
+        private System.Windows.Forms.Button buttonRemTag;
+        private System.Windows.Forms.Button buttonAddTag;
+        private System.Windows.Forms.CheckBox checkboxEnableAlphabeticalTagSorting;
+        private System.Windows.Forms.Button buttonClearTagList;
+        private System.Windows.Forms.Button buttonExportTagsToCSV;
         private System.Windows.Forms.TextBox TxtNewTagInput;
-        private System.Windows.Forms.Button btnTagUp;
-        private System.Windows.Forms.Button btnTagDown;
-        private System.Windows.Forms.Button BtnImportCSV;
+        private System.Windows.Forms.Button buttonMoveTagUp;
+        private System.Windows.Forms.Button buttonMoveTagDown;
+        private System.Windows.Forms.Button buttonImportTagsFromCSV;
         private System.Windows.Forms.CheckBox cbShowTagsThatAreNotInTheList;
     }
 }

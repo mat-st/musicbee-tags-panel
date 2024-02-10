@@ -24,8 +24,8 @@ namespace MusicBeePlugin
             this.settingsStorage = settingsStorage;
             InitializeComponent();
 
-            this.Btn_Save.DialogResult = DialogResult.OK;
-            this.Btn_Cancel.DialogResult = DialogResult.Cancel;
+            this.buttonSave.DialogResult = DialogResult.OK;
+            this.buttonCancel.DialogResult = DialogResult.Cancel;
 
             Version pluginVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             VersionLbl.Text = $"Version: {pluginVersion.ToString()}";
@@ -38,7 +38,7 @@ namespace MusicBeePlugin
 
             // Tooltips
 
-            toolTipAddTagPage.SetToolTip(this.btnAddTabPage, TOOLTIPADDTAGPAGE);
+            toolTipAddTagPage.SetToolTip(this.buttonAddTabPage, TOOLTIPADDTAGPAGE);
         }
 
 
